@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller
 
-import io.lees.boom.core.support.error.CoreException
-import io.lees.boom.core.support.error.ErrorType
+import io.lees.boom.core.support.error.CoreApiException
+import io.lees.boom.core.support.error.CoreApiErrorType
 import io.lees.boom.core.support.response.ApiResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class ApiControllerAdvice {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
 
-    @ExceptionHandler(CoreException::class)
-    fun handleCoreException(e: CoreException): ResponseEntity<ApiResponse<Any>> {
-        when (e.errorType.logLevel) {
+    @ExceptionHandler(CoreApiException::class)
+    fun handleCoreException(e: CoreApiException): ResponseEntity<ApiResponse<Any>> {
+        when (e.coreApiErrorType.logLevel) {
             LogLevel.ERROR -> log.error("CoreException : {}", e.message, e)
             LogLevel.WARN -> log.warn("CoreException : {}", e.message, e)
             else -> log.info("CoreException : {}", e.message, e)
         }
-        return ResponseEntity(ApiResponse.error(e.errorType, e.data), e.errorType.status)
+        return ResponseEntity(ApiResponse.error(e.coreApiErrorType, e.data), e.coreApiErrorType.status)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ApiResponse<Any>> {
         log.error("Exception : {}", e.message, e)
-        return ResponseEntity(ApiResponse.error(ErrorType.DEFAULT_ERROR), ErrorType.DEFAULT_ERROR.status)
+        return ResponseEntity(ApiResponse.error(CoreApiErrorType.DEFAULT_ERROR), CoreApiErrorType.DEFAULT_ERROR.status)
     }
 }

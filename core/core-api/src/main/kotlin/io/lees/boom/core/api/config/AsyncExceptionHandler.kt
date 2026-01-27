@@ -1,19 +1,22 @@
 package io.lees.boom.core.api.config
 
-import io.lees.boom.core.support.error.CoreException
+import io.lees.boom.core.error.CoreErrorLevel
+import io.lees.boom.core.error.CoreException
+
 import org.slf4j.LoggerFactory
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
-import org.springframework.boot.logging.LogLevel
+
 import java.lang.reflect.Method
 
 class AsyncExceptionHandler : AsyncUncaughtExceptionHandler {
-    private val log = LoggerFactory.getLogger(javaClass)
+
+    private val log = LoggerFactory.getLogger(AsyncExceptionHandler::class.java)
 
     override fun handleUncaughtException(e: Throwable, method: Method, vararg params: Any?) {
         if (e is CoreException) {
-            when (e.errorType.logLevel) {
-                LogLevel.ERROR -> log.error("CoreException : {}", e.message, e)
-                LogLevel.WARN -> log.warn("CoreException : {}", e.message, e)
+            when (e.errorType.level) {
+                CoreErrorLevel.ERROR -> log.error("CoreException : {}", e.message, e)
+                CoreErrorLevel.WARN -> log.warn("CoreException : {}", e.message, e)
                 else -> log.info("CoreException : {}", e.message, e)
             }
         } else {

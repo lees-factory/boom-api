@@ -1,12 +1,12 @@
 package io.lees.boom.core.support.response
 
-import io.lees.boom.core.support.error.ErrorMessage
-import io.lees.boom.core.support.error.ErrorType
+import io.lees.boom.core.support.error.CoreApiErrorMessage
+import io.lees.boom.core.support.error.CoreApiErrorType
 
 class ApiResponse<T> private constructor(
     val result: ResultType,
     val data: T? = null,
-    val error: ErrorMessage? = null,
+    val error: CoreApiErrorMessage? = null,
 ) {
     companion object {
         fun success(): ApiResponse<Any> {
@@ -17,8 +17,8 @@ class ApiResponse<T> private constructor(
             return ApiResponse(ResultType.SUCCESS, data, null)
         }
 
-        fun <S> error(error: ErrorType, errorData: Any? = null): ApiResponse<S> {
-            return ApiResponse(ResultType.ERROR, null, ErrorMessage(error, errorData))
+        fun <S> error(error: CoreApiErrorType, errorData: Any? = null): ApiResponse<S> {
+            return ApiResponse(ResultType.ERROR, null, CoreApiErrorMessage(error, errorData))
         }
     }
 }
