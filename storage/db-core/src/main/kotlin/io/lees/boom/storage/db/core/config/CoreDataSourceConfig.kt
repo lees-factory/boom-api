@@ -11,12 +11,10 @@ import org.springframework.context.annotation.Configuration
 internal class CoreDataSourceConfig {
     @Bean
     @ConfigurationProperties(prefix = "storage.datasource.core")
-    fun coreHikariConfig(): HikariConfig {
-        return HikariConfig()
-    }
+    fun coreHikariConfig(): HikariConfig = HikariConfig()
 
     @Bean
-    fun coreDataSource(@Qualifier("coreHikariConfig") config: HikariConfig): HikariDataSource {
-        return HikariDataSource(config)
-    }
+    fun coreDataSource(
+        @Qualifier("coreHikariConfig") config: HikariConfig,
+    ): HikariDataSource = HikariDataSource(config)
 }

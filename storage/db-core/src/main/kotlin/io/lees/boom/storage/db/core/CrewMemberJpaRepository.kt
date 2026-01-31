@@ -1,4 +1,6 @@
 package io.lees.boom.storage.db.core
 
-interface CrewMemberJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
 }
