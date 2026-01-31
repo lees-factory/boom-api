@@ -4,18 +4,35 @@
 # 변수 설정
 # =======================================
 APP_NAME="core-api"
-# CI/CD에서 이 경로로 JAR와 스크립트를 복사할 것입니다.
 DEPLOY_PATH="/home/ubuntu/boom-api"
-JAR_NAME="core-api-0.0.1-SNAPSHOT.jar"
-JAR_PATH="$DEPLOY_PATH/$JAR_NAME"
-ACTIVE_PROFILE="prod"
+ACTIVE_PROFILE="live" # prod 환경이므로 live
 
 echo "======================================="
 echo "   🚀 배포 스크립트 실행: $APP_NAME"
 echo "======================================="
 
-# 1. 실행 중인 프로세스 종료
-echo "> 1. 현재 구동 중인 애플리케이션 확인 및 종료"
+# ---------------------------------------
+# 1. JAR 파일 찾기 (자동 감지)
+# ---------------------------------------
+echo "> 1. JAR 파일 탐색 중..."
+
+# boom-api 폴더 내의 모든 .jar 파일을 찾되, plain.jar(껍데기)는 제외하고 가장 최신 파일 1개 선택
+JAR_PATH=$(find $DEPLOY_PATH -name "*.jar" ! -name "*plain.jar" | head -n 1)
+
+if [ -z "$JAR_PATH" ]; then
+  echo "❌ 오류: 실행할 JAR 파일을 찾을 수 없습니다."
+  echo "   현재 경로: $DEPLOY_PATH"
+  echo "   파일 목록:"
+  ls -R $DEPLOY_PATH
+  exit 1
+fi
+
+echo "   > 찾은 JAR 파일: $JAR_PATH"
+
+# ---------------------------------------
+# 2. 기존 프로세스 종료
+# ---------------------------------------
+echo "> 2. 구동 중인 애플리케이션 확인 및 종료"
 CURRENT_PID=$(pgrep -f "java -jar.*$APP_NAME")
 
 if [ -z "$CURRENT_PID" ]; then
@@ -26,12 +43,14 @@ else
     sleep 5
 fi
 
-# 2. 새 애플리케이션 실행
-echo "> 2. 새 애플리케이션 실행"
+# ---------------------------------------
+# 3. 새 애플리케이션 실행
+# ---------------------------------------
+echo "> 3. 새 애플리케이션 실행"
 
-# 실행 권한 부여 (혹시 모르니)
 chmod +x $JAR_PATH
 
+# DB 비밀번호 등은 환경변수(-D)나 OS 환경변수로 주입됨
 nohup java -jar \
     -Dspring.profiles.active=$ACTIVE_PROFILE \
     -Dstorage.database.core-db.password="${DB_PASSWORD}" \
