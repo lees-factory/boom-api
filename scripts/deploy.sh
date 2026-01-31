@@ -28,6 +28,7 @@ fi
 nohup java -jar \
     -Dspring.profiles.active=$ACTIVE_PROFILE \
     -Dstorage.database.core-db.password="${DB_PASSWORD}" \
+    -Xms400m -Xmx400m \
     $JAR_NAME > nohup.out 2>&1 &
 
 # 3. 헬스 체크 (Health Check)
