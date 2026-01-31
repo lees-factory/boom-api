@@ -33,7 +33,7 @@ fi
 nohup $JAVA_PATH -jar \
     -Dspring.profiles.active=$ACTIVE_PROFILE \
     -Dstorage.database.core-db.password="${DB_PASSWORD}" \
-    -Xms512m -Xmx512m \
+    -Xms256m -Xmx384m\
     $JAR_NAME > nohup.out 2>&1 &
 
 # 3. 헬스 체크
