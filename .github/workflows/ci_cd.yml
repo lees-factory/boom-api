@@ -69,7 +69,7 @@ jobs:
           # 2. scripts/deploy.sh 파일 복사
           source: "deploy-artifact/*.jar,scripts/deploy.sh"
           target: "/home/ubuntu/boom-api"
-          strip_components: 1 # deploy-artifact 폴더 껍질 벗기기
+
 
       - name: Execute Deploy Script
         uses: appleboy/ssh-action@master
