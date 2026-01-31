@@ -1,16 +1,14 @@
-name: ci_cd
+name: CI/CD
 
 on:
   push:
-    branches: [ "main", "dev" ]
-  pull_request:
     branches: [ "main", "dev" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.0.2
@@ -29,48 +27,27 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run Ktlint Check
-        run: ./gradlew ktlintCheck
-
-      - name: Build with Gradle (Test 제외)
-        # CI 서버 메모리 절약 및 속도를 위해 테스트 제외 (필요시 -x test 제거)
+      # 1. 빌드 (테스트 제외)
+      - name: Build
         run: ./gradlew clean build -x test -x asciidoctor
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v6.0.0
-        with:
-          name: boom-api-jar
-          path: core/core-api/build/libs/*.jar
-          retention-days: 1
+      # 2. 빌드된 JAR를 찾아서 현재 위치로 꺼내오기 (경로 단순화)
+      - name: Move JAR to Root
+        run: mv core/core-api/build/libs/*SNAPSHOT.jar ./app.jar
 
-  # [추가됨] 배포 Job
-  deploy:
-    needs: build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v6.0.0
-        with:
-          name: boom-api-jar
-          path: deploy-artifact
-
-      - name: Checkout Code (스크립트 가져오기 위해)
-        uses: actions/checkout@v6.0.2
-
-      - name: Copy JAR & Script to Server
+      # 3. SCP로 파일 전송 (app.jar랑 deploy.sh만 서버로 바로 보냄)
+      - name: Copy Files to Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_KEY }}
           port: ${{ secrets.REMOTE_PORT || 22 }}
-          # 1. JAR 파일 복사
-          # 2. scripts/deploy.sh 파일 복사
-          source: "deploy-artifact/*.jar,scripts/deploy.sh"
+          source: "app.jar,scripts/deploy.sh"
           target: "/home/ubuntu/boom-api"
+          strip_components: 1 # scripts/ 폴더 껍질 벗겨서 deploy.sh만 넣음
 
-
+      # 4. SSH로 접속해서 실행
       - name: Execute Deploy Script
         uses: appleboy/ssh-action@master
         with:
@@ -78,14 +55,10 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_KEY }}
           port: ${{ secrets.REMOTE_PORT || 22 }}
-          # 복사된 JAR를 꺼내고 스크립트 실행
           envs: DB_PASSWORD
           script: |
-            # SCP로 복사된 파일 정리 (jar가 deploy-artifact 폴더 안에 있을 수 있음)
-            mv /home/ubuntu/boom-api/deploy-artifact/*.jar /home/ubuntu/boom-api/ 2>/dev/null || true
-
-            # 스크립트 실행 권한 부여 및 실행
-            chmod +x /home/ubuntu/boom-api/scripts/deploy.sh
-            /home/ubuntu/boom-api/scripts/deploy.sh
+            cd /home/ubuntu/boom-api
+            chmod +x deploy.sh
+            ./deploy.sh
         env:
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

@@ -1,61 +1,33 @@
 #!/bin/bash
 
-# =======================================
-# 변수 설정
-# =======================================
 APP_NAME="core-api"
 DEPLOY_PATH="/home/ubuntu/boom-api"
-ACTIVE_PROFILE="live" # prod 환경이므로 live
+JAR_NAME="app.jar"
+ACTIVE_PROFILE="live"
 
-echo "======================================="
-echo "   🚀 배포 스크립트 실행: $APP_NAME"
-echo "======================================="
+echo "🚀 배포 시작: $APP_NAME"
 
-# ---------------------------------------
-# 1. JAR 파일 찾기 (자동 감지)
-# ---------------------------------------
-echo "> 1. JAR 파일 탐색 중..."
-
-# boom-api 폴더 내의 모든 .jar 파일을 찾되, plain.jar(껍데기)는 제외하고 가장 최신 파일 1개 선택
-JAR_PATH=$(find $DEPLOY_PATH -name "*.jar" ! -name "*plain.jar" | head -n 1)
-
-if [ -z "$JAR_PATH" ]; then
-  echo "❌ 오류: 실행할 JAR 파일을 찾을 수 없습니다."
-  echo "   현재 경로: $DEPLOY_PATH"
-  echo "   파일 목록:"
-  ls -R $DEPLOY_PATH
-  exit 1
-fi
-
-echo "   > 찾은 JAR 파일: $JAR_PATH"
-
-# ---------------------------------------
-# 2. 기존 프로세스 종료
-# ---------------------------------------
-echo "> 2. 구동 중인 애플리케이션 확인 및 종료"
+# 1. 기존 프로세스 종료
 CURRENT_PID=$(pgrep -f "java -jar.*$APP_NAME")
-
-if [ -z "$CURRENT_PID" ]; then
-    echo "   > 구동 중인 애플리케이션이 없습니다."
-else
+if [ -n "$CURRENT_PID" ]; then
     echo "   > 실행 중인 프로세스 종료 (PID: $CURRENT_PID)"
     kill -15 $CURRENT_PID
     sleep 5
 fi
 
-# ---------------------------------------
-# 3. 새 애플리케이션 실행
-# ---------------------------------------
-echo "> 3. 새 애플리케이션 실행"
+# 2. 실행
+echo "   > 새 애플리케이션 실행"
+cd $DEPLOY_PATH
 
-chmod +x $JAR_PATH
+# app.jar가 있는지 확인
+if [ ! -f "$JAR_NAME" ]; then
+    echo "❌ 오류: $JAR_NAME 파일이 없습니다."
+    exit 1
+fi
 
-# DB 비밀번호 등은 환경변수(-D)나 OS 환경변수로 주입됨
 nohup java -jar \
     -Dspring.profiles.active=$ACTIVE_PROFILE \
     -Dstorage.database.core-db.password="${DB_PASSWORD}" \
-    $JAR_PATH > $DEPLOY_PATH/nohup.out 2>&1 &
+    $JAR_NAME > nohup.out 2>&1 &
 
-echo "======================================="
-echo "   ✅ 배포 완료! (로그: $DEPLOY_PATH/nohup.out)"
-echo "======================================="
+echo "✅ 배포 완료!"
