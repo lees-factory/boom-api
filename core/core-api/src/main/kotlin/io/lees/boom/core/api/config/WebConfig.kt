@@ -14,7 +14,8 @@ class WebConfig(
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry.addResourceHandler("/docs/**")
+        registry
+            .addResourceHandler("/docs/**")
             .addResourceLocations("classpath:/static/docs/")
     }
 }
