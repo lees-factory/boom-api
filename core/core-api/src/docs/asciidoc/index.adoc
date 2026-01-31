@@ -10,6 +10,23 @@
 == 소개 (Introduce)
 Boom API 문서입니다.
 
+== Member API
+
+=== 소셜 로그인 (Social Login)
+소셜 계정으로 로그인하거나 회원가입을 진행합니다.
+
+==== HTTP Request
+include::{snippets}/member-login/http-request.adoc[]
+
+==== Request Fields
+include::{snippets}/member-login/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-login/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/member-login/response-fields.adoc[]
+
 == Crew API
 
 === 크루 생성 (Create Crew)

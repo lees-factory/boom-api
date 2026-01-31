@@ -8,7 +8,7 @@ spring:
       - logging.yml
       - db-core.yml
 
-  web.resources.add-mappings: true
+  web.resources.add-mappings: false
 
 server:
   tomcat:

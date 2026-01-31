@@ -5,11 +5,7 @@ import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/crews")
@@ -31,6 +27,7 @@ class CrewController(
                 memberId = memberId!!,
                 name = request.name,
                 description = request.description,
+                maxMemberCount = request.maxMemberCount ?: 100, // [추가]
             )
 
         // ID는 Service에서 보장됨

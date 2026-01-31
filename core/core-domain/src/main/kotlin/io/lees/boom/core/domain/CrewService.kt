@@ -18,11 +18,11 @@ class CrewService(
         memberId: Long,
         name: String,
         description: String,
+        maxMemberCount: Int,
     ): Crew {
         // 1. 크루 생성
-        val newCrew = Crew.create(name, description)
+        val newCrew = Crew.create(name, description, maxMemberCount)
         val savedCrew = crewAppender.append(newCrew)
-
         if (savedCrew.id == null) {
             throw CoreException(CoreErrorType.CREW_CREATE_ERROR)
         }

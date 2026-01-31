@@ -17,6 +17,9 @@ import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
 import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest
+import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
@@ -42,31 +45,34 @@ class CrewControllerTest : RestDocsTest() {
     @Test
     fun createCrew() {
         // given
-        val request = CrewCreateRequest(name = "클라이밍 붐", description = "부산 클라이밍 크루입니다.")
-        // Service는 비즈니스 로직에 의해 반드시 ID가 있는 객체를 반환한다고 가정
-        val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 30)
+        val request = CrewCreateRequest(name = "클라이밍 붐", description = "부산 클라이밍 크루입니다.", maxMemberCount = 100)
+        val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 100)
 
-        every { crewService.createCrew(any(), any(), any()) } returns createdCrew
+        // Service 파라미터 4개에 대응
+        every { crewService.createCrew(any(), any(), any(), any()) } returns createdCrew
 
         // when & then
         mockMvc
             .perform(
                 post("/api/v1/crews")
-                    .header("X-User-Id", "1") // Resolver가 이 헤더를 파싱하여 memberId로 주입
+                    .header("X-User-Id", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonMapper().writeValueAsString(request)),
             ).andExpect(status().isOk)
             .andDo(
                 document(
                     "createCrew",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
                     requestHeaders(
                         headerWithName("X-User-Id").description("로그인 사용자 ID"),
                     ),
                     requestFields(
                         fieldWithPath("name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath(
+                            "maxMemberCount",
+                        ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(), // [추가]
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
