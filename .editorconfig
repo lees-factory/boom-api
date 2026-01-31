@@ -1,8 +1,45 @@
-[{*.kt,*.kts}]
-ktlint_code_style = INTELLIJ_IDEA
-ktlint_standard_function-expression-body = disabled
+root = true
+
+# 모든 파일 공통 설정
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# YAML 파일 설정 (보통 2칸 사용)
+[*.{yml,yaml}]
+indent_size = 2
+
+# Kotlin 및 Gradle Script 파일 설정
+[*.{kt,kts}]
+# 들여쓰기 4칸 (Kotlin 표준)
+indent_size = 4
+continuation_indent_size = 4
+
+# 최대 줄 길이 120자 (가독성 확보 및 GitHub View 최적화)
+max_line_length = 120
+
+# [가독성 향상] 후행 쉼표 허용
+# 배열이나 파라미터 리스트의 마지막에 콤마(,)를 허용하여
+# 라인 추가/삭제 시 불필요한 변경(Diff)을 줄여줍니다.
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
-ij_kotlin_name_count_to_use_star_import = 2147483647
-ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
-ij_kotlin_packages_to_use_import_on_demand = unset
+
+# Import 순서 정의 (Java -> Kotlin -> 그 외)
+ij_kotlin_imports_layout = java.**, javax.**, kotlin.**, ^
+
+# Ktlint 스타일 지정 (official / android_studio)
+ktlint_code_style = official
+
+# [규칙 상세 설정]
+# 와일드카드 Import(*) 금지 -> 코드의 출처를 명확히 함
+ktlint_standard_no-wildcard-imports = enabled
+
+# 빈 블록에 대한 포맷팅 완화 (테스트 코드 등에서 유용)
+ktlint_standard_no-empty-class-body = disabled
+
+# 주석 위치 제약 완화
+ktlint_standard_discouraged-comment-location = disabled

@@ -1,3 +1,6 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.springframework.boot.gradle.plugin.ResolveMainClassName
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring") apply false
@@ -114,5 +117,26 @@ subprojects {
 
     tasks.named("asciidoctor").configure {
         dependsOn("restDocsTest")
+    }
+
+    tasks.register("format") {
+        group = "formatting"
+        description = "Runs ktlintFormat to auto-format code"
+        dependsOn("ktlintFormat")
+    }
+
+    // [문서 복사 설정]
+    val copyDocs = tasks.register<Copy>("copyDocs") {
+        dependsOn("asciidoctor")
+        from(tasks.named<AsciidoctorTask>("asciidoctor").map { it.outputDir })
+        into("build/resources/main/static/docs")
+
+        // 중요: ResolveMainClassName 태스크와의 충돌 방지 (Implicit dependency error 해결)
+        // Main Class를 찾은 "후"에 문서를 복사하도록 순서 지정
+        mustRunAfter(tasks.withType<ResolveMainClassName>())
+    }
+
+    tasks.named("bootJar") {
+        dependsOn(copyDocs)
     }
 }
