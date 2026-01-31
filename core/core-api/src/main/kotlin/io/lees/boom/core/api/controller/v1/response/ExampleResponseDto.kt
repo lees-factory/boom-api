@@ -14,8 +14,6 @@ data class ExampleItemResponseDto(
     val key: String,
 ) {
     companion object {
-        fun build(): List<ExampleItemResponseDto> {
-            return listOf(ExampleItemResponseDto("1"), ExampleItemResponseDto("2"))
-        }
+        fun build(): List<ExampleItemResponseDto> = listOf(ExampleItemResponseDto("1"), ExampleItemResponseDto("2"))
     }
 }

@@ -22,7 +22,5 @@ class AsyncConfig : AsyncConfigurer {
         return executor
     }
 
-    override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
-        return AsyncExceptionHandler()
-    }
+    override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler = AsyncExceptionHandler()
 }

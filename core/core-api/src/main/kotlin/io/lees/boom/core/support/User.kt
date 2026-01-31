@@ -1,3 +1,5 @@
 package io.lees.boom.core.support
 
-annotation class User()
+@Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class User

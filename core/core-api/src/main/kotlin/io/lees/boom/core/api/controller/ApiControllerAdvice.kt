@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller
 
-import io.lees.boom.core.support.error.CoreApiException
 import io.lees.boom.core.support.error.CoreApiErrorType
+import io.lees.boom.core.support.error.CoreApiException
 import io.lees.boom.core.support.response.ApiResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

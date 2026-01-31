@@ -1,10 +1,6 @@
-package io.lees.boom.core.api.controller.v1.request
+package io.lees.boom.core.api.controller.v1.response
 
 import io.lees.boom.core.domain.Crew
-
-data class CrewResponse(
-    val id: Long,
-)
 
 data class CrewResponse(
     val id: Long,
@@ -13,13 +9,12 @@ data class CrewResponse(
     val maxMemberCount: Int,
 ) {
     companion object {
-        fun from(crew: Crew): CrewResponse {
-            return CrewResponse(
+        fun from(crew: Crew): CrewResponse =
+            CrewResponse(
                 id = crew.id ?: 0L,
                 name = crew.name,
                 description = crew.description,
-                maxMemberCount = crew.maxMemberCount
+                maxMemberCount = crew.maxMemberCount,
             )
-        }
     }
 }

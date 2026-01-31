@@ -1,38 +1,52 @@
 package io.lees.boom.core.api.controller.v1
 
-import io.lees.boom.core.api.controller.v1.request.CrewRequestDto
-import io.lees.boom.core.api.controller.v1.response.ExampleItemResponseDto
-import io.lees.boom.core.api.controller.v1.response.ExampleResponseDto
-import io.lees.boom.core.domain.ExampleData
-import io.lees.boom.core.domain.ExampleService
+import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
+import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
+import io.lees.boom.core.domain.CrewService
+import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @RestController
-class ExampleController(
-    val exampleExampleService: ExampleService,
+@RequestMapping("/api/v1/crews")
+class CrewController(
+    private val crewService: CrewService,
 ) {
-    @GetMapping("/get/{exampleValue}")
-    fun exampleGet(
-        @PathVariable exampleValue: String,
-        @RequestParam exampleParam: String,
-    ): ApiResponse<ExampleResponseDto> {
-        val result = exampleExampleService.processExample(ExampleData(exampleValue, exampleParam))
-        return ApiResponse.success(ExampleResponseDto(result.data, LocalDate.now(), LocalDateTime.now(), ExampleItemResponseDto.build()))
+    /**
+     * 크루 생성
+     * [POST] /api/v1/crews
+     * @User memberId: Resolver가 인증 후 주입해주는 ID
+     */
+    @PostMapping
+    suspend fun createCrew(
+        @User memberId: Long?, // Header 직접 접근 제거 -> Resolver 사용
+        @RequestBody request: CrewCreateRequest,
+    ): ApiResponse<CrewIdResponse> {
+        val createdCrew =
+            crewService.createCrew(
+                memberId = memberId!!,
+                name = request.name,
+                description = request.description,
+            )
+
+        // ID는 Service에서 보장됨
+        return ApiResponse.success(CrewIdResponse(createdCrew.id!!))
     }
 
-    @PostMapping("/post")
-    fun examplePost(
-        @RequestBody request: CrewRequestDto,
-    ): ApiResponse<ExampleResponseDto> {
-        val result = exampleExampleService.processExample(request.toExampleData())
-        return ApiResponse.success(ExampleResponseDto(result.data, LocalDate.now(), LocalDateTime.now(), ExampleItemResponseDto.build()))
+    /**
+     * 크루 가입
+     * [POST] /api/v1/crews/{crewId}/join
+     */
+    @PostMapping("/{crewId}/join")
+    suspend fun joinCrew(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+    ): ApiResponse<Any> {
+        crewService.joinCrew(memberId!!, crewId)
+        return ApiResponse.success()
     }
 }
