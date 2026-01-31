@@ -29,7 +29,7 @@ jobs:
 
       # 1. 빌드 (테스트 제외)
       - name: Build
-        run: ./gradlew clean build -x test -x asciidoctor
+        run: ./gradlew clean build -x test
 
       # 2. [핵심] 전송할 파일들을 Runner의 Root로 싹 다 꺼내오기 (경로 단순화)
       - name: Prepare Files for Transfer
