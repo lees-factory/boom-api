@@ -23,6 +23,14 @@ storage:
       url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
       username: postgres.cnlbftaurppzamivofhb
       password: ${DB_PASSWORD}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health # 또는 "*"
+  endpoint:
+    health:
+      show-details: always
 ---
 spring.config.activate.on-profile: local
 
