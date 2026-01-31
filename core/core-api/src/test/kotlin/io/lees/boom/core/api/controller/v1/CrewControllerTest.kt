@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1
 
 import com.fasterxml.jackson.module.kotlin.jsonMapper
-import io.lees.boom.core.api.controller.v1.request.ExampleRequestDto
+import io.lees.boom.core.api.controller.v1.request.CrewRequestDto
 import io.lees.boom.core.domain.ExampleResult
 import io.lees.boom.core.domain.ExampleService
 import io.lees.boom.test.api.RestDocsTest
@@ -73,7 +73,7 @@ class ExampleControllerTest : RestDocsTest() {
         mockMvc.perform(
             post("/post")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMapper().writeValueAsString(ExampleRequestDto("HELLO_BODY"))),
+                .content(jsonMapper().writeValueAsString(CrewRequestDto("HELLO_BODY"))),
         )
             .andExpect(status().isOk)
             .andDo(

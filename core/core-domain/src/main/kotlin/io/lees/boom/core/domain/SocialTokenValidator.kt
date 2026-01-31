@@ -4,9 +4,11 @@ import io.lees.boom.core.enums.SocialProvider
 import org.springframework.stereotype.Component
 
 @Component
-class SocialTokenValidator() {
-
-    suspend fun validate(provider: SocialProvider, token: String): SocialProfile {
+class SocialTokenValidator {
+    suspend fun validate(
+        provider: SocialProvider,
+        token: String,
+    ): SocialProfile {
         // 격벽: 각 공급자의 구현 상세는 이 도구 안에서만 캡슐화됩니다.
         return when (provider) {
             SocialProvider.GOOGLE -> verifyGoogle(token)
@@ -30,5 +32,4 @@ class SocialTokenValidator() {
         // 실제 구현: Kakao Access Token으로 사용자 정보 조회
         return SocialProfile(SocialProvider.KAKAO, "kakao_id_789", "kakao@daum.net", "KakaoUser")
     }
-
 }

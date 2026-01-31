@@ -6,5 +6,5 @@ data class SocialProfile(
     val provider: SocialProvider,
     val socialId: String,
     val email: String,
-    val name: String
+    val name: String,
 )

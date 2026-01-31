@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1
 
-import io.lees.boom.core.api.controller.v1.request.ExampleRequestDto
+import io.lees.boom.core.api.controller.v1.request.CrewRequestDto
 import io.lees.boom.core.api.controller.v1.response.ExampleItemResponseDto
 import io.lees.boom.core.api.controller.v1.response.ExampleResponseDto
 import io.lees.boom.core.domain.ExampleData
@@ -30,7 +30,7 @@ class ExampleController(
 
     @PostMapping("/post")
     fun examplePost(
-        @RequestBody request: ExampleRequestDto,
+        @RequestBody request: CrewRequestDto,
     ): ApiResponse<ExampleResponseDto> {
         val result = exampleExampleService.processExample(request.toExampleData())
         return ApiResponse.success(ExampleResponseDto(result.data, LocalDate.now(), LocalDateTime.now(), ExampleItemResponseDto.build()))

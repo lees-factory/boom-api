@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class MemberAppender(
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) {
-    suspend fun append(member: Member): Member {
-        return memberRepository.save(member)
-    }
+    suspend fun append(member: Member): Member = memberRepository.save(member)
 }
