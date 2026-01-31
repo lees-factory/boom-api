@@ -20,7 +20,7 @@ class MemberController(
      * * 클라이언트 SDK에서 받은 토큰을 서버로 전달하여 검증 및 로그인 처리
      */
     @PostMapping("/login")
-    suspend fun login(
+    fun login(
         @RequestBody request: MemberLoginRequest,
     ): ApiResponse<MemberResponse> {
         // [Coordinator] 비즈니스 로직(Service)에 흐름 위임

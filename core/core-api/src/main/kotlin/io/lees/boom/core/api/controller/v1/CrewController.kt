@@ -22,7 +22,7 @@ class CrewController(
      * @User memberId: Resolver가 인증 후 주입해주는 ID
      */
     @PostMapping
-    suspend fun createCrew(
+    fun createCrew(
         @User memberId: Long?, // Header 직접 접근 제거 -> Resolver 사용
         @RequestBody request: CrewCreateRequest,
     ): ApiResponse<CrewIdResponse> {
@@ -42,7 +42,7 @@ class CrewController(
      * [POST] /api/v1/crews/{crewId}/join
      */
     @PostMapping("/{crewId}/join")
-    suspend fun joinCrew(
+    fun joinCrew(
         @User memberId: Long?,
         @PathVariable crewId: Long,
     ): ApiResponse<Any> {

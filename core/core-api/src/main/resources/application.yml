@@ -7,7 +7,7 @@ spring:
       - monitoring.yml
       - logging.yml
       - db-core.yml
-      - client-example.yml
+
   web.resources.add-mappings: false
 
 server:
@@ -17,6 +17,12 @@ server:
       max: 600
       min-spare: 100
 
+storage:
+  database:
+    core-db:
+      url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
+      username: postgres.cnlbftaurppzamivofhb
+      password: ${DB_PASSWORD}
 ---
 spring.config.activate.on-profile: local
 
@@ -30,9 +36,7 @@ spring.config.activate.on-profile: dev
 
 
 ---
-spring.config.activate.on-profile: staging
+spring.config.activate.on-profile: prod
 
 
----
-spring.config.activate.on-profile: live
 

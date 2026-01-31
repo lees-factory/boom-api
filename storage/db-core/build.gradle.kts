@@ -8,6 +8,6 @@ dependencies {
     implementation(project(":core:core-enum"))
     compileOnly(project(":core:core-domain"))
     api("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("com.h2database:h2")
 }

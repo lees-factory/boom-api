@@ -10,7 +10,7 @@ class SocialLoginService(
     private val memberFinder: MemberFinder,
     private val memberAppender: MemberAppender,
 ) {
-    suspend fun login(
+    fun login(
         provider: SocialProvider,
         token: String,
     ): Member {

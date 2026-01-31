@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 class CrewAppender(
     private val crewRepository: CrewRepository,
 ) {
-    suspend fun append(crew: Crew): Crew = crewRepository.save(crew)
+    fun append(crew: Crew): Crew = crewRepository.save(crew)
 
-    suspend fun appendMember(crewMember: CrewMember): CrewMember = crewRepository.saveMember(crewMember)
+    fun appendMember(crewMember: CrewMember): CrewMember = crewRepository.saveMember(crewMember)
 }

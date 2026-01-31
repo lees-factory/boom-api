@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class SocialProfileReader {
-    suspend fun read(
+    fun read(
         provider: SocialProvider,
         token: String,
     ): SocialProfile =

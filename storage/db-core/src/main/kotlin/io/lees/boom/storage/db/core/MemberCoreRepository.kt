@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository
 internal class MemberCoreRepository(
     private val memberJpaRepository: MemberJpaRepository,
 ) : MemberRepository {
-    override suspend fun findBySocialInfo(
+    override fun findBySocialInfo(
         provider: SocialProvider,
         socialId: String,
     ): Member? = memberJpaRepository.findByProviderAndSocialId(provider, socialId)?.toDomain()
 
-    override suspend fun save(member: Member): Member = memberJpaRepository.save(member.toEntity()).toDomain()
+    override fun save(member: Member): Member = memberJpaRepository.save(member.toEntity()).toDomain()
 
     // [Mapper] Domain -> Entity
     private fun Member.toEntity() =

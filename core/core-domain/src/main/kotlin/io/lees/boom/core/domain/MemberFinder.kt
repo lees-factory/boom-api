@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 class MemberFinder(
     private val memberRepository: MemberRepository,
 ) {
-    suspend fun findBySocialInfo(
+    fun findBySocialInfo(
         provider: SocialProvider,
         socialId: String,
     ): Member? = memberRepository.findBySocialInfo(provider, socialId)

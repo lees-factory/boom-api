@@ -14,7 +14,7 @@ class CrewService(
      * 1. 크루 정보 저장
      * 2. 생성자를 리더로 하여 크루원 정보 저장
      */
-    suspend fun createCrew(
+    fun createCrew(
         memberId: Long,
         name: String,
         description: String,
@@ -41,7 +41,7 @@ class CrewService(
     /**
      * 크루 가입하기 (초대/직접 가입 등 흐름에 따라 메서드 분화 가능)
      */
-    suspend fun joinCrew(
+    fun joinCrew(
         memberId: Long,
         crewId: Long,
     ) {

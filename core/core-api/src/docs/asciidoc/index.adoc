@@ -1,4 +1,4 @@
-= API Docs
+= Boom API Documentation
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -7,32 +7,45 @@
 :sectlinks:
 :snippets: build/generated-snippets
 
-== Introduce
+== 소개 (Introduce)
+Boom API 문서입니다.
 
-This is the Core API documentation.
+== Crew API
 
-== Example API
+=== 크루 생성 (Create Crew)
+크루를 생성합니다.
 
-=== Example GET API
-==== Curl Request
-include::{snippets}/exampleGet/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/exampleGet/path-parameters.adoc[]
-==== Query Parameters
-include::{snippets}/exampleGet/query-parameters.adoc[]
-==== Http Response
-include::{snippets}/exampleGet/http-response.adoc[]
+==== HTTP Request
+include::{snippets}/createCrew/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/createCrew/request-headers.adoc[]
+
+==== Request Fields
+include::{snippets}/createCrew/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/createCrew/http-response.adoc[]
+
 ==== Response Fields
-include::{snippets}/exampleGet/response-fields.adoc[]
+include::{snippets}/createCrew/response-fields.adoc[]
 
 '''
 
-=== Example POST API
-==== Curl Request
-include::{snippets}/examplePost/curl-request.adoc[]
-==== Request Fields
-include::{snippets}/examplePost/request-fields.adoc[]
-==== Http Response
-include::{snippets}/examplePost/http-response.adoc[]
+=== 크루 가입 (Join Crew)
+특정 크루에 가입합니다.
+
+==== HTTP Request
+include::{snippets}/joinCrew/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/joinCrew/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/joinCrew/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/joinCrew/http-response.adoc[]
+
 ==== Response Fields
-include::{snippets}/examplePost/response-fields.adoc[]
+include::{snippets}/joinCrew/response-fields.adoc[]

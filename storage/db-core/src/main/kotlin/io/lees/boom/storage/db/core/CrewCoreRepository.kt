@@ -11,17 +11,17 @@ internal class CrewCoreRepository(
     private val crewJpaRepository: CrewJpaRepository,
     private val crewMemberJpaRepository: CrewMemberJpaRepository,
 ) : CrewRepository {
-    override suspend fun save(crew: Crew): Crew {
+    override fun save(crew: Crew): Crew {
         val entity = crew.toEntity()
         return crewJpaRepository.save(entity).toDomain()
     }
 
-    override suspend fun saveMember(crewMember: CrewMember): CrewMember {
+    override fun saveMember(crewMember: CrewMember): CrewMember {
         val entity = crewMember.toEntity()
         return crewMemberJpaRepository.save(entity).toDomain()
     }
 
-    override suspend fun findCrewById(crewId: Long): Crew? = crewJpaRepository.findByIdOrNull(crewId)?.toDomain()
+    override fun findCrewById(crewId: Long): Crew? = crewJpaRepository.findByIdOrNull(crewId)?.toDomain()
 
     // Mapper Methods (Entity <-> Domain) 승준펀치 펀치입니다
     private fun Crew.toEntity() =

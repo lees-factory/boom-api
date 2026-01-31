@@ -6,8 +6,8 @@ import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.test.api.RestDocsTest
-import io.mockk.coEvery
-import io.mockk.coJustRun
+import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +46,7 @@ class CrewControllerTest : RestDocsTest() {
         // Service는 비즈니스 로직에 의해 반드시 ID가 있는 객체를 반환한다고 가정
         val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 30)
 
-        coEvery { crewService.createCrew(any(), any(), any()) } returns createdCrew
+        every { crewService.createCrew(any(), any(), any()) } returns createdCrew
 
         // when & then
         mockMvc
@@ -80,7 +80,7 @@ class CrewControllerTest : RestDocsTest() {
     @Test
     fun joinCrew() {
         // given
-        coJustRun { crewService.joinCrew(any(), any()) }
+        justRun { crewService.joinCrew(any(), any()) }
 
         // when & then
         mockMvc
