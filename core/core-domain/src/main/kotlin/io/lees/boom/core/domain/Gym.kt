@@ -6,9 +6,7 @@ data class Gym(
     val id: Long? = null,
     val name: String,
     val address: String? = null,
-
     val location: Location,
-
     val crowdLevel: CrowdLevel = CrowdLevel.NORMAL,
 ) {
     companion object {

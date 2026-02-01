@@ -13,22 +13,21 @@ import org.springframework.stereotype.Repository
 internal class GymCoreRepository(
     private val gymJpaRepository: GymJpaRepository,
 ) : GymRepository {
-
     @Transactional
     override fun save(gym: Gym): Gym {
-
         val id = gym.id
         return if (gym.id != null) {
             // [UPDATE] ID가 있으면 조회 후 변경 (Dirty Checking)
-            val entity = gymJpaRepository.findByIdOrNull(id as Long)
-                ?: throw CoreException(CoreErrorType.NOT_FOUND_DATA)
+            val entity =
+                gymJpaRepository.findByIdOrNull(id as Long)
+                    ?: throw CoreException(CoreErrorType.NOT_FOUND_DATA)
 
             entity.update(
                 name = gym.name,
                 address = gym.address,
                 latitude = gym.location.latitude,
                 longitude = gym.location.longitude,
-                crowdLevel = gym.crowdLevel
+                crowdLevel = gym.crowdLevel,
             )
 
             entity.toDomain()
@@ -36,18 +35,18 @@ internal class GymCoreRepository(
             gymJpaRepository.save(gym.toEntity()).toDomain()
         }
     }
+
     override fun findGymsWithinViewport(
         southWestLocation: Location,
         northEastLocation: Location,
-    ): List<Gym> {
-        return gymJpaRepository.findByLatitudeBetweenAndLongitudeBetween(
-            minimumLatitude = minOf(southWestLocation.latitude, northEastLocation.latitude),
-            maximumLatitude = maxOf(southWestLocation.latitude, northEastLocation.latitude),
-            minimumLongitude = minOf(southWestLocation.longitude, northEastLocation.longitude),
-            maximumLongitude = maxOf(southWestLocation.longitude, northEastLocation.longitude),
-        ).map { it.toDomain() }
-    }
-
+    ): List<Gym> =
+        gymJpaRepository
+            .findByLatitudeBetweenAndLongitudeBetween(
+                minimumLatitude = minOf(southWestLocation.latitude, northEastLocation.latitude),
+                maximumLatitude = maxOf(southWestLocation.latitude, northEastLocation.latitude),
+                minimumLongitude = minOf(southWestLocation.longitude, northEastLocation.longitude),
+                maximumLongitude = maxOf(southWestLocation.longitude, northEastLocation.longitude),
+            ).map { it.toDomain() }
 
     private fun Gym.toEntity() =
         GymEntity(

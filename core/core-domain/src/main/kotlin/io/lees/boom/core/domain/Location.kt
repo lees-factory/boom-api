@@ -5,7 +5,9 @@ data class Location(
     val longitude: Double,
 ) {
     companion object {
-        fun create(latitude: Double, longitude: Double): Location =
-            Location(latitude, longitude)
+        fun create(
+            latitude: Double,
+            longitude: Double,
+        ): Location = Location(latitude, longitude)
     }
 }
