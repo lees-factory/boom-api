@@ -3,26 +3,25 @@ package io.lees.boom.core.domain
 import io.lees.boom.core.enums.SocialProvider
 import org.springframework.stereotype.Component
 
+/**
+ * 소셜 프로필 조회 도구 (Implement Layer)
+ * 외부 OAuth2 연동을 통해 사용자 프로필을 조회하는 도구 클래스
+ */
 @Component
-class SocialProfileReader {
+class SocialProfileReader(
+    private val oAuth2UserInfoReader: OAuth2UserInfoReader,
+) {
     fun read(
         provider: SocialProvider,
         token: String,
-    ): SocialProfile =
-        when (provider) {
-            SocialProvider.GOOGLE -> readGoogleProfile(token)
-            SocialProvider.APPLE -> readAppleProfile(token)
-            SocialProvider.KAKAO -> readKakaoProfile(token)
-        }
+    ): SocialProfile {
+        val userInfo = oAuth2UserInfoReader.read(provider.name, token)
 
-    private fun readGoogleProfile(token: String): SocialProfile {
-        // ... implementation (http client 호출 등)
-        return SocialProfile(SocialProvider.GOOGLE, "sub_g", "g@test.com", "GUser")
+        return SocialProfile(
+            provider = provider,
+            socialId = userInfo.socialId,
+            email = userInfo.email,
+            name = userInfo.name,
+        )
     }
-
-    private fun readAppleProfile(token: String): SocialProfile =
-        SocialProfile(SocialProvider.APPLE, "sub_a", "a@test.com", "AUser")
-
-    private fun readKakaoProfile(token: String): SocialProfile =
-        SocialProfile(SocialProvider.KAKAO, "id_k", "k@test.com", "KUser")
 }

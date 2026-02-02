@@ -17,5 +17,17 @@ class WebConfig(
         registry
             .addResourceHandler("/docs/**")
             .addResourceLocations("classpath:/static/docs/")
+        registry
+            .addResourceHandler("/favicon.ico")
+            .addResourceLocations("classpath:/static/")
+        registry
+            .addResourceHandler("/js/**")
+            .addResourceLocations("/js/")
+        registry
+            .addResourceHandler("/css/**")
+            .addResourceLocations("/css/")
+        registry
+            .addResourceHandler("/images/**")
+            .addResourceLocations("/images/")
     }
 }

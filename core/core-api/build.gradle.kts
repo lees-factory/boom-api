@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":core:core-domain"))
     implementation(project(":support:monitoring"))
     implementation(project(":support:logging"))
+    implementation(project(":clients:client-oauth2"))
     runtimeOnly(project(":storage:db-core"))
 
     testImplementation(project(":tests:api-docs"))
