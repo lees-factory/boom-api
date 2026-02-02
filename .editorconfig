@@ -32,7 +32,7 @@ ij_kotlin_allow_trailing_comma_on_call_site = true
 ij_kotlin_imports_layout = java.**, javax.**, kotlin.**, ^
 
 # Ktlint 스타일 지정
-ktlint_code_style = official
+ktlint_code_style = ktlint_official
 
 # [규칙 상세 설정]
 # 와일드카드 Import(*) 금지 해제 -> 이제 실패하지 않습니다.
