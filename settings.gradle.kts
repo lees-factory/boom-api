@@ -8,7 +8,7 @@ include(
     "tests:api-docs",
     "support:logging",
     "support:monitoring",
-
+    "clients:client-oauth2",
 )
 
 pluginManagement {
