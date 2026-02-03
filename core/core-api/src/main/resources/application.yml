@@ -33,6 +33,11 @@ management:
   endpoint:
     health:
       show-details: always
+jwt:
+  secret-key: "my-super-secret-key-must-be-very-long"
+  issuer: "boom-api"
+  access-token-expiration-seconds: 3600      # 1시간
+  refresh-token-expiration-seconds: 2592000
 ---
 spring.config.activate.on-profile: local
 

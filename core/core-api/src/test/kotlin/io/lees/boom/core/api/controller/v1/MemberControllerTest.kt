@@ -2,10 +2,8 @@ package io.lees.boom.core.api.controller.v1
 
 import com.fasterxml.jackson.module.kotlin.jsonMapper
 import io.lees.boom.core.api.controller.v1.request.MemberLoginRequest
-import io.lees.boom.core.domain.Member
-import io.lees.boom.core.domain.SocialInfo
 import io.lees.boom.core.domain.SocialLoginService
-import io.lees.boom.core.enums.MemberRole
+import io.lees.boom.core.domain.TokenPair
 import io.lees.boom.core.enums.SocialProvider
 import io.lees.boom.test.api.RestDocsTest
 import io.mockk.every
@@ -32,17 +30,24 @@ class MemberControllerTest : RestDocsTest() {
     @Test
     fun login() {
         // given
-        val request = MemberLoginRequest(provider = SocialProvider.KAKAO, token = "sample-token")
-        val member =
-            Member(
-                id = 1L,
+        val request =
+            MemberLoginRequest(
+                provider = SocialProvider.KAKAO,
+                socialId = "social-id-123",
                 name = "홍길동",
                 email = "test@test.com",
-                role = MemberRole.USER,
-                socialInfo = SocialInfo(provider = SocialProvider.KAKAO, socialId = "social-id-123"),
+                profileImage = "http://k.kakaocdn.net/image.jpg",
             )
 
-        every { socialLoginService.login(any(), any()) } returns member
+        val tokenPair =
+            TokenPair(
+                accessToken = "access-token-sample",
+                refreshToken = "refresh-token-sample",
+            )
+
+        every {
+            socialLoginService.login(any(), any(), any(), any(), any())
+        } returns tokenPair
 
         // when & then
         mockMvc
@@ -59,15 +64,20 @@ class MemberControllerTest : RestDocsTest() {
                     requestFields(
                         fieldWithPath(
                             "provider",
-                        ).type(JsonFieldType.STRING).description("소셜 로그인 제공자 (GOOGLE, APPLE, KAKAO)"),
-                        fieldWithPath("token").type(JsonFieldType.STRING).description("소셜 서비스에서 발급받은 토큰"),
+                        ).type(JsonFieldType.STRING).description("소셜 로그인 제공자 (KAKAO, APPLE, GOOGLE)"),
+                        fieldWithPath("socialId").type(JsonFieldType.STRING).description("소셜 서비스의 고유 ID"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("사용자 이름(닉네임)"),
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일 (선택)").optional(),
+                        fieldWithPath(
+                            "profileImage",
+                        ).type(JsonFieldType.STRING).description("프로필 이미지 URL (선택)").optional(),
                     ),
                     responseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
-                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 고유 ID"),
-                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("사용자 이름"),
-                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("사용자 이메일"),
-                        fieldWithPath("data.role").type(JsonFieldType.STRING).description("사용자 권한"),
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS)"),
+                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token (1시간)"),
+                        fieldWithPath(
+                            "data.refreshToken",
+                        ).type(JsonFieldType.STRING).description("Refresh Token (30일)"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
