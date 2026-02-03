@@ -53,16 +53,17 @@ start_app() {
 
     log "🚀 애플리케이션 시작 (profile: $PROFILE)"
 
+    # [수정] -Djwt.secret-key 옵션 추가
     nohup $JAVA_PATH \
         $JVM_OPTS \
         -Dspring.profiles.active="$PROFILE" \
         -Dstorage.database.core-db.password="${DB_PASSWORD}" \
+        -Djwt.secret-key="${JWT_SECRET_KEY}" \
         -jar "$JAR_NAME" \
         > nohup.out 2>&1 &
 
     log "📝 PID: $!"
 }
-
 # ------------------------------------------------------------
 # 3. 헬스체크
 # ------------------------------------------------------------
