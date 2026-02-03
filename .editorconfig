@@ -1,6 +1,5 @@
 root = true
 
-# 모든 파일 공통 설정
 [*]
 charset = utf-8
 end_of_line = lf
@@ -9,37 +8,14 @@ indent_size = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# YAML 파일 설정
 [*.{yml,yaml}]
 indent_size = 2
 
-# Kotlin 및 Gradle Script 파일 설정
 [*.{kt,kts}]
 indent_size = 4
-continuation_indent_size = 4
 max_line_length = 120
 
-# [와일드카드 Import 설정]
-# IntelliJ에서 임포트 개수가 1개만 되어도 *로 묶이도록 설정 (사실상 허용)
-ij_kotlin_name_count_to_use_star_import = 1
-ij_kotlin_name_count_to_use_star_import_for_members = 1
-
-# [가독성 향상] 후행 쉼표 허용
-ij_kotlin_allow_trailing_comma = true
-ij_kotlin_allow_trailing_comma_on_call_site = true
-
-# Import 순서 정의
-ij_kotlin_imports_layout = java.**, javax.**, kotlin.**, ^
-
-# Ktlint 스타일 지정
-ktlint_code_style = ktlint_official
-
-# [규칙 상세 설정]
-# 와일드카드 Import(*) 금지 해제 -> 이제 실패하지 않습니다.
+# ktlint 완화
 ktlint_standard_no-wildcard-imports = disabled
-
-# 빈 블록에 대한 포맷팅 완화
 ktlint_standard_no-empty-class-body = disabled
-
-# 주석 위치 제약 완화
 ktlint_standard_discouraged-comment-location = disabled
