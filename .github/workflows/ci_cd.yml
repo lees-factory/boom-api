@@ -56,10 +56,11 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_KEY }}
           port: ${{ secrets.REMOTE_PORT || 22 }}
-          envs: DB_PASSWORD
+          envs: DB_PASSWORD,JWT_SECRET_KEY
           script: |
             cd ${{ env.DEPLOY_PATH }}
             chmod +x deploy.sh
             ./deploy.sh
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
