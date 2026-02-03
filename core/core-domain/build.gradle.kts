@@ -1,4 +1,5 @@
 dependencies {
     implementation(project(":core:core-enum"))
     compileOnly("org.springframework:spring-context")
+    compileOnly("jakarta.transaction:jakarta.transaction-api")
 }
