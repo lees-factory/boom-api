@@ -17,23 +17,23 @@ internal class MemberCoreRepository(
 
     override fun save(member: Member): Member = memberJpaRepository.save(member.toEntity()).toDomain()
 
-    // [Mapper] Domain -> Entity
     private fun Member.toEntity() =
         MemberEntity(
             name = this.name,
             email = this.email,
-            role = this.role, // [추가] 매핑
+            profileImage = this.profileImage, // [추가]
+            role = this.role,
             provider = this.socialInfo.provider,
             socialId = this.socialInfo.socialId,
         )
 
-    // [Mapper] Entity -> Domain
     private fun MemberEntity.toDomain() =
         Member(
             id = this.id,
             name = this.name,
             email = this.email,
-            role = this.role, // [추가] 매핑
+            profileImage = this.profileImage, // [추가]
+            role = this.role,
             socialInfo =
                 SocialInfo(
                     provider = this.provider,

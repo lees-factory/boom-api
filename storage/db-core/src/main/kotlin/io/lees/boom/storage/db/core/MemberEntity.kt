@@ -12,7 +12,9 @@ import jakarta.persistence.Table
 @Table(name = "member")
 class MemberEntity(
     val name: String,
-    val email: String,
+    val email: String?,
+    @Column(name = "profile_image")
+    val profileImage: String?, // [추가]
     val socialId: String,
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
