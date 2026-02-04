@@ -105,3 +105,43 @@ include::{snippets}/getGymsByRadius/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/getGymsByRadius/response-fields.adoc[]
+
+'''
+
+=== 암장 입장 (Enter Gym)
+특정 암장에 입장 처리합니다.
+
+==== HTTP Request
+include::{snippets}/enterGym/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/enterGym/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/enterGym/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/enterGym/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/enterGym/response-fields.adoc[]
+
+'''
+
+=== 암장 퇴장 (Exit Gym)
+특정 암장에서 퇴장 처리합니다.
+
+==== HTTP Request
+include::{snippets}/exitGym/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/exitGym/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/exitGym/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/exitGym/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/exitGym/response-fields.adoc[]
