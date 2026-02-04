@@ -7,6 +7,8 @@ data class Gym(
     val name: String,
     val address: String? = null,
     val location: Location,
+    val maxCapacity: Int, // [추가]
+    val currentCount: Int, // [추가]
     val crowdLevel: CrowdLevel = CrowdLevel.NORMAL,
 ) {
     companion object {
@@ -14,12 +16,16 @@ data class Gym(
             name: String,
             address: String?,
             location: Location,
+            maxCapacity: Int = 50,
+            currentCount: Int = 0,
             crowdLevel: CrowdLevel = CrowdLevel.NORMAL,
         ): Gym =
             Gym(
                 name = name,
                 address = address,
                 location = location,
+                maxCapacity = maxCapacity,
+                currentCount = currentCount,
                 crowdLevel = crowdLevel,
             )
     }

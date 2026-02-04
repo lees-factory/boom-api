@@ -14,4 +14,8 @@ enum class CoreErrorCode {
     B3000,
     B3001,
     B3002,
+
+    // 짐 (Gym) - [추가]
+    B4000, // ALREADY_ADMITTED (이미 입장 중)
+    B4001, // NOT_ADMITTED (입장 기록 없음)
 }

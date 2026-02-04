@@ -2,6 +2,8 @@ package io.lees.boom.core.domain
 
 import io.lees.boom.core.enums.MemberRole
 import io.lees.boom.core.enums.SocialProvider
+import io.lees.boom.core.error.CoreErrorType
+import io.lees.boom.core.error.CoreException
 import org.springframework.stereotype.Service
 
 @Service
@@ -32,18 +34,21 @@ class SocialLoginService(
                         provider = provider,
                         socialId = socialId,
                     )
-                // 2. 저장 (Appender가 트랜잭션 관리)
+                // 2. 저장
                 memberAppender.append(newMember)
             }
 
-        // 3. 토큰 발급
-        val accessToken = tokenGenerator.createAccessToken(targetMember.id!!, targetMember.role.name)
+        // [수정] ID 검증 로직 추가 (!! 제거)
+        // DB에 저장된 객체인데 ID가 없다면 시스템 에러로 간주합니다.
+        val memberId = targetMember.id ?: throw CoreException(CoreErrorType.INVALID_USERID)
+
+        // 3. 토큰 발급 (이제 memberId는 Long 타입이므로 에러 없음)
+        val accessToken = tokenGenerator.createAccessToken(memberId, targetMember.role.name)
         val refreshToken = tokenGenerator.createRefreshToken()
 
-        // 4. Refresh Token 저장 (하드코딩 제거됨!)
-        // "토큰 생성기야, 이거 유효기간 몇 초니?" 라고 물어보고 저장
+        // 4. Refresh Token 저장
         refreshTokenStore.store(
-            memberId = targetMember.id!!,
+            memberId = memberId,
             refreshToken = refreshToken,
             ttlSeconds = tokenGenerator.getRefreshTokenExpirationSeconds(),
         )

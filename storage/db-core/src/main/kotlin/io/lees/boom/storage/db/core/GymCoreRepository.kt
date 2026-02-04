@@ -36,6 +36,8 @@ internal class GymCoreRepository(
         }
     }
 
+    override fun findById(id: Long): Gym? = gymJpaRepository.findByIdOrNull(id)?.toDomain()
+
     override fun findGymsWithinViewport(
         southWestLocation: Location,
         northEastLocation: Location,
@@ -54,6 +56,8 @@ internal class GymCoreRepository(
             address = this.address,
             latitude = this.location.latitude,
             longitude = this.location.longitude,
+            maxCapacity = this.maxCapacity,
+            currentCount = this.currentCount,
             crowdLevel = this.crowdLevel,
         )
 
@@ -63,6 +67,8 @@ internal class GymCoreRepository(
             name = this.name,
             address = this.address,
             location = Location.create(this.latitude, this.longitude),
+            maxCapacity = this.maxCapacity,
+            currentCount = this.currentCount,
             crowdLevel = this.crowdLevel,
         )
 }
