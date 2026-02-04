@@ -15,6 +15,10 @@ class GymEntity(
     var address: String? = null,
     var latitude: Double,
     var longitude: Double,
+    @Column(nullable = false)
+    var maxCapacity: Int = 50, // [추가] 최대 수용 인원 (기본 50)
+    @Column(nullable = false)
+    var currentCount: Int = 0,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var crowdLevel: CrowdLevel,
@@ -31,5 +35,13 @@ class GymEntity(
         this.latitude = latitude
         this.longitude = longitude
         this.crowdLevel = crowdLevel
+    }
+
+    fun updateCrowdStatus(
+        newCount: Int,
+        newLevel: CrowdLevel,
+    ) {
+        this.currentCount = newCount
+        this.crowdLevel = newLevel
     }
 }

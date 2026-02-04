@@ -8,6 +8,8 @@ import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,6 +18,32 @@ import org.springframework.web.bind.annotation.RestController
 class GymController(
     private val gymService: GymService,
 ) {
+    /**
+     * 암장 입장 체크
+     */
+    @PostMapping("/{gymId}/entry")
+    fun enterGym(
+        @User memberId: Long, // 인증된 사용자만 호출 가능
+        @PathVariable gymId: Long,
+    ): ApiResponse<Any> {
+        gymService.enterUser(gymId, memberId)
+        return ApiResponse.success()
+    }
+
+    /**
+     * 암장 퇴장 체크
+     */
+    @PostMapping("/{gymId}/exit")
+    fun exitGym(
+        @User memberId: Long,
+        @PathVariable gymId: Long,
+    ): ApiResponse<Any> {
+        gymService.exitUser(gymId, memberId)
+        return ApiResponse.success()
+    }
+
+    // --- 기존 조회 API (유지) ---
+
     @GetMapping
     fun getGymsOnMap(
         @User memberId: Long?,
@@ -31,7 +59,7 @@ class GymController(
 
         val responses = gyms.map { GymResponse.of(it) }
 
-        return ApiResponse.Companion.success(responses)
+        return ApiResponse.success(responses)
     }
 
     @GetMapping("/radius")
@@ -39,7 +67,6 @@ class GymController(
         @User memberId: Long?,
         @ModelAttribute request: GymRadiusSearchRequest,
     ): ApiResponse<List<GymResponse>> {
-        // Service에 위임 (도구 레이어를 통해 뷰포트 변환 후 조회됨)
         val gyms =
             gymService.getGymsByRadius(
                 latitude = request.latitude,
