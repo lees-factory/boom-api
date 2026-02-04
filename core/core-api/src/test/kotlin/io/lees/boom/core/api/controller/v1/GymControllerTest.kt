@@ -175,6 +175,67 @@ class GymControllerTest : RestDocsTest() {
             )
     }
 
-    // getGymsByRadius 테스트도 동일한 필드 추가가 필요하지만,
-    // 위 getGymsOnMap 예시와 동일하므로 생략하거나 기존 파일에서 필드만 추가하면 됩니다.
+    @Test
+    fun getGymsByRadius() {
+        // given
+        val latitude = 35.23
+        val longitude = 129.07
+        val radiusKm = 5.0
+
+        val gyms =
+            listOf(
+                Gym.create(
+                    name = "더클라임",
+                    address = "부산광역시 금정구",
+                    location = Location.create(35.2326, 129.0642),
+                    maxCapacity = 50,
+                    currentCount = 45,
+                    crowdLevel = CrowdLevel.CROWDED,
+                ),
+            )
+
+        every {
+            gymService.getGymsByRadius(latitude, longitude, radiusKm)
+        } returns gyms
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/gyms/radius")
+                    .header("X-User-Id", "1")
+                    .param("latitude", latitude.toString())
+                    .param("longitude", longitude.toString())
+                    .param("radiusKm", radiusKm.toString())
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getGymsByRadius",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                    ),
+                    queryParameters(
+                        parameterWithName("latitude").description("중심점 위도"),
+                        parameterWithName("longitude").description("중심점 경도"),
+                        parameterWithName("radiusKm").description("검색 반경 (km)"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("암장 ID"),
+                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("암장 이름"),
+                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
+                        fieldWithPath("data[].latitude").type(JsonFieldType.NUMBER).description("위도"),
+                        fieldWithPath("data[].longitude").type(JsonFieldType.NUMBER).description("경도"),
+                        fieldWithPath("data[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
+                        fieldWithPath("data[].currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
+                        fieldWithPath(
+                            "data[].crowdLevel",
+                        ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
 }
