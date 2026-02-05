@@ -5,6 +5,8 @@ import io.lees.boom.core.domain.Gym
 import io.lees.boom.core.domain.GymService
 import io.lees.boom.core.domain.Location
 import io.lees.boom.core.enums.CrowdLevel
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
@@ -216,6 +218,8 @@ class GymControllerTest : RestDocsTest() {
         val latitude = 35.23
         val longitude = 129.07
         val radiusKm = 5.0
+        val page = 0
+        val size = 10
 
         val gyms =
             listOf(
@@ -229,9 +233,11 @@ class GymControllerTest : RestDocsTest() {
                 ),
             )
 
+        val sliceResult = SliceResult.of(gyms, PageRequest(page, size), hasNext = false)
+
         every {
-            gymService.getGymsByRadius(latitude, longitude, radiusKm)
-        } returns gyms
+            gymService.getGymsByRadiusSlice(latitude, longitude, radiusKm, any())
+        } returns sliceResult
 
         // when & then
         mockMvc
@@ -241,6 +247,8 @@ class GymControllerTest : RestDocsTest() {
                     .param("latitude", latitude.toString())
                     .param("longitude", longitude.toString())
                     .param("radiusKm", radiusKm.toString())
+                    .param("page", page.toString())
+                    .param("size", size.toString())
                     .contentType(MediaType.APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andDo(
@@ -255,19 +263,24 @@ class GymControllerTest : RestDocsTest() {
                         parameterWithName("latitude").description("중심점 위도"),
                         parameterWithName("longitude").description("중심점 경도"),
                         parameterWithName("radiusKm").description("검색 반경 (km)"),
+                        parameterWithName("page").description("페이지 번호 (0부터 시작, 기본값: 0)").optional(),
+                        parameterWithName("size").description("페이지 크기 (기본값: 10, 최대: 100)").optional(),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
-                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("암장 ID"),
-                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("암장 이름"),
-                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
-                        fieldWithPath("data[].latitude").type(JsonFieldType.NUMBER).description("위도"),
-                        fieldWithPath("data[].longitude").type(JsonFieldType.NUMBER).description("경도"),
-                        fieldWithPath("data[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
-                        fieldWithPath("data[].currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
+                        fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("암장 ID"),
+                        fieldWithPath("data.content[].name").type(JsonFieldType.STRING).description("암장 이름"),
+                        fieldWithPath("data.content[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
+                        fieldWithPath("data.content[].latitude").type(JsonFieldType.NUMBER).description("위도"),
+                        fieldWithPath("data.content[].longitude").type(JsonFieldType.NUMBER).description("경도"),
+                        fieldWithPath("data.content[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
+                        fieldWithPath("data.content[].currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
                         fieldWithPath(
-                            "data[].crowdLevel",
+                            "data.content[].crowdLevel",
                         ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+                        fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
+                        fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

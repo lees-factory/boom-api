@@ -3,7 +3,9 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.controller.v1.request.GymRadiusSearchRequest
 import io.lees.boom.core.api.controller.v1.request.GymSearchRequest
 import io.lees.boom.core.api.controller.v1.response.GymResponse
+import io.lees.boom.core.api.controller.v1.response.SliceResponse
 import io.lees.boom.core.domain.GymService
+import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
@@ -79,14 +81,16 @@ class GymController(
     fun getGymsByRadius(
         @User memberId: Long?,
         @ModelAttribute request: GymRadiusSearchRequest,
-    ): ApiResponse<List<GymResponse>> {
-        val gyms =
-            gymService.getGymsByRadius(
+        @ModelAttribute pageRequest: PageRequest,
+    ): ApiResponse<SliceResponse<GymResponse>> {
+        val sliceResult =
+            gymService.getGymsByRadiusSlice(
                 latitude = request.latitude,
                 longitude = request.longitude,
                 radiusKm = request.radiusKm,
+                pageRequest = pageRequest,
             )
 
-        return ApiResponse.success(gyms.map { GymResponse.of(it) })
+        return ApiResponse.success(SliceResponse.of(sliceResult) { GymResponse.of(it) })
     }
 }

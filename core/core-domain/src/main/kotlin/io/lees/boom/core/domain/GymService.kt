@@ -2,6 +2,8 @@ package io.lees.boom.core.domain
 
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import org.springframework.stereotype.Service
 
 @Service
@@ -157,6 +159,27 @@ class GymService(
             northEastLatitude = viewport.northEast.latitude,
             southWestLongitude = viewport.southWest.longitude,
             northEastLongitude = viewport.northEast.longitude,
+        )
+    }
+
+    /**
+     * 반경 내 암장 목록 조회 (무한스크롤용 Slice)
+     */
+    fun getGymsByRadiusSlice(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        pageRequest: PageRequest,
+    ): SliceResult<Gym> {
+        val center = Location.create(latitude, longitude)
+        val viewport = locationCalculator.calculateViewport(center, radiusKm)
+
+        return gymReader.readInViewportSlice(
+            southWestLatitude = viewport.southWest.latitude,
+            southWestLongitude = viewport.southWest.longitude,
+            northEastLatitude = viewport.northEast.latitude,
+            northEastLongitude = viewport.northEast.longitude,
+            pageRequest = pageRequest,
         )
     }
 }
