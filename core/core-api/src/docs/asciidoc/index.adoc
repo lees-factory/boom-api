@@ -150,6 +150,24 @@ include::{snippets}/getGymsByRadiusList/response-fields.adoc[]
 
 '''
 
+=== 현재 입장중인 암장 조회 (Get Current Visit)
+현재 로그인한 유저가 입장중인 암장 정보를 조회합니다. +
+입장중인 암장이 없으면 `data`가 `null`로 반환됩니다.
+
+==== HTTP Request
+include::{snippets}/getCurrentVisit/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/getCurrentVisit/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/getCurrentVisit/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getCurrentVisit/response-fields.adoc[]
+
+'''
+
 === 암장 입장 (Enter Gym)
 특정 암장에 입장 처리합니다.
 
