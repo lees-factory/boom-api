@@ -18,6 +18,9 @@ class WebConfig(
             .excludePathPatterns(
                 "/api/v1/members/login", // 로그인
                 "/api/v1/members/refresh", // 토큰 갱신
+                "/api/v1/gyms", // 지도 뷰포트 조회
+                "/api/v1/gyms/radius", // 반경 조회 - 지도용
+                "/api/v1/gyms/radius/list", // 반경 조회 - 목록용
                 "/docs/**",
                 "/health",
                 "/favicon.ico",

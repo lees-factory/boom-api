@@ -13,7 +13,7 @@ enum class CoreErrorType(
     // 멤버
 
     // 인증
-    UNAUTHORIZED_USER(CoreErrorKind.SERVER_ERROR, CoreErrorCode.B2000, "인증되지 않는 사용자 입니다.", CoreErrorLevel.ERROR),
+    UNAUTHORIZED_USER(CoreErrorKind.UNAUTHORIZED, CoreErrorCode.B2000, "인증되지 않는 사용자 입니다.", CoreErrorLevel.ERROR),
     INVALID_USERID(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B2001, "잘못된 사용자 ID 형식입니다.", CoreErrorLevel.ERROR),
     NOT_FOUND_MEMBER(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B2002, "회원을 찾을 수 없습니다.", CoreErrorLevel.ERROR),
 
