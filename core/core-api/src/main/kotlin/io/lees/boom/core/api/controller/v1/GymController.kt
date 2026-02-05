@@ -77,8 +77,31 @@ class GymController(
         return ApiResponse.success(responses)
     }
 
+    /**
+     * 반경 내 암장 조회 (지도용 - 전체 반환)
+     * 지도에 마커로 표시할 때 사용
+     */
     @GetMapping("/radius")
     fun getGymsByRadius(
+        @User memberId: Long?,
+        @ModelAttribute request: GymRadiusSearchRequest,
+    ): ApiResponse<List<GymResponse>> {
+        val gyms =
+            gymService.getGymsByRadius(
+                latitude = request.latitude,
+                longitude = request.longitude,
+                radiusKm = request.radiusKm,
+            )
+
+        return ApiResponse.success(gyms.map { GymResponse.of(it) })
+    }
+
+    /**
+     * 반경 내 암장 목록 조회 (목록용 - 무한스크롤 페이징)
+     * 리스트 화면에서 사용
+     */
+    @GetMapping("/radius/list")
+    fun getGymsByRadiusList(
         @User memberId: Long?,
         @ModelAttribute request: GymRadiusSearchRequest,
         @ModelAttribute pageRequest: PageRequest,
