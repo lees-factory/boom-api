@@ -15,7 +15,21 @@ import org.springframework.data.domain.PageRequest as JpaPageRequest
 internal class GymVisitCoreRepository(
     private val gymVisitJpaRepository: GymVisitJpaRepository,
 ) : GymVisitRepository {
-    override fun save(visit: GymVisit): GymVisit = gymVisitJpaRepository.save(visit.toEntity()).toDomain()
+    override fun save(visit: GymVisit): GymVisit {
+        val entity =
+            if (visit.id != null) {
+                // 기존 엔티티 업데이트
+                val existing = gymVisitJpaRepository.findById(visit.id).orElseThrow()
+                existing.status = visit.status
+                existing.exitedAt = visit.exitedAt
+                existing.expiresAt = visit.expiresAt
+                existing
+            } else {
+                // 새 엔티티 생성
+                visit.toEntity()
+            }
+        return gymVisitJpaRepository.save(entity).toDomain()
+    }
 
     override fun findById(id: Long): GymVisit? = gymVisitJpaRepository.findByIdOrNull(id)?.toDomain()
 
