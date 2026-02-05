@@ -22,7 +22,7 @@ server:
 storage:
   database:
     core-db:
-      url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
+      url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
       username: postgres.cnlbftaurppzamivofhb
       password: ${DB_PASSWORD}
 management:
