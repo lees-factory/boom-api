@@ -15,4 +15,6 @@ enum class CoreApiErrorType(
         "An unexpected error has occurred.",
         LogLevel.ERROR,
     ),
+
+    NOT_FOUND(HttpStatus.NOT_FOUND, CoreApiErrorCode.E501, "Not Found", LogLevel.INFO),
 }
