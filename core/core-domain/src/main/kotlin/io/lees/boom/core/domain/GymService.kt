@@ -65,8 +65,61 @@ class GymService(
         gymVisitAppender.append(exitedVisit)
 
         // 3. 암장 인원 감소
+        decreaseGymCount(gymId)
+    }
+
+    /**
+     * 방문 연장 (기본 3시간 추가)
+     */
+    fun extendVisit(
+        gymId: Long,
+        memberId: Long,
+    ) {
+        val activeVisit =
+            gymVisitReader.readActiveVisit(gymId, memberId)
+                ?: throw CoreException(CoreErrorType.NOT_ADMITTED)
+
+        val extendedVisit = activeVisit.extend()
+        gymVisitAppender.append(extendedVisit)
+    }
+
+    /**
+     * 오래된 방문 기록 일괄 정리 (매일 새벽 스케줄러에서 호출)
+     * 24시간 이상 지난 입장 상태의 방문을 퇴장 처리합니다.
+     * 앱이 죽거나 삭제된 경우 등 예외 상황만 처리합니다.
+     *
+     * @return 퇴장 처리된 방문 수
+     */
+    fun cleanupStaleVisits(): Int {
+        val staleVisits = gymVisitReader.readStaleVisits()
+        if (staleVisits.isEmpty()) return 0
+
+        // gymId별로 그룹화하여 count 업데이트 최적화
+        val visitsByGym = staleVisits.groupBy { it.gymId }
+
+        visitsByGym.forEach { (gymId, visits) ->
+            // 각 방문을 퇴장 처리
+            visits.forEach { visit ->
+                val exitedVisit = visit.exit()
+                gymVisitAppender.append(exitedVisit)
+            }
+
+            // 암장 인원 일괄 감소
+            decreaseGymCount(gymId, visits.size)
+        }
+
+        return staleVisits.size
+    }
+
+    /**
+     * 암장 인원 감소 (내부 메서드)
+     */
+    private fun decreaseGymCount(
+        gymId: Long,
+        count: Int = 1,
+    ) {
         val gym = gymReader.read(gymId)
-        val newCount = (gym.currentCount - 1).coerceAtLeast(0)
+        val newCount = (gym.currentCount - count).coerceAtLeast(0)
         val newLevel = crowdLevelCalculator.calculate(newCount, gym.maxCapacity)
 
         val updatedGym =

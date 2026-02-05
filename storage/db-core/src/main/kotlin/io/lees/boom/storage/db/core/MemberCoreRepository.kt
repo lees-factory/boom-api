@@ -15,8 +15,7 @@ internal class MemberCoreRepository(
         socialId: String,
     ): Member? = memberJpaRepository.findByProviderAndSocialId(provider, socialId)?.toDomain()
 
-    override fun findById(memberId: Long): Member? =
-        memberJpaRepository.findById(memberId).orElse(null)?.toDomain()
+    override fun findById(memberId: Long): Member? = memberJpaRepository.findById(memberId).orElse(null)?.toDomain()
 
     override fun save(member: Member): Member = memberJpaRepository.save(member.toEntity()).toDomain()
 

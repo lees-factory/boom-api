@@ -10,8 +10,7 @@ enum class CoreErrorType(
     NOT_FOUND_DATA(CoreErrorKind.SERVER_ERROR, CoreErrorCode.B1000, "해당 데이터를 찾지 못했습니다.", CoreErrorLevel.INFO),
     INVALID_REQUEST(CoreErrorKind.SERVER_ERROR, CoreErrorCode.B1001, "요청이 올바르지 않습니다.", CoreErrorLevel.INFO),
 
-    //멤버
-
+    // 멤버
 
     // 인증
     UNAUTHORIZED_USER(CoreErrorKind.SERVER_ERROR, CoreErrorCode.B2000, "인증되지 않는 사용자 입니다.", CoreErrorLevel.ERROR),

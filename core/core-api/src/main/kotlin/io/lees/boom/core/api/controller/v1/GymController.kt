@@ -42,6 +42,19 @@ class GymController(
         return ApiResponse.success()
     }
 
+    /**
+     * 방문 연장 (기본 3시간 추가)
+     * 만료 10분 전 알림을 받은 사용자가 연장 버튼을 누를 때 호출
+     */
+    @PostMapping("/{gymId}/extend")
+    fun extendVisit(
+        @User memberId: Long,
+        @PathVariable gymId: Long,
+    ): ApiResponse<Any> {
+        gymService.extendVisit(gymId, memberId)
+        return ApiResponse.success()
+    }
+
     // --- 기존 조회 API (유지) ---
 
     @GetMapping

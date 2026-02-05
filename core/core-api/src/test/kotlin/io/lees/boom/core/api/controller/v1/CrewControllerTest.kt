@@ -6,6 +6,7 @@ import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.test.api.RestDocsTest
+import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -34,7 +35,6 @@ class CrewControllerTest : RestDocsTest() {
     @BeforeEach
     fun setUp() {
         crewService = mockk()
-        // UserArgumentResolver를 명시적으로 등록해야 @User 어노테이션이 동작함
         mockMvc =
             mockController(
                 CrewController(crewService),
@@ -45,17 +45,17 @@ class CrewControllerTest : RestDocsTest() {
     @Test
     fun createCrew() {
         // given
+        val memberId = 1L
         val request = CrewCreateRequest(name = "클라이밍 붐", description = "부산 클라이밍 크루입니다.", maxMemberCount = 100)
         val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 100)
 
-        // Service 파라미터 4개에 대응
         every { crewService.createCrew(any(), any(), any(), any()) } returns createdCrew
 
         // when & then
         mockMvc
             .perform(
                 post("/api/v1/crews")
-                    .header("X-User-Id", "1")
+                    .with(authenticatedUser(memberId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonMapper().writeValueAsString(request)),
             ).andExpect(status().isOk)
@@ -65,14 +65,14 @@ class CrewControllerTest : RestDocsTest() {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     requestFields(
                         fieldWithPath("name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("description").type(JsonFieldType.STRING).description("크루 설명"),
                         fieldWithPath(
                             "maxMemberCount",
-                        ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(), // [추가]
+                        ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
@@ -86,13 +86,14 @@ class CrewControllerTest : RestDocsTest() {
     @Test
     fun joinCrew() {
         // given
+        val memberId = 2L
         justRun { crewService.joinCrew(any(), any()) }
 
         // when & then
         mockMvc
             .perform(
                 post("/api/v1/crews/{crewId}/join", 1L)
-                    .header("X-User-Id", "2") // Resolver 동작 확인
+                    .with(authenticatedUser(memberId))
                     .contentType(MediaType.APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andDo(
@@ -101,7 +102,7 @@ class CrewControllerTest : RestDocsTest() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     pathParameters(
                         parameterWithName("crewId").description("가입할 크루 ID"),

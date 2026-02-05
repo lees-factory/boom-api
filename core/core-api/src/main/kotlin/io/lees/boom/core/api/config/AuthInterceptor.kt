@@ -8,11 +8,11 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
+
 @Component
 class AuthInterceptor(
     private val jwtTokenProvider: JwtTokenProvider,
 ) : HandlerInterceptor {
-
     companion object {
         private const val BEARER_PREFIX = "Bearer "
         private const val USER_ID_ATTRIBUTE = "userId"
@@ -35,8 +35,9 @@ class AuthInterceptor(
         val token = authHeader.removePrefix(BEARER_PREFIX)
         val claims = jwtTokenProvider.validateAndGetClaims(token)
 
-        val userId = claims.subject?.toLongOrNull()
-            ?: throw CoreException(CoreErrorType.INVALID_USERID)
+        val userId =
+            claims.subject?.toLongOrNull()
+                ?: throw CoreException(CoreErrorType.INVALID_USERID)
 
         request.setAttribute(USER_ID_ATTRIBUTE, userId)
         return true

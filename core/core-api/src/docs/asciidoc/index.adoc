@@ -163,3 +163,25 @@ include::{snippets}/exitGym/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/exitGym/response-fields.adoc[]
+
+'''
+
+=== 방문 연장 (Extend Visit)
+암장 방문 시간을 연장합니다. +
+기본적으로 입장 후 3시간이 지나면 자동 퇴장 처리됩니다. +
+만료 10분 전 알림을 받은 사용자가 연장 버튼을 누르면 3시간이 추가됩니다.
+
+==== HTTP Request
+include::{snippets}/extendVisit/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/extendVisit/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/extendVisit/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/extendVisit/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/extendVisit/response-fields.adoc[]
