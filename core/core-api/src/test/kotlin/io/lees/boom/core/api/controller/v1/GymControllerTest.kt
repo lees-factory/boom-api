@@ -3,10 +3,12 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.domain.Gym
 import io.lees.boom.core.domain.GymService
+import io.lees.boom.core.domain.GymVisitor
 import io.lees.boom.core.domain.Location
 import io.lees.boom.core.enums.CrowdLevel
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.SliceResult
+import java.time.LocalDateTime
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
@@ -344,6 +346,76 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.content[].crowdLevel",
                         ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+                        fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
+                        fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getGymVisitors() {
+        // given
+        val gymId = 1L
+        val page = 0
+        val size = 10
+
+        val visitors =
+            listOf(
+                GymVisitor(
+                    memberId = 1L,
+                    memberName = "홍길동",
+                    memberProfileImage = "https://example.com/profile.jpg",
+                    admittedAt = LocalDateTime.of(2026, 2, 5, 14, 30, 0),
+                ),
+                GymVisitor(
+                    memberId = 2L,
+                    memberName = "김철수",
+                    memberProfileImage = null,
+                    admittedAt = LocalDateTime.of(2026, 2, 5, 15, 0, 0),
+                ),
+            )
+
+        val sliceResult = SliceResult.of(visitors, PageRequest(page, size), hasNext = false)
+
+        every {
+            gymService.getGymVisitors(gymId, any())
+        } returns sliceResult
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/gyms/{gymId}/visitors", gymId)
+                    .with(authenticatedUser(1L))
+                    .param("page", page.toString())
+                    .param("size", size.toString())
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getGymVisitors",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("gymId").description("암장 ID"),
+                    ),
+                    queryParameters(
+                        parameterWithName("page").description("페이지 번호 (0부터 시작, 기본값: 0)").optional(),
+                        parameterWithName("size").description("페이지 크기 (기본값: 10, 최대: 100)").optional(),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data.content[].memberId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                        fieldWithPath("data.content[].memberName").type(JsonFieldType.STRING).description("유저 이름"),
+                        fieldWithPath(
+                            "data.content[].memberProfileImage",
+                        ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
+                        fieldWithPath("data.content[].admittedAt").type(JsonFieldType.STRING).description("입장 시간"),
                         fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
                         fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
                         fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),

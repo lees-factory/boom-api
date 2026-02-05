@@ -209,3 +209,30 @@ include::{snippets}/extendVisit/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/extendVisit/response-fields.adoc[]
+
+'''
+
+=== 암장 입장 유저 목록 조회 (Get Gym Visitors)
+특정 암장에 현재 입장 중인 유저 목록을 조회합니다. +
+퇴장한 유저는 목록에 포함되지 않습니다. +
+무한스크롤(Infinite Scroll) 방식의 페이징을 지원합니다.
+
+NOTE: `hasNext`가 `true`이면 다음 페이지가 존재합니다. `page`를 1 증가시켜 다음 데이터를 요청하세요.
+
+==== HTTP Request
+include::{snippets}/getGymVisitors/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/getGymVisitors/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/getGymVisitors/path-parameters.adoc[]
+
+==== Query Parameters
+include::{snippets}/getGymVisitors/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/getGymVisitors/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getGymVisitors/response-fields.adoc[]
