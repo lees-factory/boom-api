@@ -16,10 +16,11 @@ internal class GymVisitCoreRepository(
     private val gymVisitJpaRepository: GymVisitJpaRepository,
 ) : GymVisitRepository {
     override fun save(visit: GymVisit): GymVisit {
+        val visitId = visit.id
         val entity =
-            if (visit.id != null) {
+            if (visitId != null) {
                 // 기존 엔티티 업데이트
-                val existing = gymVisitJpaRepository.findById(visit.id).orElseThrow()
+                val existing = gymVisitJpaRepository.findById(visitId).orElseThrow()
                 existing.status = visit.status
                 existing.exitedAt = visit.exitedAt
                 existing.expiresAt = visit.expiresAt
