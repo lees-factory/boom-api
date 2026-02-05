@@ -8,7 +8,6 @@ import io.lees.boom.core.domain.Location
 import io.lees.boom.core.enums.CrowdLevel
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.SliceResult
-import java.time.LocalDateTime
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
@@ -30,6 +29,7 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 
 class GymControllerTest : RestDocsTest() {
     private lateinit var gymService: GymService
