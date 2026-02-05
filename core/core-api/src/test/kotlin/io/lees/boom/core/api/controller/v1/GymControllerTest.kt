@@ -218,6 +218,70 @@ class GymControllerTest : RestDocsTest() {
         val latitude = 35.23
         val longitude = 129.07
         val radiusKm = 5.0
+
+        val gyms =
+            listOf(
+                Gym.create(
+                    name = "더클라임",
+                    address = "부산광역시 금정구",
+                    location = Location.create(35.2326, 129.0642),
+                    maxCapacity = 50,
+                    currentCount = 45,
+                    crowdLevel = CrowdLevel.CROWDED,
+                ),
+            )
+
+        every {
+            gymService.getGymsByRadius(latitude, longitude, radiusKm)
+        } returns gyms
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/gyms/radius")
+                    .with(authenticatedUser(1L))
+                    .param("latitude", latitude.toString())
+                    .param("longitude", longitude.toString())
+                    .param("radiusKm", radiusKm.toString())
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getGymsByRadius",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    queryParameters(
+                        parameterWithName("latitude").description("중심점 위도"),
+                        parameterWithName("longitude").description("중심점 경도"),
+                        parameterWithName("radiusKm").description("검색 반경 (km)"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("암장 ID"),
+                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("암장 이름"),
+                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
+                        fieldWithPath("data[].latitude").type(JsonFieldType.NUMBER).description("위도"),
+                        fieldWithPath("data[].longitude").type(JsonFieldType.NUMBER).description("경도"),
+                        fieldWithPath("data[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
+                        fieldWithPath("data[].currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
+                        fieldWithPath(
+                            "data[].crowdLevel",
+                        ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getGymsByRadiusList() {
+        // given
+        val latitude = 35.23
+        val longitude = 129.07
+        val radiusKm = 5.0
         val page = 0
         val size = 10
 
@@ -233,7 +297,7 @@ class GymControllerTest : RestDocsTest() {
                 ),
             )
 
-        val sliceResult = SliceResult.of(gyms, PageRequest(page, size), hasNext = false)
+        val sliceResult = SliceResult.of(gyms, PageRequest(page, size), hasNext = true)
 
         every {
             gymService.getGymsByRadiusSlice(latitude, longitude, radiusKm, any())
@@ -242,7 +306,7 @@ class GymControllerTest : RestDocsTest() {
         // when & then
         mockMvc
             .perform(
-                get("/api/v1/gyms/radius")
+                get("/api/v1/gyms/radius/list")
                     .with(authenticatedUser(1L))
                     .param("latitude", latitude.toString())
                     .param("longitude", longitude.toString())
@@ -253,7 +317,7 @@ class GymControllerTest : RestDocsTest() {
             ).andExpect(status().isOk)
             .andDo(
                 document(
-                    "getGymsByRadius",
+                    "getGymsByRadiusList",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
@@ -270,7 +334,9 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
                         fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("암장 ID"),
                         fieldWithPath("data.content[].name").type(JsonFieldType.STRING).description("암장 이름"),
-                        fieldWithPath("data.content[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
+                        fieldWithPath(
+                            "data.content[].address",
+                        ).type(JsonFieldType.STRING).description("암장 주소").optional(),
                         fieldWithPath("data.content[].latitude").type(JsonFieldType.NUMBER).description("위도"),
                         fieldWithPath("data.content[].longitude").type(JsonFieldType.NUMBER).description("경도"),
                         fieldWithPath("data.content[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
