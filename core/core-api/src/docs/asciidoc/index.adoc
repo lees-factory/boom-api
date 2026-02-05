@@ -107,7 +107,10 @@ include::{snippets}/getGymsOnMap/response-fields.adoc[]
 
 === 반경 기반 암장 검색 (Search Gyms By Radius)
 특정 위치를 기준으로 반경 N km 이내의 암장을 검색합니다. +
+무한스크롤(Infinite Scroll) 방식의 페이징을 지원합니다. +
 (내부적으로 해당 반경을 포함하는 사각형 영역을 계산하여 조회합니다.)
+
+NOTE: `hasNext`가 `true`이면 다음 페이지가 존재합니다. `page`를 1 증가시켜 다음 데이터를 요청하세요.
 
 ==== HTTP Request
 include::{snippets}/getGymsByRadius/http-request.adoc[]

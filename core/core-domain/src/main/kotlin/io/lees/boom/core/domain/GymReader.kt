@@ -2,6 +2,8 @@ package io.lees.boom.core.domain
 
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import org.springframework.stereotype.Component
 
 @Component
@@ -22,5 +24,18 @@ class GymReader(
         val northEast = Location.create(northEastLatitude, northEastLongitude)
 
         return gymRepository.findGymsWithinViewport(southWest, northEast)
+    }
+
+    fun readInViewportSlice(
+        southWestLatitude: Double,
+        southWestLongitude: Double,
+        northEastLatitude: Double,
+        northEastLongitude: Double,
+        pageRequest: PageRequest,
+    ): SliceResult<Gym> {
+        val southWest = Location.create(southWestLatitude, southWestLongitude)
+        val northEast = Location.create(northEastLatitude, northEastLongitude)
+
+        return gymRepository.findGymsWithinViewportSlice(southWest, northEast, pageRequest)
     }
 }

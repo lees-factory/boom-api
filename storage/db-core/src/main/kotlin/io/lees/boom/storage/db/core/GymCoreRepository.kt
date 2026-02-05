@@ -5,9 +5,12 @@ import io.lees.boom.core.domain.GymRepository
 import io.lees.boom.core.domain.Location
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
+import org.springframework.data.domain.PageRequest as JpaPageRequest
 
 @Repository
 internal class GymCoreRepository(
@@ -49,6 +52,31 @@ internal class GymCoreRepository(
                 minimumLongitude = minOf(southWestLocation.longitude, northEastLocation.longitude),
                 maximumLongitude = maxOf(southWestLocation.longitude, northEastLocation.longitude),
             ).map { it.toDomain() }
+
+    override fun findGymsWithinViewportSlice(
+        southWestLocation: Location,
+        northEastLocation: Location,
+        pageRequest: PageRequest,
+    ): SliceResult<Gym> {
+        val minLat = minOf(southWestLocation.latitude, northEastLocation.latitude)
+        val maxLat = maxOf(southWestLocation.latitude, northEastLocation.latitude)
+        val minLon = minOf(southWestLocation.longitude, northEastLocation.longitude)
+        val maxLon = maxOf(southWestLocation.longitude, northEastLocation.longitude)
+
+        // limit+1 조회로 hasNext 판단
+        val pageable = JpaPageRequest.of(pageRequest.page, pageRequest.size + 1)
+        val entities =
+            gymJpaRepository.findByViewportWithLimit(
+                minLat = minLat,
+                maxLat = maxLat,
+                minLon = minLon,
+                maxLon = maxLon,
+                pageable = pageable,
+            )
+
+        val gyms = entities.map { it.toDomain() }
+        return SliceResult.fromLimitPlusOne(gyms, pageRequest)
+    }
 
     private fun Gym.toEntity() =
         GymEntity(
