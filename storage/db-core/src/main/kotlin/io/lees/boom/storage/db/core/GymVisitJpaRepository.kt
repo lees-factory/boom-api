@@ -45,7 +45,10 @@ interface GymVisitJpaRepository : JpaRepository<GymVisitEntity, Long> {
 
 interface GymVisitorProjection {
     fun getMemberId(): Long
+
     fun getMemberName(): String
+
     fun getMemberProfileImage(): String?
+
     fun getAdmittedAt(): LocalDateTime
 }
