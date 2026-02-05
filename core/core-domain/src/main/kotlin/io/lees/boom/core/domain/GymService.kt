@@ -138,10 +138,10 @@ class GymService(
         northEastLongitude: Double,
     ): List<Gym> =
         gymReader.readInViewport(
-            southWestLatitude,
-            northEastLatitude,
-            southWestLongitude,
-            northEastLongitude,
+            southWestLatitude = southWestLatitude,
+            southWestLongitude = southWestLongitude,
+            northEastLatitude = northEastLatitude,
+            northEastLongitude = northEastLongitude,
         )
 
     fun getGymsByRadius(
