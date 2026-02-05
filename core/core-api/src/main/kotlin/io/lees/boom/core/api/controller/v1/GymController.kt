@@ -3,6 +3,7 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.controller.v1.request.GymRadiusSearchRequest
 import io.lees.boom.core.api.controller.v1.request.GymSearchRequest
 import io.lees.boom.core.api.controller.v1.response.GymResponse
+import io.lees.boom.core.api.controller.v1.response.GymVisitorResponse
 import io.lees.boom.core.api.controller.v1.response.SliceResponse
 import io.lees.boom.core.domain.GymService
 import io.lees.boom.core.support.PageRequest
@@ -115,5 +116,20 @@ class GymController(
             )
 
         return ApiResponse.success(SliceResponse.of(sliceResult) { GymResponse.of(it) })
+    }
+
+    /**
+     * 암장 입장 유저 목록 조회
+     * 특정 암장에 현재 입장 중인 유저 목록을 조회합니다.
+     */
+    @GetMapping("/{gymId}/visitors")
+    fun getGymVisitors(
+        @User memberId: Long?,
+        @PathVariable gymId: Long,
+        @ModelAttribute pageRequest: PageRequest,
+    ): ApiResponse<SliceResponse<GymVisitorResponse>> {
+        val sliceResult = gymService.getGymVisitors(gymId, pageRequest)
+
+        return ApiResponse.success(SliceResponse.of(sliceResult) { GymVisitorResponse.of(it) })
     }
 }

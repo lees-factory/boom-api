@@ -2,10 +2,14 @@ package io.lees.boom.storage.db.core
 
 import io.lees.boom.core.domain.GymVisit
 import io.lees.boom.core.domain.GymVisitRepository
+import io.lees.boom.core.domain.GymVisitor
 import io.lees.boom.core.enums.VisitStatus
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
+import org.springframework.data.domain.PageRequest as JpaPageRequest
 
 @Repository
 internal class GymVisitCoreRepository(
@@ -28,6 +32,26 @@ internal class GymVisitCoreRepository(
         gymVisitJpaRepository
             .findByStatusAndAdmittedAtBefore(VisitStatus.ADMISSION, threshold)
             .map { it.toDomain() }
+
+    override fun findActiveVisitorsByGymId(
+        gymId: Long,
+        pageRequest: PageRequest,
+    ): SliceResult<GymVisitor> {
+        val pageable = JpaPageRequest.of(pageRequest.page, pageRequest.size + 1)
+        val projections = gymVisitJpaRepository.findActiveVisitorsByGymId(gymId, pageable)
+
+        val visitors =
+            projections.map { projection ->
+                GymVisitor(
+                    memberId = projection.getMemberId(),
+                    memberName = projection.getMemberName(),
+                    memberProfileImage = projection.getMemberProfileImage(),
+                    admittedAt = projection.getAdmittedAt(),
+                )
+            }
+
+        return SliceResult.fromLimitPlusOne(visitors, pageRequest)
+    }
 
     private fun GymVisit.toEntity() =
         GymVisitEntity(

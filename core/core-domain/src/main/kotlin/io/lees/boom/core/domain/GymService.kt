@@ -156,8 +156,8 @@ class GymService(
 
         return gymReader.readInViewport(
             southWestLatitude = viewport.southWest.latitude,
-            northEastLatitude = viewport.northEast.latitude,
             southWestLongitude = viewport.southWest.longitude,
+            northEastLatitude = viewport.northEast.latitude,
             northEastLongitude = viewport.northEast.longitude,
         )
     }
@@ -182,4 +182,12 @@ class GymService(
             pageRequest = pageRequest,
         )
     }
+
+    /**
+     * 특정 암장의 현재 입장 유저 목록 조회
+     */
+    fun getGymVisitors(
+        gymId: Long,
+        pageRequest: PageRequest,
+    ): SliceResult<GymVisitor> = gymVisitReader.readActiveVisitors(gymId, pageRequest)
 }

@@ -1,5 +1,7 @@
 package io.lees.boom.core.domain
 
+import io.lees.boom.core.support.PageRequest
+import io.lees.boom.core.support.SliceResult
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -26,4 +28,12 @@ class GymVisitReader(
      */
     fun readStaleVisits(now: LocalDateTime = LocalDateTime.now()): List<GymVisit> =
         gymVisitRepository.findStaleVisits(now.minusHours(STALE_HOURS))
+
+    /**
+     * 특정 암장의 현재 입장 유저 목록 조회 (페이징)
+     */
+    fun readActiveVisitors(
+        gymId: Long,
+        pageRequest: PageRequest,
+    ): SliceResult<GymVisitor> = gymVisitRepository.findActiveVisitorsByGymId(gymId, pageRequest)
 }
