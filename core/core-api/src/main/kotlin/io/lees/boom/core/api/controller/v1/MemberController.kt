@@ -1,6 +1,7 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.controller.v1.request.MemberLoginRequest
+import io.lees.boom.core.api.controller.v1.request.TokenRefreshRequest
 import io.lees.boom.core.api.controller.v1.response.MemberLoginResponse
 import io.lees.boom.core.domain.SocialLoginService
 import io.lees.boom.core.support.response.ApiResponse
@@ -40,5 +41,15 @@ class MemberController(
 
         // 3. 공통 응답 포맷으로 래핑하여 반환
         return ApiResponse.success(response)
+    }
+
+    @PostMapping("/refresh")
+    fun refresh(
+        @RequestBody request: TokenRefreshRequest,
+    ): ApiResponse<MemberLoginResponse> {
+        val tokenPair = socialLoginService.refreshToken(request.refreshToken)
+        return ApiResponse.success(
+            MemberLoginResponse(tokenPair.accessToken, tokenPair.refreshToken)
+        )
     }
 }

@@ -1,7 +1,10 @@
 package io.lees.boom.core.domain
 
 interface MemberTokenRepository {
-    fun findByMemberId(memberId: Long): MemberToken?
+    fun store(memberToken: MemberToken): MemberToken
 
-    fun save(memberToken: MemberToken): MemberToken
+    // [추가] 토큰 값으로 MemberToken 조회
+    fun findByRefreshToken(refreshToken: String): MemberToken?
+
+    fun findByMemberId(memberId: Long): MemberToken?
 }

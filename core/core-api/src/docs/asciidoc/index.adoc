@@ -27,6 +27,24 @@ include::{snippets}/member-login/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/member-login/response-fields.adoc[]
 
+'''
+
+=== 토큰 갱신 (Token Refresh)
+Refresh Token을 사용하여 새로운 Access Token과 Refresh Token을 발급받습니다. +
+자동 로그인 시 사용합니다. (Refresh Token Rotation 적용)
+
+==== HTTP Request
+include::{snippets}/member-refresh/http-request.adoc[]
+
+==== Request Fields
+include::{snippets}/member-refresh/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-refresh/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/member-refresh/response-fields.adoc[]
+
 == Crew API
 
 === 크루 생성 (Create Crew)

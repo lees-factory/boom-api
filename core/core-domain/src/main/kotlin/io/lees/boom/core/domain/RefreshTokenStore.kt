@@ -20,6 +20,6 @@ class RefreshTokenStore(
                 expirationDateTime = LocalDateTime.now().plusSeconds(ttlSeconds),
             )
 
-        memberTokenRepository.save(memberToken)
+        memberTokenRepository.store(memberToken)
     }
 }
