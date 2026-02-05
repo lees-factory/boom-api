@@ -77,3 +77,25 @@ CREATE INDEX idx_gym_visit_check ON public.gym_visit (member_id, gym_id, status)
 ALTER TABLE public.gym_visit ADD COLUMN expires_at timestamp without time zone NOT NULL DEFAULT now();
 -- 오래된 방문 조회를 위한 인덱스 추가 (매일 새벽 스케줄러에서 24시간 이상 지난 방문 정리용)
 CREATE INDEX idx_gym_visit_stale ON public.gym_visit (status, admitted_at) WHERE status = 'ADMISSION';
+
+-- [2026-02-06] GymActiveVisit (현재 입장 상태) 테이블 추가
+-- 방문 기록(gym_visit)과 현재 상태(gym_active_visit)를 분리하여:
+-- 1. 통계용 히스토리 보존 (gym_visit에 항상 INSERT)
+-- 2. "이미 입장 중" 버그 방지 (유저당 1개 row만 존재, UNIQUE 제약)
+-- 3. 현재 입장 조회 성능 향상 (작은 테이블에서 조회)
+CREATE TABLE public.gym_active_visit (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    gym_id bigint NOT NULL,
+    member_id bigint NOT NULL UNIQUE,
+    admitted_at timestamp without time zone NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT gym_active_visit_pkey PRIMARY KEY (id)
+);
+-- 유저별 현재 입장 조회용 인덱스 (UNIQUE 제약으로 자동 생성되지만 명시적으로 추가)
+CREATE UNIQUE INDEX idx_active_visit_member ON public.gym_active_visit (member_id);
+-- 암장별 입장 유저 목록 조회용 인덱스
+CREATE INDEX idx_active_visit_gym ON public.gym_active_visit (gym_id);
+-- 만료된 입장 정리용 인덱스 (스케줄러에서 사용)
+CREATE INDEX idx_active_visit_expires ON public.gym_active_visit (expires_at);

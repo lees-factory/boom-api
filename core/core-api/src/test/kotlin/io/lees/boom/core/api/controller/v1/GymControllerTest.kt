@@ -1,7 +1,9 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
+import io.lees.boom.core.domain.CurrentVisit
 import io.lees.boom.core.domain.Gym
+import io.lees.boom.core.domain.GymActiveVisit
 import io.lees.boom.core.domain.GymService
 import io.lees.boom.core.domain.GymVisitor
 import io.lees.boom.core.domain.Location
@@ -419,6 +421,100 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
                         fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
                         fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getCurrentVisit() {
+        // given
+        val memberId = 1L
+        val gym =
+            Gym(
+                id = 1L,
+                name = "더클라임",
+                address = "부산광역시 금정구",
+                location = Location.create(35.2326, 129.0642),
+                maxCapacity = 50,
+                currentCount = 45,
+                crowdLevel = CrowdLevel.CROWDED,
+            )
+
+        val activeVisit =
+            GymActiveVisit(
+                id = 1L,
+                gymId = 1L,
+                memberId = memberId,
+                admittedAt = LocalDateTime.of(2026, 2, 5, 14, 30, 0),
+                expiresAt = LocalDateTime.of(2026, 2, 5, 17, 30, 0),
+            )
+
+        val currentVisit = CurrentVisit(gym = gym, activeVisit = activeVisit)
+
+        every { gymService.getCurrentVisit(memberId) } returns currentVisit
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/gyms/my-visit")
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getCurrentVisit",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data.gymId").type(JsonFieldType.NUMBER).description("암장 ID"),
+                        fieldWithPath("data.gymName").type(JsonFieldType.STRING).description("암장 이름"),
+                        fieldWithPath("data.gymAddress").type(JsonFieldType.STRING).description("암장 주소").optional(),
+                        fieldWithPath("data.latitude").type(JsonFieldType.NUMBER).description("위도"),
+                        fieldWithPath("data.longitude").type(JsonFieldType.NUMBER).description("경도"),
+                        fieldWithPath("data.maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
+                        fieldWithPath("data.currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
+                        fieldWithPath(
+                            "data.crowdLevel",
+                        ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath("data.admittedAt").type(JsonFieldType.STRING).description("입장 시간"),
+                        fieldWithPath("data.expiresAt").type(JsonFieldType.STRING).description("만료 예정 시간"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getCurrentVisit_notAdmitted() {
+        // given
+        val memberId = 1L
+
+        every { gymService.getCurrentVisit(memberId) } returns null
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/gyms/my-visit")
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getCurrentVisit_notAdmitted",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).description("입장중인 암장이 없음"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

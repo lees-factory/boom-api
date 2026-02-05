@@ -18,20 +18,20 @@ class GymVisitExpirationScheduler(
     private val log = LoggerFactory.getLogger(javaClass)
 
     /**
-     * 매일 새벽 4시에 24시간 이상 지난 방문 기록 일괄 정리
+     * 매일 새벽 4시에 만료된 방문 기록 일괄 정리
      * - 앱이 죽거나 삭제된 경우
      * - 폰이 꺼진 경우
      * - 네트워크 끊긴 경우 등 예외 상황 처리
      */
     @Scheduled(cron = "0 0 4 * * *") // 매일 새벽 4시
-    fun cleanupStaleVisits() {
+    fun cleanupExpiredVisits() {
         try {
-            val cleanedCount = gymService.cleanupStaleVisits()
+            val cleanedCount = gymService.cleanupExpiredVisits()
             if (cleanedCount > 0) {
-                log.info("오래된 방문 기록 정리 완료: {}건", cleanedCount)
+                log.info("만료된 방문 기록 정리 완료: {}건", cleanedCount)
             }
         } catch (e: Exception) {
-            log.error("오래된 방문 기록 정리 중 오류 발생", e)
+            log.error("만료된 방문 기록 정리 중 오류 발생", e)
         }
     }
 }

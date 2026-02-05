@@ -2,6 +2,7 @@ package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.controller.v1.request.GymRadiusSearchRequest
 import io.lees.boom.core.api.controller.v1.request.GymSearchRequest
+import io.lees.boom.core.api.controller.v1.response.CurrentVisitResponse
 import io.lees.boom.core.api.controller.v1.response.GymResponse
 import io.lees.boom.core.api.controller.v1.response.GymVisitorResponse
 import io.lees.boom.core.api.controller.v1.response.SliceResponse
@@ -56,6 +57,18 @@ class GymController(
     ): ApiResponse<Any> {
         gymService.extendVisit(gymId, memberId)
         return ApiResponse.success()
+    }
+
+    /**
+     * 현재 입장중인 암장 조회
+     * 입장중인 암장이 없으면 data가 null로 반환됩니다.
+     */
+    @GetMapping("/my-visit")
+    fun getCurrentVisit(
+        @User memberId: Long,
+    ): ApiResponse<CurrentVisitResponse?> {
+        val currentVisit = gymService.getCurrentVisit(memberId)
+        return ApiResponse.success(currentVisit?.let { CurrentVisitResponse.of(it) })
     }
 
     // --- 기존 조회 API (유지) ---
