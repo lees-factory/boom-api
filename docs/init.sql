@@ -71,3 +71,9 @@ CREATE TABLE public.gym_visit (
 );
 -- 빠른 조회를 위해 인덱스 추가 (특정 유저가 특정 암장에 현재 입장 중인지 확인용)
 CREATE INDEX idx_gym_visit_check ON public.gym_visit (member_id, gym_id, status);
+
+-- [2026-02-05] GymVisit 테이블에 만료 시간 컬럼 추가 (앱에서 연장 기능용)
+-- 입장 시 기본 3시간 후 만료, 연장 시 3시간씩 추가
+ALTER TABLE public.gym_visit ADD COLUMN expires_at timestamp without time zone NOT NULL DEFAULT now();
+-- 오래된 방문 조회를 위한 인덱스 추가 (매일 새벽 스케줄러에서 24시간 이상 지난 방문 정리용)
+CREATE INDEX idx_gym_visit_stale ON public.gym_visit (status, admitted_at) WHERE status = 'ADMISSION';

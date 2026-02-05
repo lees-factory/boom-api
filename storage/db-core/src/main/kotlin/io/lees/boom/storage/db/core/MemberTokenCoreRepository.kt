@@ -25,14 +25,12 @@ internal class MemberTokenCoreRepository(
 
     // [추가] 인터페이스 구현
     @Transactional(readOnly = true)
-    override fun findByRefreshToken(refreshToken: String): MemberToken? {
-        return memberTokenJpaRepository.findByRefreshToken(refreshToken)?.toDomain()
-    }
+    override fun findByRefreshToken(refreshToken: String): MemberToken? =
+        memberTokenJpaRepository.findByRefreshToken(refreshToken)?.toDomain()
 
     @Transactional(readOnly = true)
-    override fun findByMemberId(memberId: Long): MemberToken? {
-        return memberTokenJpaRepository.findByMemberId(memberId)?.toDomain()
-    }
+    override fun findByMemberId(memberId: Long): MemberToken? =
+        memberTokenJpaRepository.findByMemberId(memberId)?.toDomain()
 
     private fun MemberTokenEntity.toDomain() =
         MemberToken(

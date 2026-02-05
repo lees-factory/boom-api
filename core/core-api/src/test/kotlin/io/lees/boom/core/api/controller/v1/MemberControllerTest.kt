@@ -118,7 +118,9 @@ class MemberControllerTest : RestDocsTest() {
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS)"),
                         fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("새로운 Access Token"),
-                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("새로운 Refresh Token (Rotation)"),
+                        fieldWithPath(
+                            "data.refreshToken",
+                        ).type(JsonFieldType.STRING).description("새로운 Refresh Token (Rotation)"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

@@ -6,6 +6,7 @@ import io.lees.boom.core.domain.GymService
 import io.lees.boom.core.domain.Location
 import io.lees.boom.core.enums.CrowdLevel
 import io.lees.boom.test.api.RestDocsTest
+import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -50,7 +51,7 @@ class GymControllerTest : RestDocsTest() {
         mockMvc
             .perform(
                 post("/api/v1/gyms/{gymId}/entry", gymId)
-                    .header("X-User-Id", memberId.toString())
+                    .with(authenticatedUser(memberId))
                     .contentType(MediaType.APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andDo(
@@ -59,7 +60,7 @@ class GymControllerTest : RestDocsTest() {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     pathParameters(
                         parameterWithName("gymId").description("입장할 암장 ID"),
@@ -84,7 +85,7 @@ class GymControllerTest : RestDocsTest() {
         mockMvc
             .perform(
                 post("/api/v1/gyms/{gymId}/exit", gymId)
-                    .header("X-User-Id", memberId.toString())
+                    .with(authenticatedUser(memberId))
                     .contentType(MediaType.APPLICATION_JSON),
             ).andExpect(status().isOk)
             .andDo(
@@ -93,10 +94,44 @@ class GymControllerTest : RestDocsTest() {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     pathParameters(
                         parameterWithName("gymId").description("퇴장할 암장 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun extendVisit() {
+        // given
+        val gymId = 1L
+        val memberId = 1L
+        justRun { gymService.extendVisit(gymId, memberId) }
+
+        // when & then
+        mockMvc
+            .perform(
+                post("/api/v1/gyms/{gymId}/extend", gymId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "extendVisit",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("gymId").description("연장할 암장 ID"),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
@@ -135,7 +170,7 @@ class GymControllerTest : RestDocsTest() {
         mockMvc
             .perform(
                 get("/api/v1/gyms")
-                    .header("X-User-Id", "1")
+                    .with(authenticatedUser(1L))
                     .param("southWestLatitude", southWestLat.toString())
                     .param("southWestLongitude", southWestLon.toString())
                     .param("northEastLatitude", northEastLat.toString())
@@ -148,7 +183,7 @@ class GymControllerTest : RestDocsTest() {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     queryParameters(
                         parameterWithName("southWestLatitude").description("남서쪽 위도"),
@@ -202,7 +237,7 @@ class GymControllerTest : RestDocsTest() {
         mockMvc
             .perform(
                 get("/api/v1/gyms/radius")
-                    .header("X-User-Id", "1")
+                    .with(authenticatedUser(1L))
                     .param("latitude", latitude.toString())
                     .param("longitude", longitude.toString())
                     .param("radiusKm", radiusKm.toString())
@@ -214,7 +249,7 @@ class GymControllerTest : RestDocsTest() {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        headerWithName("X-User-Id").description("로그인 사용자 ID"),
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     queryParameters(
                         parameterWithName("latitude").description("중심점 위도"),

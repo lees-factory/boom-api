@@ -49,7 +49,7 @@ class MemberController(
     ): ApiResponse<MemberLoginResponse> {
         val tokenPair = socialLoginService.refreshToken(request.refreshToken)
         return ApiResponse.success(
-            MemberLoginResponse(tokenPair.accessToken, tokenPair.refreshToken)
+            MemberLoginResponse(tokenPair.accessToken, tokenPair.refreshToken),
         )
     }
 }

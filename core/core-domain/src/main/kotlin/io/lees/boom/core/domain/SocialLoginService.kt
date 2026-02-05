@@ -58,14 +58,17 @@ class SocialLoginService(
     }
 
     fun refreshToken(inputRefreshToken: String): TokenPair {
-        val memberToken = refreshTokenReader.readByToken(inputRefreshToken)
-            ?: throw CoreException(CoreErrorType.UNAUTHORIZED_USER)
+        val memberToken =
+            refreshTokenReader.readByToken(inputRefreshToken)
+                ?: throw CoreException(CoreErrorType.UNAUTHORIZED_USER)
 
-        val member = memberFinder.findById(memberToken.memberId)
-            ?: throw CoreException(CoreErrorType.NOT_FOUND_MEMBER)
+        val member =
+            memberFinder.findById(memberToken.memberId)
+                ?: throw CoreException(CoreErrorType.NOT_FOUND_MEMBER)
 
-        val memberId = member.id
-            ?: throw CoreException(CoreErrorType.INVALID_USERID)
+        val memberId =
+            member.id
+                ?: throw CoreException(CoreErrorType.INVALID_USERID)
 
         val newAccessToken = tokenGenerator.createAccessToken(memberId, member.role.name)
         val newRefreshToken = tokenGenerator.createRefreshToken()

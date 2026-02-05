@@ -21,9 +21,15 @@ class GymVisitEntity(
     @Column(nullable = false)
     val admittedAt: LocalDateTime,
     var exitedAt: LocalDateTime? = null,
+    @Column(nullable = false)
+    var expiresAt: LocalDateTime,
 ) : BaseEntity() {
     fun exit(time: LocalDateTime) {
         this.status = VisitStatus.EXIT
         this.exitedAt = time
+    }
+
+    fun extend(newExpiresAt: LocalDateTime) {
+        this.expiresAt = newExpiresAt
     }
 }

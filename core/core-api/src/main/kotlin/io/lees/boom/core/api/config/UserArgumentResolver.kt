@@ -14,10 +14,9 @@ import kotlin.jvm.java
 
 @Component
 class UserArgumentResolver : HandlerMethodArgumentResolver {
-    override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(User::class.java) &&
+    override fun supportsParameter(parameter: MethodParameter): Boolean =
+        parameter.hasParameterAnnotation(User::class.java) &&
             (parameter.parameterType == Long::class.java || parameter.parameterType == Long::class.javaObjectType)
-    }
 
     override fun resolveArgument(
         parameter: MethodParameter,

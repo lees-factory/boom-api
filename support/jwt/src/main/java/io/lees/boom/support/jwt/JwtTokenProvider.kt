@@ -42,7 +42,8 @@ class JwtTokenProvider(
         val now = Date()
         val validity = Date(now.time + (jwtProperties.refreshTokenExpirationSeconds * 1000))
 
-        return Jwts.builder()
+        return Jwts
+            .builder()
             .issuer(jwtProperties.issuer)
             .issuedAt(now)
             .expiration(validity)
@@ -52,9 +53,10 @@ class JwtTokenProvider(
 
     override fun getRefreshTokenExpirationSeconds(): Long = jwtProperties.refreshTokenExpirationSeconds
 
-    fun validateAndGetClaims(token: String): Claims {
-        return try {
-            Jwts.parser()
+    fun validateAndGetClaims(token: String): Claims =
+        try {
+            Jwts
+                .parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
@@ -62,5 +64,4 @@ class JwtTokenProvider(
         } catch (e: Exception) {
             throw CoreException(CoreErrorType.UNAUTHORIZED_USER)
         }
-    }
 }
