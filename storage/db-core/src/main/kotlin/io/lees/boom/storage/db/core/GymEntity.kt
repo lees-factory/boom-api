@@ -28,12 +28,14 @@ class GymEntity(
         address: String?,
         latitude: Double,
         longitude: Double,
+        currentCount: Int,
         crowdLevel: CrowdLevel,
     ) {
         this.name = name
         this.address = address
         this.latitude = latitude
         this.longitude = longitude
+        this.currentCount = currentCount
         this.crowdLevel = crowdLevel
     }
 

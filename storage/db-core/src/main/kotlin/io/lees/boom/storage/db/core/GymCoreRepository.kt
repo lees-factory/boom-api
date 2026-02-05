@@ -30,6 +30,7 @@ internal class GymCoreRepository(
                 address = gym.address,
                 latitude = gym.location.latitude,
                 longitude = gym.location.longitude,
+                currentCount = gym.currentCount,
                 crowdLevel = gym.crowdLevel,
             )
 
