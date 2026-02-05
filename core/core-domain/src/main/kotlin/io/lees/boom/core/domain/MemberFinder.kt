@@ -11,4 +11,6 @@ class MemberFinder(
         provider: SocialProvider,
         socialId: String,
     ): Member? = memberRepository.findBySocialInfo(provider, socialId)
+
+    fun findById(memberId: Long): Member? = memberRepository.findById(memberId)
 }

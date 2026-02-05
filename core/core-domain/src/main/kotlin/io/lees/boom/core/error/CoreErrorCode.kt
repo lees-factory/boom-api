@@ -9,6 +9,7 @@ enum class CoreErrorCode {
     // 인증
     B2000,
     B2001,
+    B2002,
 
     // 크루
     B3000,

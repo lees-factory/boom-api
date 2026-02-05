@@ -83,4 +83,45 @@ class MemberControllerTest : RestDocsTest() {
                 ),
             )
     }
+
+    @Test
+    fun refresh() {
+        // given
+        val request =
+            mapOf("refreshToken" to "old-refresh-token-sample")
+
+        val tokenPair =
+            TokenPair(
+                accessToken = "new-access-token-sample",
+                refreshToken = "new-refresh-token-sample",
+            )
+
+        every {
+            socialLoginService.refreshToken(any())
+        } returns tokenPair
+
+        // when & then
+        mockMvc
+            .perform(
+                post("/api/v1/members/refresh")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonMapper().writeValueAsString(request)),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "member-refresh",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("기존 Refresh Token"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS)"),
+                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("새로운 Access Token"),
+                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("새로운 Refresh Token (Rotation)"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
 }

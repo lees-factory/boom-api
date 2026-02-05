@@ -9,4 +9,6 @@ interface MemberRepository {
         provider: SocialProvider,
         socialId: String,
     ): Member?
+
+    fun findById(memberId: Long): Member?
 }
