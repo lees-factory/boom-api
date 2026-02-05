@@ -1,5 +1,9 @@
 package io.lees.boom.core.api.controller
 
+import io.lees.boom.core.error.CoreErrorKind
+import io.lees.boom.core.error.CoreErrorLevel
+import io.lees.boom.core.error.CoreErrorType
+import io.lees.boom.core.error.CoreException
 import io.lees.boom.core.support.error.CoreApiErrorType
 import io.lees.boom.core.support.error.CoreApiException
 import io.lees.boom.core.support.response.ApiResponse
@@ -27,13 +31,22 @@ class ApiControllerAdvice {
     }
 
     @ExceptionHandler(CoreApiException::class)
-    fun handleCoreException(e: CoreApiException): ResponseEntity<ApiResponse<Any>> {
+    fun handleCoreApiException(e: CoreApiException): ResponseEntity<ApiResponse<Any>> {
         when (e.coreApiErrorType.logLevel) {
-            LogLevel.ERROR -> log.error("CoreException : {}", e.message, e)
-            LogLevel.WARN -> log.warn("CoreException : {}", e.message, e)
-            else -> log.info("CoreException : {}", e.message, e)
+            LogLevel.ERROR -> log.error("CoreApiException : {}", e.message, e)
+            LogLevel.WARN -> log.warn("CoreApiException : {}", e.message, e)
+            else -> log.info("CoreApiException : {}", e.message, e)
         }
         return ResponseEntity(ApiResponse.error(e.coreApiErrorType, e.data), e.coreApiErrorType.status)
+    }
+
+    @ExceptionHandler(CoreException::class)
+    fun handleCoreException(e: CoreException): ResponseEntity<ApiResponse<Any>> {
+        val errorType = e.errorType
+        logError(errorType, e)
+
+        val status = mapKindToHttpStatus(errorType.kind)
+        return ResponseEntity(ApiResponse.error(errorType), status)
     }
 
     @ExceptionHandler(Exception::class)
@@ -41,4 +54,25 @@ class ApiControllerAdvice {
         log.error("Exception : {}", e.message, e)
         return ResponseEntity(ApiResponse.error(CoreApiErrorType.DEFAULT_ERROR), CoreApiErrorType.DEFAULT_ERROR.status)
     }
+
+    private fun logError(
+        errorType: CoreErrorType,
+        e: Exception,
+    ) {
+        when (errorType.level) {
+            CoreErrorLevel.ERROR -> log.error("CoreException : {}", e.message, e)
+            CoreErrorLevel.WARN -> log.warn("CoreException : {}", e.message, e)
+            else -> log.info("CoreException : {}", e.message, e)
+        }
+    }
+
+    /**
+     * 도메인 에러의 Kind를 HTTP Status로 번역
+     */
+    private fun mapKindToHttpStatus(kind: CoreErrorKind): HttpStatus =
+        when (kind) {
+            CoreErrorKind.CLIENT_ERROR -> HttpStatus.BAD_REQUEST
+            CoreErrorKind.SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR
+            CoreErrorKind.UNAUTHORIZED -> HttpStatus.UNAUTHORIZED
+        }
 }

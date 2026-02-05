@@ -1,5 +1,6 @@
 package io.lees.boom.core.support.response
 
+import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.support.error.CoreApiErrorMessage
 import io.lees.boom.core.support.error.CoreApiErrorType
 
@@ -15,6 +16,11 @@ class ApiResponse<T> private constructor(
 
         fun <S> error(
             error: CoreApiErrorType,
+            errorData: Any? = null,
+        ): ApiResponse<S> = ApiResponse(ResultType.ERROR, null, CoreApiErrorMessage(error, errorData))
+
+        fun <S> error(
+            error: CoreErrorType,
             errorData: Any? = null,
         ): ApiResponse<S> = ApiResponse(ResultType.ERROR, null, CoreApiErrorMessage(error, errorData))
     }
