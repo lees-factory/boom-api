@@ -31,6 +31,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
@@ -51,10 +52,18 @@ class CrewControllerTest : RestDocsTest() {
     fun createCrew() {
         // given
         val memberId = 1L
-        val request = CrewCreateRequest(name = "클라이밍 붐", description = "부산 클라이밍 크루입니다.", maxMemberCount = 100)
+        val request =
+            CrewCreateRequest(
+                name = "클라이밍 붐",
+                description = "부산 클라이밍 크루입니다.",
+                maxMemberCount = 100,
+                latitude = 35.1796,
+                longitude = 129.0756,
+                address = "부산광역시 해운대구",
+            )
         val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 100)
 
-        every { crewService.createCrew(any(), any(), any(), any()) } returns createdCrew
+        every { crewService.createCrew(any(), any(), any(), any(), any(), any(), any()) } returns createdCrew
 
         // when & then
         mockMvc
@@ -78,6 +87,9 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "maxMemberCount",
                         ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(),
+                        fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("크루 위치 위도").optional(),
+                        fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("크루 위치 경도").optional(),
+                        fieldWithPath("address").type(JsonFieldType.STRING).description("크루 주소").optional(),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
@@ -351,6 +363,142 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data[].description").type(JsonFieldType.STRING).description("일정 설명"),
                         fieldWithPath("data[].scheduledAt").type(JsonFieldType.STRING).description("일정 날짜/시간"),
                         fieldWithPath("data[].createdBy").type(JsonFieldType.NUMBER).description("생성자 멤버 ID"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getLocalCrews() {
+        // given
+        val crews =
+            listOf(
+                Crew(
+                    id = 1L,
+                    name = "해운대 클라이밍",
+                    description = "해운대 클라이밍 크루",
+                    maxMemberCount = 50,
+                    memberCount = 12,
+                    latitude = 35.1796,
+                    longitude = 129.0756,
+                    address = "부산광역시 해운대구",
+                    activityScore = 350.0,
+                ),
+                Crew(
+                    id = 2L,
+                    name = "서면 볼더링",
+                    description = "서면 볼더링 크루",
+                    maxMemberCount = 30,
+                    memberCount = 8,
+                    latitude = 35.1580,
+                    longitude = 129.0596,
+                    address = "부산광역시 부산진구 서면",
+                    activityScore = 120.0,
+                ),
+            )
+
+        every { crewService.getLocalCrews(any(), any(), any(), any()) } returns crews
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/crews/local")
+                    .param("lat", "35.1796")
+                    .param("lon", "129.0756")
+                    .param("page", "0")
+                    .param("size", "20"),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getLocalCrews",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    queryParameters(
+                        parameterWithName("lat").description("현재 위치 위도"),
+                        parameterWithName("lon").description("현재 위치 경도"),
+                        parameterWithName("page").description("페이지 번호 (기본 0)").optional(),
+                        parameterWithName("size").description("페이지 크기 (기본 20)").optional(),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("크루 ID"),
+                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("크루 이름"),
+                        fieldWithPath("data[].description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
+                        fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("크루 주소").optional(),
+                        fieldWithPath("data[].activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
+                        fieldWithPath(
+                            "data[].activityRank",
+                        ).type(JsonFieldType.STRING).description("활동 등급 (노랑단/초록단/빨강단/보라단/황금단)"),
+                        fieldWithPath(
+                            "data[].activityRankColor",
+                        ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getCrewRanking() {
+        // given
+        val crews =
+            listOf(
+                Crew(
+                    id = 3L,
+                    name = "전국 1위 크루",
+                    description = "활동 점수 최상위 크루",
+                    maxMemberCount = 100,
+                    memberCount = 45,
+                    address = "서울특별시 강남구",
+                    activityScore = 1200.0,
+                ),
+                Crew(
+                    id = 1L,
+                    name = "해운대 클라이밍",
+                    description = "해운대 클라이밍 크루",
+                    maxMemberCount = 50,
+                    memberCount = 12,
+                    address = "부산광역시 해운대구",
+                    activityScore = 350.0,
+                ),
+            )
+
+        every { crewService.getCrewRanking(any(), any()) } returns crews
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/crews/ranking")
+                    .param("page", "0")
+                    .param("size", "20"),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getCrewRanking",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    queryParameters(
+                        parameterWithName("page").description("페이지 번호 (기본 0)").optional(),
+                        parameterWithName("size").description("페이지 크기 (기본 20)").optional(),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("크루 ID"),
+                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("크루 이름"),
+                        fieldWithPath("data[].description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
+                        fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("크루 주소").optional(),
+                        fieldWithPath("data[].activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
+                        fieldWithPath(
+                            "data[].activityRank",
+                        ).type(JsonFieldType.STRING).description("활동 등급 (노랑단/초록단/빨강단/보라단/황금단)"),
+                        fieldWithPath(
+                            "data[].activityRankColor",
+                        ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

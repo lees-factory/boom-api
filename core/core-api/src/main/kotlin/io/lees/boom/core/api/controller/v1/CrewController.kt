@@ -4,6 +4,7 @@ import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.api.controller.v1.request.CrewScheduleCreateRequest
 import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
 import io.lees.boom.core.api.controller.v1.response.CrewMemberResponse
+import io.lees.boom.core.api.controller.v1.response.CrewResponse
 import io.lees.boom.core.api.controller.v1.response.CrewScheduleResponse
 import io.lees.boom.core.api.controller.v1.response.MyCrewResponse
 import io.lees.boom.core.domain.CrewService
@@ -31,6 +32,9 @@ class CrewController(
                 name = request.name,
                 description = request.description,
                 maxMemberCount = request.maxMemberCount ?: 100,
+                latitude = request.latitude,
+                longitude = request.longitude,
+                address = request.address,
             )
         return ApiResponse.success(CrewIdResponse(createdCrew.id!!))
     }
@@ -105,5 +109,34 @@ class CrewController(
     ): ApiResponse<List<CrewScheduleResponse>> {
         val schedules = crewService.getSchedules(crewId, memberId!!)
         return ApiResponse.success(schedules.map { CrewScheduleResponse.from(it) })
+    }
+
+    /**
+     * 동네 크루 찾기
+     * [GET] /api/v1/crews/local?lat=37.123&lon=127.123
+     */
+    @GetMapping("/local")
+    fun getLocalCrews(
+        @RequestParam lat: Double,
+        @RequestParam lon: Double,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): ApiResponse<List<CrewResponse>> {
+        val crews = crewService.getLocalCrews(lat, lon, page, size)
+        // CrewResponse.from(it) 팩토리 메서드 필요
+        return ApiResponse.success(crews.map { CrewResponse.of(it) })
+    }
+
+    /**
+     * 크루 랭킹 조회
+     * [GET] /api/v1/crews/ranking
+     */
+    @GetMapping("/ranking")
+    fun getCrewRanking(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): ApiResponse<List<CrewResponse>> {
+        val crews = crewService.getCrewRanking(page, size)
+        return ApiResponse.success(crews.map { CrewResponse.of(it) })
     }
 }

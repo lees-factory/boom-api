@@ -207,6 +207,43 @@ include::{snippets}/getCrewSchedules/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/getCrewSchedules/response-fields.adoc[]
 
+'''
+
+=== 동네 크루 찾기 (Get Local Crews)
+현재 위치 기준 반경 5km 이내의 크루 목록을 조회합니다. +
+활동 점수 높은 순으로 정렬됩니다.
+
+==== HTTP Request
+include::{snippets}/getLocalCrews/http-request.adoc[]
+
+==== Query Parameters
+include::{snippets}/getLocalCrews/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/getLocalCrews/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getLocalCrews/response-fields.adoc[]
+
+'''
+
+=== 크루 랭킹 조회 (Get Crew Ranking)
+활동 점수 기반 크루 랭킹을 조회합니다. +
+활동 등급은 클라이밍 홀드 색상을 오마주한 컬러 랭킹 체계입니다. +
+(노랑단 → 초록단 → 빨강단 → 보라단 → 황금단)
+
+==== HTTP Request
+include::{snippets}/getCrewRanking/http-request.adoc[]
+
+==== Query Parameters
+include::{snippets}/getCrewRanking/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/getCrewRanking/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getCrewRanking/response-fields.adoc[]
+
 == Gym API
 
 === 암장 리스트 조회 (Get Gyms On Map)
@@ -287,6 +324,28 @@ include::{snippets}/getCurrentVisit/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/getCurrentVisit/response-fields.adoc[]
+
+'''
+
+=== [TEST ONLY] 암장 입장 - 위치 검증 없음 (Enter Gym For Test)
+WARNING: **테스트 전용 API입니다. 운영 환경에서는 사용하지 마세요.** +
+위치 검증(100m 반경) 없이 암장에 입장합니다. +
+GPS 위치 전송이 불가능한 테스트 환경에서 입장 기능을 검증할 때 사용합니다.
+
+==== HTTP Request
+include::{snippets}/enterGymForTest/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/enterGymForTest/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/enterGymForTest/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/enterGymForTest/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/enterGymForTest/response-fields.adoc[]
 
 '''
 

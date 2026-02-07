@@ -96,6 +96,40 @@ class GymControllerTest : RestDocsTest() {
     }
 
     @Test
+    fun enterGymForTest() {
+        // given
+        val gymId = 1L
+        val memberId = 1L
+        justRun { gymService.enterUserWithoutLocationCheck(gymId, memberId) }
+
+        // when & then
+        mockMvc
+            .perform(
+                post("/api/v1/gyms/{gymId}/test-entry", gymId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "enterGymForTest",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("gymId").description("입장할 암장 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
     fun exitGym() {
         // given
         val gymId = 1L

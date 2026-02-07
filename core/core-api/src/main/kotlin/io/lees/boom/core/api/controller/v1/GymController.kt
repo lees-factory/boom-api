@@ -41,6 +41,20 @@ class GymController(
     }
 
     /**
+     * [TEST ONLY] 위치 검증 없이 암장 입장
+     * 테스트 환경에서 반경 100m 제한 없이 입장 가능한 API
+     * 운영 환경에서는 사용하지 마세요.
+     */
+    @PostMapping("/{gymId}/test-entry")
+    fun enterGymForTest(
+        @User memberId: Long,
+        @PathVariable gymId: Long,
+    ): ApiResponse<Any> {
+        gymService.enterUserWithoutLocationCheck(gymId, memberId)
+        return ApiResponse.success()
+    }
+
+    /**
      * 암장 퇴장 체크
      */
     @PostMapping("/{gymId}/exit")
