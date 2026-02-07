@@ -8,6 +8,7 @@ interface MyCrewProjection {
     val crewId: Long
     val name: String
     val description: String
+    val crewImage: String?
     val maxMemberCount: Int
     val myRole: CrewRole
     val memberCount: Long
@@ -28,7 +29,7 @@ interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
     @Query(
         """
         SELECT c.id as crewId, c.name as name, c.description as description,
-               c.maxMemberCount as maxMemberCount, cm.role as myRole,
+               c.crewImage as crewImage, c.maxMemberCount as maxMemberCount, cm.role as myRole,
                (SELECT COUNT(cm2) FROM CrewMemberEntity cm2 WHERE cm2.crewId = c.id) as memberCount
         FROM CrewMemberEntity cm
         JOIN CrewEntity c ON cm.crewId = c.id

@@ -33,12 +33,26 @@ class CrewController(
                 memberId = memberId!!,
                 name = request.name,
                 description = request.description,
+                crewImage = request.crewImage,
                 maxMemberCount = request.maxMemberCount ?: 100,
                 latitude = request.latitude,
                 longitude = request.longitude,
                 address = request.address,
             )
         return ApiResponse.success(CrewIdResponse(createdCrew.id!!))
+    }
+
+    /**
+     * 크루 상세 조회
+     * [GET] /api/v1/crews/{crewId}
+     * 내 크루 상세 / 동네 크루 상세 모두 이 API로 조회
+     */
+    @GetMapping("/{crewId}")
+    fun getCrew(
+        @PathVariable crewId: Long,
+    ): ApiResponse<CrewResponse> {
+        val crew = crewService.getCrew(crewId)
+        return ApiResponse.success(CrewResponse.of(crew))
     }
 
     /**

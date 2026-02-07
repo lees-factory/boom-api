@@ -128,6 +128,24 @@ include::{snippets}/createCrew/response-fields.adoc[]
 
 '''
 
+=== 크루 상세 조회 (Get Crew Detail)
+크루 상세 정보를 조회합니다. +
+내 크루 상세 조회, 동네 크루 상세 조회 모두 이 API를 사용합니다.
+
+==== HTTP Request
+include::{snippets}/getCrew/http-request.adoc[]
+
+==== Path Parameters
+include::{snippets}/getCrew/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/getCrew/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getCrew/response-fields.adoc[]
+
+'''
+
 === 크루 가입 (Join Crew)
 특정 크루에 가입합니다.
 

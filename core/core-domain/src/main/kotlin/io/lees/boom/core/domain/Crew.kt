@@ -4,6 +4,7 @@ data class Crew(
     val id: Long? = null,
     val name: String,
     val description: String,
+    val crewImage: String? = null,
     val maxMemberCount: Int = 100,
     val memberCount: Int = 0,
     val latitude: Double? = null,
@@ -15,6 +16,7 @@ data class Crew(
         fun create(
             name: String,
             description: String,
+            crewImage: String?,
             maxMemberCount: Int,
             latitude: Double?,
             longitude: Double?,
@@ -23,6 +25,7 @@ data class Crew(
             Crew(
                 name = name,
                 description = description,
+                crewImage = crewImage,
                 maxMemberCount = maxMemberCount,
                 latitude = latitude,
                 longitude = longitude,

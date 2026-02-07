@@ -130,6 +130,7 @@ internal class CrewCoreRepository(
         CrewEntity(
             name = this.name,
             description = this.description,
+            crewImage = this.crewImage,
             maxMemberCount = this.maxMemberCount,
             memberCount = this.memberCount,
             latitude = this.latitude,
@@ -143,6 +144,7 @@ internal class CrewCoreRepository(
             id = this.id,
             name = this.name,
             description = this.description,
+            crewImage = this.crewImage,
             maxMemberCount = this.maxMemberCount,
             memberCount = this.memberCount,
             latitude = this.latitude,
@@ -171,6 +173,7 @@ internal class CrewCoreRepository(
             crewId = this.crewId,
             name = this.name,
             description = this.description,
+            crewImage = this.crewImage,
             maxMemberCount = this.maxMemberCount,
             myRole = this.myRole,
             memberCount = this.memberCount,

@@ -8,6 +8,7 @@ import jakarta.persistence.Table
 class CrewEntity(
     val name: String,
     val description: String,
+    var crewImage: String? = null,
     val maxMemberCount: Int,
     var memberCount: Int = 0,
     var latitude: Double? = null,
