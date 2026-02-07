@@ -1,0 +1,47 @@
+---
+spring.config.activate.on-profile: local
+
+storage:
+  supabase:
+    endpoint: https://localhost
+    region: ap-northeast-2
+    access-key: local
+    secret-key: local
+    bucket: local
+    public-url: https://localhost
+
+---
+spring.config.activate.on-profile: local-dev
+
+storage:
+  supabase:
+    endpoint: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/s3
+    region: ap-northeast-2
+    access-key: ${storage.s3.access-key}
+    secret-key: ${storage.s3.secret-key}
+    bucket: ${storage.s3.bucket}
+    public-url: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/object/public
+
+---
+spring.config.activate.on-profile: dev
+
+storage:
+  supabase:
+    endpoint: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/s3
+    region: ap-northeast-2
+    access-key: ${storage.s3.access-key}
+    secret-key: ${storage.s3.secret-key}
+    bucket: ${storage.s3.bucket}
+    public-url: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/object/public
+
+---
+spring.config.activate.on-profile: prod
+
+storage:
+  supabase:
+    endpoint: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/s3
+    region: ap-northeast-2
+    access-key: ${storage.s3.access-key}
+    secret-key: ${storage.s3.secret-key}
+    bucket: ${storage.s3.bucket}
+    public-url: https://cnlbftaurppzamivofhb.supabase.co/storage/v1/object/public

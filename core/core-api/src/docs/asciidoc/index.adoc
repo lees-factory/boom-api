@@ -12,8 +12,48 @@ Boom API 문서입니다.
 
 == Member API
 
+=== 내 정보 조회 (Get Me)
+현재 로그인한 사용자의 프로필 정보를 조회합니다.
+
+==== HTTP Request
+include::{snippets}/getMe/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/getMe/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/getMe/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getMe/response-fields.adoc[]
+
+'''
+
+=== 내 정보 수정 (Update Me)
+현재 로그인한 사용자의 프로필 정보를 수정합니다. +
+`multipart/form-data` 형식으로 전송합니다. +
+프로필 이미지는 Supabase Storage에 업로드 후 URL이 저장됩니다.
+
+NOTE: 모든 필드는 선택사항입니다. 전달된 필드만 업데이트됩니다.
+
+==== HTTP Request
+include::{snippets}/updateMe/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/updateMe/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/updateMe/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/updateMe/response-fields.adoc[]
+
+'''
+
 === 소셜 로그인 (Social Login)
-소셜 계정으로 로그인하거나 회원가입을 진행합니다.
+소셜 계정으로 로그인하거나 회원가입을 진행합니다. +
+Apple 로그인의 경우 `name`, `email`, `profileImage`가 전달되지 않을 수 있으며, +
+`name`이 null이면 UUID 기반 이름이 자동 생성됩니다.
 
 ==== HTTP Request
 include::{snippets}/member-login/http-request.adoc[]
@@ -169,7 +209,10 @@ include::{snippets}/getCurrentVisit/response-fields.adoc[]
 '''
 
 === 암장 입장 (Enter Gym)
-특정 암장에 입장 처리합니다.
+특정 암장에 입장 처리합니다. +
+사용자의 현재 위치가 암장에서 **100m 이내**여야 입장이 가능합니다.
+
+NOTE: 클라이언트에서 GPS 위치를 함께 전송해야 합니다. 서버에서 암장과의 거리를 검증합니다.
 
 ==== HTTP Request
 include::{snippets}/enterGym/http-request.adoc[]
@@ -179,6 +222,9 @@ include::{snippets}/enterGym/request-headers.adoc[]
 
 ==== Path Parameters
 include::{snippets}/enterGym/path-parameters.adoc[]
+
+==== Request Fields
+include::{snippets}/enterGym/request-fields.adoc[]
 
 ==== HTTP Response
 include::{snippets}/enterGym/http-response.adoc[]

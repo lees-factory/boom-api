@@ -26,6 +26,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.pos
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
@@ -51,14 +52,24 @@ class GymControllerTest : RestDocsTest() {
         // given
         val gymId = 1L
         val memberId = 1L
-        justRun { gymService.enterUser(gymId, memberId) }
+        val userLocation = Location.create(35.2326, 129.0642)
+        justRun { gymService.enterUser(gymId, memberId, any()) }
+
+        val requestBody =
+            """
+            {
+                "latitude": ${userLocation.latitude},
+                "longitude": ${userLocation.longitude}
+            }
+            """.trimIndent()
 
         // when & then
         mockMvc
             .perform(
                 post("/api/v1/gyms/{gymId}/entry", gymId)
                     .with(authenticatedUser(memberId))
-                    .contentType(MediaType.APPLICATION_JSON),
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody),
             ).andExpect(status().isOk)
             .andDo(
                 document(
@@ -70,6 +81,10 @@ class GymControllerTest : RestDocsTest() {
                     ),
                     pathParameters(
                         parameterWithName("gymId").description("입장할 암장 ID"),
+                    ),
+                    requestFields(
+                        fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("사용자 현재 위도"),
+                        fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("사용자 현재 경도"),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),

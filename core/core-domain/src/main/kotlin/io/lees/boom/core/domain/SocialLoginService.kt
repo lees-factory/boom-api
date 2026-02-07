@@ -5,6 +5,7 @@ import io.lees.boom.core.enums.SocialProvider
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class SocialLoginService(
@@ -17,7 +18,7 @@ class SocialLoginService(
     fun login(
         provider: SocialProvider,
         socialId: String,
-        name: String,
+        name: String?,
         email: String?,
         profileImage: String?,
     ): TokenPair {
@@ -26,9 +27,10 @@ class SocialLoginService(
 
         val targetMember =
             member ?: run {
+                val resolvedName = name ?: generateDefaultName()
                 val newMember =
                     Member.register(
-                        name = name,
+                        name = resolvedName,
                         email = email ?: "",
                         profileImage = profileImage,
                         role = MemberRole.USER,
@@ -81,4 +83,6 @@ class SocialLoginService(
 
         return TokenPair(newAccessToken, newRefreshToken)
     }
+
+    private fun generateDefaultName(): String = "user-${UUID.randomUUID().toString().substring(0, 8)}"
 }

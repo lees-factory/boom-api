@@ -19,4 +19,5 @@ enum class CoreErrorCode {
     // 짐 (Gym) - [추가]
     B4000, // ALREADY_ADMITTED (이미 입장 중)
     B4001, // NOT_ADMITTED (입장 기록 없음)
+    B4002, // TOO_FAR_FROM_GYM (암장과 거리 초과)
 }

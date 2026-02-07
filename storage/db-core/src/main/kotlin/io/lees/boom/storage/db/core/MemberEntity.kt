@@ -11,10 +11,10 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "member")
 class MemberEntity(
-    val name: String,
-    val email: String?,
+    var name: String,
+    var email: String?,
     @Column(name = "profile_image")
-    val profileImage: String?, // [추가]
+    var profileImage: String?,
     val socialId: String,
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
