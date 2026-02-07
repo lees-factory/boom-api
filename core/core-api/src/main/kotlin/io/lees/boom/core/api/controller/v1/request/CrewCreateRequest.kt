@@ -4,4 +4,7 @@ data class CrewCreateRequest(
     val name: String,
     val description: String,
     val maxMemberCount: Int? = 100,
+    val latitude: Double?,
+    val longitude: Double?,
+    val address: String?,
 )

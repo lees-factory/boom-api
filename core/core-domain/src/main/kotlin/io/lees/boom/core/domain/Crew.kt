@@ -4,18 +4,29 @@ data class Crew(
     val id: Long? = null,
     val name: String,
     val description: String,
-    val maxMemberCount: Int = 100, // [수정] 기본값 100으로 변경
+    val maxMemberCount: Int = 100,
+    val memberCount: Int = 0,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val address: String? = null,
+    val activityScore: Double = 0.0,
 ) {
     companion object {
         fun create(
             name: String,
             description: String,
-            maxMemberCount: Int, // [추가]
+            maxMemberCount: Int,
+            latitude: Double?,
+            longitude: Double?,
+            address: String?,
         ): Crew =
             Crew(
                 name = name,
                 description = description,
                 maxMemberCount = maxMemberCount,
+                latitude = latitude,
+                longitude = longitude,
+                address = address,
             )
     }
 }

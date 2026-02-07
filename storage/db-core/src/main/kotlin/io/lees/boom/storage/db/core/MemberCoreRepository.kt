@@ -34,10 +34,11 @@ internal class MemberCoreRepository(
         MemberEntity(
             name = this.name,
             email = this.email,
-            profileImage = this.profileImage, // [추가]
+            profileImage = this.profileImage,
             role = this.role,
             provider = this.socialInfo.provider,
             socialId = this.socialInfo.socialId,
+            activityScore = this.activityScore,
         )
 
     private fun MemberEntity.toDomain() =
@@ -45,12 +46,13 @@ internal class MemberCoreRepository(
             id = this.id,
             name = this.name,
             email = this.email,
-            profileImage = this.profileImage, // [추가]
+            profileImage = this.profileImage,
             role = this.role,
             socialInfo =
                 SocialInfo(
                     provider = this.provider,
                     socialId = this.socialId,
                 ),
+            activityScore = this.activityScore,
         )
 }
