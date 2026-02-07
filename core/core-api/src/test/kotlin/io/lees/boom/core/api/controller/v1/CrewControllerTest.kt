@@ -19,6 +19,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -32,8 +33,11 @@ import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.partWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.restdocs.request.RequestDocumentation.requestParts
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
@@ -58,7 +62,6 @@ class CrewControllerTest : RestDocsTest() {
             CrewCreateRequest(
                 name = "클라이밍 붐",
                 description = "부산 클라이밍 크루입니다.",
-                crewImage = "https://example.com/crew-image.jpg",
                 maxMemberCount = 100,
                 latitude = 35.1796,
                 longitude = 129.0756,
@@ -69,19 +72,34 @@ class CrewControllerTest : RestDocsTest() {
                 id = 1L,
                 name = request.name,
                 description = request.description,
-                crewImage = request.crewImage,
+                crewImage = "https://storage.example.com/crew/uuid-image.jpg",
                 maxMemberCount = 100,
             )
 
         every { crewService.createCrew(any(), any(), any(), any(), any(), any(), any(), any()) } returns createdCrew
 
+        val requestPart =
+            MockMultipartFile(
+                "request",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                jsonMapper().writeValueAsBytes(request),
+            )
+        val crewImageFile =
+            MockMultipartFile(
+                "crewImage",
+                "crew-image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-content".toByteArray(),
+            )
+
         // when & then
         mockMvc
             .perform(
-                post("/api/v1/crews")
-                    .with(authenticatedUser(memberId))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonMapper().writeValueAsString(request)),
+                multipart("/api/v1/crews")
+                    .file(requestPart)
+                    .file(crewImageFile)
+                    .with(authenticatedUser(memberId)),
             ).andExpect(status().isOk)
             .andDo(
                 document(
@@ -91,18 +109,9 @@ class CrewControllerTest : RestDocsTest() {
                     requestHeaders(
                         headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
-                    requestFields(
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("크루 이름"),
-                        fieldWithPath("description").type(JsonFieldType.STRING).description("크루 설명"),
-                        fieldWithPath(
-                            "crewImage",
-                        ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
-                        fieldWithPath(
-                            "maxMemberCount",
-                        ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(),
-                        fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("크루 위치 위도").optional(),
-                        fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("크루 위치 경도").optional(),
-                        fieldWithPath("address").type(JsonFieldType.STRING).description("크루 주소").optional(),
+                    requestParts(
+                        partWithName("request").description("크루 생성 요청 JSON (name, description, maxMemberCount, latitude, longitude, address)"),
+                        partWithName("crewImage").description("크루 이미지 파일").optional(),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),

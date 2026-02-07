@@ -9,10 +9,12 @@ import io.lees.boom.core.api.controller.v1.response.CrewResponse
 import io.lees.boom.core.api.controller.v1.response.CrewScheduleResponse
 import io.lees.boom.core.api.controller.v1.response.MyCrewResponse
 import io.lees.boom.core.api.controller.v1.response.ScheduleParticipantResponse
+import io.lees.boom.core.domain.CrewImageInput
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/crews")
@@ -26,14 +28,24 @@ class CrewController(
     @PostMapping
     fun createCrew(
         @User memberId: Long?,
-        @RequestBody request: CrewCreateRequest,
+        @RequestPart request: CrewCreateRequest,
+        @RequestPart(required = false) crewImage: MultipartFile?,
     ): ApiResponse<CrewIdResponse> {
+        val imageInput =
+            crewImage?.let {
+                CrewImageInput(
+                    inputStream = it.inputStream,
+                    contentType = it.contentType ?: "image/jpeg",
+                    contentLength = it.size,
+                )
+            }
+
         val createdCrew =
             crewService.createCrew(
                 memberId = memberId!!,
                 name = request.name,
                 description = request.description,
-                crewImage = request.crewImage,
+                crewImageInput = imageInput,
                 maxMemberCount = request.maxMemberCount ?: 100,
                 latitude = request.latitude,
                 longitude = request.longitude,

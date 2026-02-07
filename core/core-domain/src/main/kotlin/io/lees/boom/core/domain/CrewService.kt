@@ -4,7 +4,9 @@ import io.lees.boom.core.enums.CrewRole
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
 import org.springframework.stereotype.Service
+import java.io.InputStream
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class CrewService(
@@ -14,6 +16,7 @@ class CrewService(
     private val crewScheduleAppender: CrewScheduleAppender,
     private val crewScheduleReader: CrewScheduleReader,
     private val activityScoreUpdater: ActivityScoreUpdater,
+    private val imageStorage: ImageStorage,
 ) {
     /**
      * 크루 만들기
@@ -24,13 +27,19 @@ class CrewService(
         memberId: Long,
         name: String,
         description: String,
-        crewImage: String?,
+        crewImageInput: CrewImageInput?,
         maxMemberCount: Int,
         latitude: Double?,
         longitude: Double?,
         address: String?,
     ): Crew {
-        val newCrew = Crew.create(name, description, crewImage, maxMemberCount, latitude, longitude, address)
+        val crewImageUrl =
+            crewImageInput?.let {
+                val path = "crew/${UUID.randomUUID()}"
+                imageStorage.upload(path, it.inputStream, it.contentType, it.contentLength)
+            }
+
+        val newCrew = Crew.create(name, description, crewImageUrl, maxMemberCount, latitude, longitude, address)
         return crewAppender.appendCrewWithLeader(newCrew, memberId)
     }
 
@@ -195,3 +204,9 @@ class CrewService(
         size: Int,
     ): List<CrewRankingInfo> = crewReader.readCrewRankingByAvgScore(page, size)
 }
+
+data class CrewImageInput(
+    val inputStream: InputStream,
+    val contentType: String,
+    val contentLength: Long,
+)
