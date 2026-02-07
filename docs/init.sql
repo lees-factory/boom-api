@@ -117,3 +117,21 @@ CREATE TABLE public.crew_schedule (
 );
 -- 크루별 일정 조회용 인덱스
 CREATE INDEX idx_crew_schedule_crew ON public.crew_schedule (crew_id, scheduled_at);
+
+-- [2026-02-07] Anti-Goinmul Ranking System
+-- 멤버 활동 점수 추가
+ALTER TABLE member ADD COLUMN activity_score INT DEFAULT 0;
+
+-- 크루 온도(랭킹용) 추가. 멤버들의 활동 점수 평균을 캐싱하거나 주기적으로 업데이트
+ALTER TABLE crew ADD COLUMN activity_score DOUBLE PRECISION DEFAULT 0.0;
+ALTER TABLE crew ADD COLUMN latitude double precision;
+ALTER TABLE crew ADD COLUMN longitude double precision;
+ALTER TABLE crew ADD COLUMN address character varying;
+
+-- [2026-02-07] 크루 멤버 수 비정규화 컬럼 추가
+-- 크루 목록/랭킹 조회 시 매번 COUNT 서브쿼리 방지
+ALTER TABLE crew ADD COLUMN member_count integer NOT NULL DEFAULT 0;
+-- 기존 데이터 보정 (member_count를 실제 crew_member 수로 업데이트)
+UPDATE crew SET member_count = (
+    SELECT COUNT(*) FROM crew_member cm WHERE cm.crew_id = crew.id
+);
