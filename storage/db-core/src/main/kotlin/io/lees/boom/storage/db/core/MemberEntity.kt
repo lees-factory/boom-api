@@ -21,4 +21,5 @@ class MemberEntity(
     val role: MemberRole,
     @Enumerated(EnumType.STRING)
     val provider: SocialProvider,
+    var activityScore: Int = 0,
 ) : BaseEntity()
