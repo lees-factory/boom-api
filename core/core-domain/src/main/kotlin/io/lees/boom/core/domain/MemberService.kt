@@ -17,6 +17,10 @@ class MemberService(
         memberFinder.findById(memberId)
             ?: throw CoreException(CoreErrorType.NOT_FOUND_MEMBER)
 
+    fun getMember(memberId: Long): Member =
+        memberFinder.findById(memberId)
+            ?: throw CoreException(CoreErrorType.NOT_FOUND_MEMBER)
+
     @Transactional
     fun updateMe(
         memberId: Long,

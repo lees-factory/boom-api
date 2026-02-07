@@ -18,6 +18,7 @@ class GymService(
     private val crowdLevelCalculator: CrowdLevelCalculator,
     private val locationCalculator: LocationCalculator,
     private val crewMemberReader: CrewMemberReader,
+    private val activityScoreUpdater: ActivityScoreUpdater,
 ) {
     companion object {
         private const val ENTRY_RADIUS_KM = 0.1 // 100m
@@ -68,6 +69,9 @@ class GymService(
                 crowdLevel = newLevel,
             )
         gymUpdater.update(updatedGym)
+
+        // 6. 활동 점수 +5
+        activityScoreUpdater.addGymVisitScore(memberId)
     }
 
     /**
@@ -95,6 +99,9 @@ class GymService(
         val newLevel = crowdLevelCalculator.calculate(newCount, gym.maxCapacity)
         val updatedGym = gym.copy(currentCount = newCount, crowdLevel = newLevel)
         gymUpdater.update(updatedGym)
+
+        // 활동 점수 +5
+        activityScoreUpdater.addGymVisitScore(memberId)
     }
 
     /**

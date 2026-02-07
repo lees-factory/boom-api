@@ -4,9 +4,11 @@ import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.api.controller.v1.request.CrewScheduleCreateRequest
 import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
 import io.lees.boom.core.api.controller.v1.response.CrewMemberResponse
+import io.lees.boom.core.api.controller.v1.response.CrewRankingResponse
 import io.lees.boom.core.api.controller.v1.response.CrewResponse
 import io.lees.boom.core.api.controller.v1.response.CrewScheduleResponse
 import io.lees.boom.core.api.controller.v1.response.MyCrewResponse
+import io.lees.boom.core.api.controller.v1.response.ScheduleParticipantResponse
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
@@ -112,6 +114,34 @@ class CrewController(
     }
 
     /**
+     * 크루 일정 참여
+     * [POST] /api/v1/crews/{crewId}/schedules/{scheduleId}/participate
+     */
+    @PostMapping("/{crewId}/schedules/{scheduleId}/participate")
+    fun participateSchedule(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @PathVariable scheduleId: Long,
+    ): ApiResponse<Any> {
+        crewService.participateSchedule(crewId, scheduleId, memberId!!)
+        return ApiResponse.success()
+    }
+
+    /**
+     * 크루 일정 참여자 목록 조회
+     * [GET] /api/v1/crews/{crewId}/schedules/{scheduleId}/participants
+     */
+    @GetMapping("/{crewId}/schedules/{scheduleId}/participants")
+    fun getScheduleParticipants(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @PathVariable scheduleId: Long,
+    ): ApiResponse<List<ScheduleParticipantResponse>> {
+        val participants = crewService.getScheduleParticipants(crewId, scheduleId, memberId!!)
+        return ApiResponse.success(participants.map { ScheduleParticipantResponse.from(it) })
+    }
+
+    /**
      * 동네 크루 찾기
      * [GET] /api/v1/crews/local?lat=37.123&lon=127.123
      */
@@ -128,15 +158,15 @@ class CrewController(
     }
 
     /**
-     * 크루 랭킹 조회
+     * 크루 랭킹 조회 (크루원 평균 활동 점수 기반)
      * [GET] /api/v1/crews/ranking
      */
     @GetMapping("/ranking")
     fun getCrewRanking(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-    ): ApiResponse<List<CrewResponse>> {
-        val crews = crewService.getCrewRanking(page, size)
-        return ApiResponse.success(crews.map { CrewResponse.of(it) })
+    ): ApiResponse<List<CrewRankingResponse>> {
+        val rankings = crewService.getCrewRanking(page, size)
+        return ApiResponse.success(rankings.map { CrewRankingResponse.from(it) })
     }
 }

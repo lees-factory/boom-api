@@ -3,6 +3,7 @@ package io.lees.boom.storage.db.core
 import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewMember
 import io.lees.boom.core.domain.CrewMemberInfo
+import io.lees.boom.core.domain.CrewRankingInfo
 import io.lees.boom.core.domain.CrewRepository
 import io.lees.boom.core.domain.MyCrewInfo
 import io.lees.boom.core.enums.CrewRole
@@ -113,6 +114,17 @@ internal class CrewCoreRepository(
             .map { it.toDomain() }
     }
 
+    override fun findCrewRankingByAvgScore(
+        page: Int,
+        size: Int,
+    ): List<CrewRankingInfo> {
+        val pageRequest = PageRequest.of(page, size)
+        return crewJpaRepository
+            .findCrewRankingByAvgScore(pageRequest)
+            .content
+            .map { it.toDomain() }
+    }
+
     // Mapper Methods (Entity <-> Domain) 승준펀치 펀치입니다
     private fun Crew.toEntity() =
         CrewEntity(
@@ -170,5 +182,15 @@ internal class CrewCoreRepository(
             name = this.memberName,
             profileImage = this.memberProfileImage,
             role = this.role,
+        )
+
+    private fun CrewRankingProjection.toDomain() =
+        CrewRankingInfo(
+            crewId = this.crewId,
+            name = this.name,
+            description = this.description,
+            memberCount = this.memberCount,
+            maxMemberCount = this.maxMemberCount,
+            avgScore = this.avgScore,
         )
 }

@@ -27,4 +27,10 @@ class CrewReader(
         page: Int,
         size: Int,
     ): List<Crew> = crewRepository.findCrewRanking(page, size)
+
+    // 크루원 평균 활동 점수 기반 랭킹
+    fun readCrewRankingByAvgScore(
+        page: Int,
+        size: Int,
+    ): List<CrewRankingInfo> = crewRepository.findCrewRankingByAvgScore(page, size)
 }

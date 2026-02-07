@@ -47,4 +47,9 @@ interface CrewRepository {
         page: Int,
         size: Int,
     ): List<Crew>
+
+    fun findCrewRankingByAvgScore(
+        page: Int,
+        size: Int,
+    ): List<CrewRankingInfo>
 }

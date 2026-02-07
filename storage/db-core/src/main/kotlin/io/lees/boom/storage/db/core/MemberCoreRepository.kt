@@ -4,6 +4,7 @@ import io.lees.boom.core.domain.Member
 import io.lees.boom.core.domain.MemberRepository
 import io.lees.boom.core.domain.SocialInfo
 import io.lees.boom.core.enums.SocialProvider
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -28,6 +29,14 @@ internal class MemberCoreRepository(
         entity.email = member.email
         entity.profileImage = member.profileImage
         return entity.toDomain()
+    }
+
+    @Transactional
+    override fun incrementActivityScore(
+        memberId: Long,
+        score: Int,
+    ) {
+        memberJpaRepository.incrementActivityScore(memberId, score)
     }
 
     private fun Member.toEntity() =

@@ -135,3 +135,36 @@ ALTER TABLE crew ADD COLUMN member_count integer NOT NULL DEFAULT 0;
 UPDATE crew SET member_count = (
     SELECT COUNT(*) FROM crew_member cm WHERE cm.crew_id = crew.id
 );
+
+-- [2026-02-08] CrewScheduleParticipant (크루 일정 참여) 테이블 추가
+-- 크루 일정에 대한 참여 기록 관리
+CREATE TABLE public.crew_schedule_participant (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    schedule_id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    participated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT crew_schedule_participant_pkey PRIMARY KEY (id)
+);
+-- 동일 일정에 동일 유저 중복 참여 방지
+CREATE UNIQUE INDEX idx_schedule_participant_unique ON public.crew_schedule_participant (schedule_id, member_id);
+-- 일정별 참여자 목록 조회용 인덱스
+CREATE INDEX idx_schedule_participant_schedule ON public.crew_schedule_participant (schedule_id, participated_at);
+
+-- [2026-02-08] MemberBadge (클라이머 뱃지) 테이블 추가
+-- gym_visit 히스토리 기반 업적 뱃지 (마이페이지 진입 시 on-demand 계산)
+CREATE TABLE public.member_badge (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    member_id bigint NOT NULL,
+    badge_type character varying NOT NULL,
+    acquired_at timestamp without time zone NOT NULL,
+    notified boolean NOT NULL DEFAULT false,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT member_badge_pkey PRIMARY KEY (id)
+);
+-- 동일 뱃지 중복 획득 방지
+CREATE UNIQUE INDEX idx_member_badge_unique ON public.member_badge (member_id, badge_type);
+-- 특정 유저의 뱃지 목록 조회용 인덱스
+CREATE INDEX idx_member_badge_member ON public.member_badge (member_id);
