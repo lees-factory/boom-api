@@ -33,6 +33,20 @@ interface GymActiveVisitJpaRepository : JpaRepository<GymActiveVisitEntity, Long
         gymId: Long,
         pageable: Pageable,
     ): List<ActiveVisitorProjection>
+
+    @Query(
+        """
+        SELECT v.gymId as gymId, v.memberId as memberId,
+               m.name as memberName, m.profileImage as memberProfileImage
+        FROM GymActiveVisitEntity v
+        JOIN MemberEntity m ON v.memberId = m.id
+        WHERE v.memberId IN :memberIds AND v.gymId IN :gymIds
+        """,
+    )
+    fun findCrewMemberVisits(
+        memberIds: Set<Long>,
+        gymIds: Set<Long>,
+    ): List<CrewVisitorProjection>
 }
 
 interface ActiveVisitorProjection {
@@ -40,4 +54,11 @@ interface ActiveVisitorProjection {
     val memberName: String
     val memberProfileImage: String?
     val admittedAt: LocalDateTime
+}
+
+interface CrewVisitorProjection {
+    val gymId: Long
+    val memberId: Long
+    val memberName: String
+    val memberProfileImage: String?
 }

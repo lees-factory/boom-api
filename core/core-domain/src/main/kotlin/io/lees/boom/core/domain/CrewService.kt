@@ -1,13 +1,18 @@
 package io.lees.boom.core.domain
 
+import io.lees.boom.core.enums.CrewRole
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class CrewService(
     private val crewAppender: CrewAppender,
-    // 추후 CrewFinder, CrewValidator 등이 추가될 수 있음
+    private val crewReader: CrewReader,
+    private val crewMemberReader: CrewMemberReader,
+    private val crewScheduleAppender: CrewScheduleAppender,
+    private val crewScheduleReader: CrewScheduleReader,
 ) {
     /**
      * 크루 만들기
@@ -30,7 +35,7 @@ class CrewService(
         // 2. 생성자를 리더로 등록
         val leader =
             CrewMember.createLeader(
-                crewId = savedCrew.id, // Smart Cast or Safe Access (위에서 검증됨)
+                crewId = savedCrew.id,
                 memberId = memberId,
             )
         crewAppender.appendMember(leader)
@@ -50,5 +55,61 @@ class CrewService(
 
         val newMember = CrewMember.createMember(crewId, memberId)
         crewAppender.appendMember(newMember)
+    }
+
+    /**
+     * 내 크루 목록 조회
+     */
+    fun getMyCrews(memberId: Long): List<MyCrewInfo> = crewReader.readMyCrews(memberId)
+
+    /**
+     * 크루 멤버 목록 조회
+     */
+    fun getCrewMembers(crewId: Long): List<CrewMemberInfo> = crewMemberReader.readCrewMembers(crewId)
+
+    /**
+     * 크루 일정 등록
+     * LEADER, MEMBER만 접근 가능 (GUEST 제외)
+     */
+    fun createSchedule(
+        crewId: Long,
+        memberId: Long,
+        gymId: Long?,
+        title: String,
+        description: String,
+        scheduledAt: LocalDateTime,
+    ): CrewSchedule {
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        if (crewMember.role == CrewRole.GUEST) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+        }
+
+        val schedule =
+            CrewSchedule.create(
+                crewId = crewId,
+                gymId = gymId,
+                title = title,
+                description = description,
+                scheduledAt = scheduledAt,
+                createdBy = memberId,
+            )
+        return crewScheduleAppender.append(schedule)
+    }
+
+    /**
+     * 크루 일정 목록 조회
+     * 크루 멤버만 접근 가능
+     */
+    fun getSchedules(
+        crewId: Long,
+        memberId: Long,
+    ): List<CrewSchedule> {
+        crewMemberReader.readCrewMember(crewId, memberId)
+            ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        return crewScheduleReader.readByCrewId(crewId)
     }
 }

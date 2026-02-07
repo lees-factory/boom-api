@@ -19,6 +19,18 @@ enum class CoreErrorType(
 
     // 크루
     CREW_CREATE_ERROR(CoreErrorKind.SERVER_ERROR, CoreErrorCode.B3000, "크루 생성 실패", CoreErrorLevel.ERROR),
+    CREW_NOT_FOUND(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3001,
+        "크루를 찾을 수 없습니다.",
+        CoreErrorLevel.INFO,
+    ),
+    CREW_MEMBER_NOT_AUTHORIZED(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3002,
+        "크루 멤버가 아니거나 권한이 없습니다.",
+        CoreErrorLevel.INFO,
+    ),
 
     ALREADY_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4000, "이미 입장 중인 상태입니다.", CoreErrorLevel.INFO),
     NOT_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4001, "입장 기록이 없습니다.", CoreErrorLevel.INFO),

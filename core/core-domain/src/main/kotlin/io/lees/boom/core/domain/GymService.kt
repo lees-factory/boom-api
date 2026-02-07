@@ -17,6 +17,7 @@ class GymService(
     private val gymVisitAppender: GymVisitAppender,
     private val crowdLevelCalculator: CrowdLevelCalculator,
     private val locationCalculator: LocationCalculator,
+    private val crewMemberReader: CrewMemberReader,
 ) {
     companion object {
         private const val ENTRY_RADIUS_KM = 0.1 // 100m
@@ -238,6 +239,22 @@ class GymService(
         gymId: Long,
         pageRequest: PageRequest,
     ): SliceResult<GymVisitor> = gymActiveVisitReader.readActiveVisitors(gymId, pageRequest)
+
+    /**
+     * 암장 목록에 크루원 입장 정보를 enrichment
+     * 총 2회 쿼리: 1) 내 크루원 ID 조회, 2) 크루원 active_visit 배치 조회
+     */
+    fun getCrewMemberVisitMap(
+        gyms: List<Gym>,
+        memberId: Long?,
+    ): Map<Long, List<GymCrewMemberInfo>> {
+        if (memberId == null) return emptyMap()
+        val crewMemberIds = crewMemberReader.readMyCrewMemberIds(memberId)
+        if (crewMemberIds.isEmpty()) return emptyMap()
+        val gymIds = gyms.mapNotNull { it.id }.toSet()
+        if (gymIds.isEmpty()) return emptyMap()
+        return gymActiveVisitReader.readCrewMemberVisits(crewMemberIds, gymIds)
+    }
 
     /**
      * 현재 입장중인 암장 조회

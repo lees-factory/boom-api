@@ -92,7 +92,8 @@ class GymController(
                 northEastLongitude = request.northEastLongitude,
             )
 
-        val responses = gyms.map { GymResponse.of(it) }
+        val crewMap = gymService.getCrewMemberVisitMap(gyms, memberId)
+        val responses = gyms.map { GymResponse.of(it, crewMap[it.id] ?: emptyList()) }
 
         return ApiResponse.success(responses)
     }
@@ -113,7 +114,8 @@ class GymController(
                 radiusKm = request.radiusKm,
             )
 
-        return ApiResponse.success(gyms.map { GymResponse.of(it) })
+        val crewMap = gymService.getCrewMemberVisitMap(gyms, memberId)
+        return ApiResponse.success(gyms.map { GymResponse.of(it, crewMap[it.id] ?: emptyList()) })
     }
 
     /**
@@ -134,7 +136,10 @@ class GymController(
                 pageRequest = pageRequest,
             )
 
-        return ApiResponse.success(SliceResponse.of(sliceResult) { GymResponse.of(it) })
+        val crewMap = gymService.getCrewMemberVisitMap(sliceResult.content, memberId)
+        return ApiResponse.success(
+            SliceResponse.of(sliceResult) { GymResponse.of(it, crewMap[it.id] ?: emptyList()) },
+        )
     }
 
     /**
