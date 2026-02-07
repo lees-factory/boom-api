@@ -58,14 +58,22 @@ class CrewControllerTest : RestDocsTest() {
             CrewCreateRequest(
                 name = "클라이밍 붐",
                 description = "부산 클라이밍 크루입니다.",
+                crewImage = "https://example.com/crew-image.jpg",
                 maxMemberCount = 100,
                 latitude = 35.1796,
                 longitude = 129.0756,
                 address = "부산광역시 해운대구",
             )
-        val createdCrew = Crew(id = 1L, name = request.name, description = request.description, maxMemberCount = 100)
+        val createdCrew =
+            Crew(
+                id = 1L,
+                name = request.name,
+                description = request.description,
+                crewImage = request.crewImage,
+                maxMemberCount = 100,
+            )
 
-        every { crewService.createCrew(any(), any(), any(), any(), any(), any(), any()) } returns createdCrew
+        every { crewService.createCrew(any(), any(), any(), any(), any(), any(), any(), any()) } returns createdCrew
 
         // when & then
         mockMvc
@@ -87,6 +95,9 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("description").type(JsonFieldType.STRING).description("크루 설명"),
                         fieldWithPath(
+                            "crewImage",
+                        ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
+                        fieldWithPath(
                             "maxMemberCount",
                         ).type(JsonFieldType.NUMBER).description("크루 최대 인원수 (기본 100명)").optional(),
                         fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("크루 위치 위도").optional(),
@@ -96,6 +107,63 @@ class CrewControllerTest : RestDocsTest() {
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 크루 ID"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getCrew() {
+        // given
+        val crewId = 1L
+        val crew =
+            Crew(
+                id = crewId,
+                name = "클라이밍 붐",
+                description = "부산 클라이밍 크루입니다.",
+                crewImage = "https://example.com/crew1.jpg",
+                maxMemberCount = 100,
+                memberCount = 15,
+                latitude = 35.1796,
+                longitude = 129.0756,
+                address = "부산광역시 해운대구",
+                activityScore = 250.0,
+            )
+
+        every { crewService.getCrew(any()) } returns crew
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/crews/{crewId}", crewId),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getCrew",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    pathParameters(
+                        parameterWithName("crewId").description("크루 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("크루 ID"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("크루 이름"),
+                        fieldWithPath("data.description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath(
+                            "data.crewImage",
+                        ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
+                        fieldWithPath("data.maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
+                        fieldWithPath("data.memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath("data.address").type(JsonFieldType.STRING).description("크루 주소").optional(),
+                        fieldWithPath("data.activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
+                        fieldWithPath(
+                            "data.activityRank",
+                        ).type(JsonFieldType.STRING).description("활동 등급"),
+                        fieldWithPath(
+                            "data.activityRankColor",
+                        ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -145,6 +213,7 @@ class CrewControllerTest : RestDocsTest() {
                     crewId = 1L,
                     name = "클라이밍 붐",
                     description = "부산 클라이밍 크루입니다.",
+                    crewImage = "https://example.com/crew1.jpg",
                     maxMemberCount = 100,
                     myRole = CrewRole.LEADER,
                     memberCount = 5,
@@ -153,6 +222,7 @@ class CrewControllerTest : RestDocsTest() {
                     crewId = 2L,
                     name = "볼더링 클럽",
                     description = "볼더링 전문 크루",
+                    crewImage = null,
                     maxMemberCount = 50,
                     myRole = CrewRole.MEMBER,
                     memberCount = 12,
@@ -180,6 +250,9 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data[].crewId").type(JsonFieldType.NUMBER).description("크루 ID"),
                         fieldWithPath("data[].name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("data[].description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath(
+                            "data[].crewImage",
+                        ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
                         fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath(
                             "data[].myRole",
@@ -380,6 +453,7 @@ class CrewControllerTest : RestDocsTest() {
                     id = 1L,
                     name = "해운대 클라이밍",
                     description = "해운대 클라이밍 크루",
+                    crewImage = "https://example.com/crew1.jpg",
                     maxMemberCount = 50,
                     memberCount = 12,
                     latitude = 35.1796,
@@ -391,6 +465,7 @@ class CrewControllerTest : RestDocsTest() {
                     id = 2L,
                     name = "서면 볼더링",
                     description = "서면 볼더링 크루",
+                    crewImage = null,
                     maxMemberCount = 30,
                     memberCount = 8,
                     latitude = 35.1580,
@@ -427,6 +502,9 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("크루 ID"),
                         fieldWithPath("data[].name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("data[].description").type(JsonFieldType.STRING).description("크루 설명"),
+                        fieldWithPath(
+                            "data[].crewImage",
+                        ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
                         fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
                         fieldWithPath("data[].address").type(JsonFieldType.STRING).description("크루 주소").optional(),

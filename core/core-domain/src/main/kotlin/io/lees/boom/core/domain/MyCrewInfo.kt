@@ -6,6 +6,7 @@ data class MyCrewInfo(
     val crewId: Long,
     val name: String,
     val description: String,
+    val crewImage: String?,
     val maxMemberCount: Int,
     val myRole: CrewRole,
     val memberCount: Long,

@@ -168,3 +168,6 @@ CREATE TABLE public.member_badge (
 CREATE UNIQUE INDEX idx_member_badge_unique ON public.member_badge (member_id, badge_type);
 -- 특정 유저의 뱃지 목록 조회용 인덱스
 CREATE INDEX idx_member_badge_member ON public.member_badge (member_id);
+
+-- [2026-02-08] 크루 이미지 컬럼 추가
+ALTER TABLE crew ADD COLUMN crew_image character varying;

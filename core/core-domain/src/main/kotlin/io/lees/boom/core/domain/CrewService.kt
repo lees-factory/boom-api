@@ -24,14 +24,22 @@ class CrewService(
         memberId: Long,
         name: String,
         description: String,
+        crewImage: String?,
         maxMemberCount: Int,
         latitude: Double?,
         longitude: Double?,
         address: String?,
     ): Crew {
-        val newCrew = Crew.create(name, description, maxMemberCount, latitude, longitude, address)
+        val newCrew = Crew.create(name, description, crewImage, maxMemberCount, latitude, longitude, address)
         return crewAppender.appendCrewWithLeader(newCrew, memberId)
     }
+
+    /**
+     * 크루 상세 조회
+     */
+    fun getCrew(crewId: Long): Crew =
+        crewReader.readById(crewId)
+            ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
 
     /**
      * 크루 가입하기 (초대/직접 가입 등 흐름에 따라 메서드 분화 가능)
