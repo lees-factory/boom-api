@@ -13,7 +13,9 @@ Boom API 문서입니다.
 == Member API
 
 === 내 정보 조회 (Get Me)
-현재 로그인한 사용자의 프로필 정보를 조회합니다.
+현재 로그인한 사용자의 프로필 정보를 조회합니다. +
+활동 점수, 등급, 뱃지 목록을 함께 반환합니다. +
+뱃지는 on-demand로 조건을 평가하여 신규 뱃지를 자동 획득합니다.
 
 ==== HTTP Request
 include::{snippets}/getMe/http-request.adoc[]

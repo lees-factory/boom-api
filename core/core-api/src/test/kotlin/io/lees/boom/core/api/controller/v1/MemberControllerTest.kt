@@ -161,6 +161,7 @@ class MemberControllerTest : RestDocsTest() {
     fun getMe() {
         // given
         val memberId = 1L
+        val now = LocalDateTime.of(2026, 2, 8, 14, 0)
         val member =
             Member(
                 id = memberId,
@@ -169,9 +170,28 @@ class MemberControllerTest : RestDocsTest() {
                 profileImage = "https://example.com/profile.jpg",
                 role = MemberRole.USER,
                 socialInfo = SocialInfo(SocialProvider.KAKAO, "social-id-123"),
+                activityScore = 120,
+            )
+        val badges =
+            listOf(
+                BadgeResult(BadgeType.ATTEND_10, isEarned = true, isNew = false, acquiredAt = now.minusDays(30)),
+                BadgeResult(BadgeType.ATTEND_30, isEarned = true, isNew = true, acquiredAt = now),
+                BadgeResult(BadgeType.ATTEND_100, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.ATTEND_300, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.ATTEND_999, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.STREAK_7, isEarned = true, isNew = false, acquiredAt = now.minusDays(10)),
+                BadgeResult(BadgeType.STREAK_30, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.WEEK_3, isEarned = true, isNew = false, acquiredAt = now.minusDays(20)),
+                BadgeResult(BadgeType.WEEK_5, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.WEEK_7, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.EARLY, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.NIGHT, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.OPENER, isEarned = false, isNew = false, acquiredAt = null),
+                BadgeResult(BadgeType.WANDERER, isEarned = false, isNew = false, acquiredAt = null),
             )
 
         every { memberService.getMe(memberId) } returns member
+        every { badgeService.getMyBadges(memberId) } returns badges
 
         // when & then
         mockMvc
@@ -192,10 +212,30 @@ class MemberControllerTest : RestDocsTest() {
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원 ID"),
                         fieldWithPath("data.name").type(JsonFieldType.STRING).description("닉네임"),
-                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일").optional(),
                         fieldWithPath(
                             "data.profileImage",
                         ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
+                        fieldWithPath("data.activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
+                        fieldWithPath(
+                            "data.activityRank",
+                        ).type(JsonFieldType.STRING).description("활동 등급 (노랑단/초록단/빨강단/보라단/황금단)"),
+                        fieldWithPath(
+                            "data.activityRankColor",
+                        ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
+                        fieldWithPath("data.badges[].badgeType").type(JsonFieldType.STRING).description("뱃지 코드"),
+                        fieldWithPath("data.badges[].category").type(JsonFieldType.STRING).description("뱃지 카테고리"),
+                        fieldWithPath("data.badges[].title").type(JsonFieldType.STRING).description("뱃지 이름"),
+                        fieldWithPath("data.badges[].emoji").type(JsonFieldType.STRING).description("뱃지 이모지"),
+                        fieldWithPath(
+                            "data.badges[].description",
+                        ).type(JsonFieldType.STRING).description("뱃지 달성 조건 설명"),
+                        fieldWithPath("data.badges[].isEarned").type(JsonFieldType.BOOLEAN).description("획득 여부"),
+                        fieldWithPath(
+                            "data.badges[].isNew",
+                        ).type(JsonFieldType.BOOLEAN).description("이번 조회에서 신규 획득 여부"),
+                        fieldWithPath(
+                            "data.badges[].acquiredAt",
+                        ).type(JsonFieldType.STRING).description("획득 일시").optional(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
