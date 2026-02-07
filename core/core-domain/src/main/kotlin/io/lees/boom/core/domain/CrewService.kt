@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 
 @Service
 class CrewService(
-    private val crewRepository: CrewRepository,
     private val crewAppender: CrewAppender,
     private val crewReader: CrewReader,
     private val crewMemberReader: CrewMemberReader,
@@ -29,23 +28,8 @@ class CrewService(
         longitude: Double?,
         address: String?,
     ): Crew {
-        // 1. 크루 생성
         val newCrew = Crew.create(name, description, maxMemberCount, latitude, longitude, address)
-        val savedCrew = crewAppender.append(newCrew)
-        if (savedCrew.id == null) {
-            throw CoreException(CoreErrorType.CREW_CREATE_ERROR)
-        }
-
-        // 2. 생성자를 리더로 등록
-        val leader =
-            CrewMember.createLeader(
-                crewId = savedCrew.id,
-                memberId = memberId,
-            )
-        crewAppender.appendMember(leader)
-        crewRepository.incrementMemberCount(savedCrew.id)
-
-        return savedCrew
+        return crewAppender.appendCrewWithLeader(newCrew, memberId)
     }
 
     /**
@@ -59,8 +43,7 @@ class CrewService(
         // TODO: 크루 정원 초과 여부 확인
 
         val newMember = CrewMember.createMember(crewId, memberId)
-        crewAppender.appendMember(newMember)
-        crewRepository.incrementMemberCount(crewId)
+        crewAppender.appendMemberWithCount(newMember)
     }
 
     /**
