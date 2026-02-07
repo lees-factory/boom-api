@@ -1,7 +1,11 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
+import io.lees.boom.core.api.controller.v1.request.CrewScheduleCreateRequest
 import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
+import io.lees.boom.core.api.controller.v1.response.CrewMemberResponse
+import io.lees.boom.core.api.controller.v1.response.CrewScheduleResponse
+import io.lees.boom.core.api.controller.v1.response.MyCrewResponse
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
@@ -15,11 +19,10 @@ class CrewController(
     /**
      * 크루 생성
      * [POST] /api/v1/crews
-     * @User memberId: Resolver가 인증 후 주입해주는 ID
      */
     @PostMapping
     fun createCrew(
-        @User memberId: Long?, // Header 직접 접근 제거 -> Resolver 사용
+        @User memberId: Long?,
         @RequestBody request: CrewCreateRequest,
     ): ApiResponse<CrewIdResponse> {
         val createdCrew =
@@ -27,10 +30,8 @@ class CrewController(
                 memberId = memberId!!,
                 name = request.name,
                 description = request.description,
-                maxMemberCount = request.maxMemberCount ?: 100, // [추가]
+                maxMemberCount = request.maxMemberCount ?: 100,
             )
-
-        // ID는 Service에서 보장됨
         return ApiResponse.success(CrewIdResponse(createdCrew.id!!))
     }
 
@@ -45,5 +46,64 @@ class CrewController(
     ): ApiResponse<Any> {
         crewService.joinCrew(memberId!!, crewId)
         return ApiResponse.success()
+    }
+
+    /**
+     * 내 크루 목록 조회
+     * [GET] /api/v1/crews/my
+     */
+    @GetMapping("/my")
+    fun getMyCrews(
+        @User memberId: Long?,
+    ): ApiResponse<List<MyCrewResponse>> {
+        val myCrews = crewService.getMyCrews(memberId!!)
+        return ApiResponse.success(myCrews.map { MyCrewResponse.from(it) })
+    }
+
+    /**
+     * 크루 멤버 목록 조회
+     * [GET] /api/v1/crews/{crewId}/members
+     */
+    @GetMapping("/{crewId}/members")
+    fun getCrewMembers(
+        @PathVariable crewId: Long,
+    ): ApiResponse<List<CrewMemberResponse>> {
+        val members = crewService.getCrewMembers(crewId)
+        return ApiResponse.success(members.map { CrewMemberResponse.from(it) })
+    }
+
+    /**
+     * 크루 일정 등록
+     * [POST] /api/v1/crews/{crewId}/schedules
+     */
+    @PostMapping("/{crewId}/schedules")
+    fun createSchedule(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @RequestBody request: CrewScheduleCreateRequest,
+    ): ApiResponse<CrewScheduleResponse> {
+        val schedule =
+            crewService.createSchedule(
+                crewId = crewId,
+                memberId = memberId!!,
+                gymId = request.gymId,
+                title = request.title,
+                description = request.description,
+                scheduledAt = request.scheduledAt,
+            )
+        return ApiResponse.success(CrewScheduleResponse.from(schedule))
+    }
+
+    /**
+     * 크루 일정 목록 조회
+     * [GET] /api/v1/crews/{crewId}/schedules
+     */
+    @GetMapping("/{crewId}/schedules")
+    fun getSchedules(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+    ): ApiResponse<List<CrewScheduleResponse>> {
+        val schedules = crewService.getSchedules(crewId, memberId!!)
+        return ApiResponse.success(schedules.map { CrewScheduleResponse.from(it) })
     }
 }

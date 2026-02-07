@@ -186,6 +186,7 @@ class GymControllerTest : RestDocsTest() {
         every {
             gymService.getGymsOnMap(southWestLat, southWestLon, northEastLat, northEastLon)
         } returns gyms
+        every { gymService.getCrewMemberVisitMap(gyms, 1L) } returns emptyMap()
 
         // when & then
         mockMvc
@@ -219,12 +220,17 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath("data[].address").type(JsonFieldType.STRING).description("암장 주소").optional(),
                         fieldWithPath("data[].latitude").type(JsonFieldType.NUMBER).description("위도"),
                         fieldWithPath("data[].longitude").type(JsonFieldType.NUMBER).description("경도"),
-                        // [추가된 필드 검증]
                         fieldWithPath("data[].maxCapacity").type(JsonFieldType.NUMBER).description("최대 수용 인원"),
                         fieldWithPath("data[].currentCount").type(JsonFieldType.NUMBER).description("현재 인원"),
                         fieldWithPath(
                             "data[].crowdLevel",
                         ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath(
+                            "data[].crewMemberCount",
+                        ).type(JsonFieldType.NUMBER).description("입장중인 크루원 수"),
+                        fieldWithPath(
+                            "data[].crewMembers",
+                        ).type(JsonFieldType.ARRAY).description("입장중인 크루원 목록"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -253,6 +259,7 @@ class GymControllerTest : RestDocsTest() {
         every {
             gymService.getGymsByRadius(latitude, longitude, radiusKm)
         } returns gyms
+        every { gymService.getCrewMemberVisitMap(gyms, 1L) } returns emptyMap()
 
         // when & then
         mockMvc
@@ -289,6 +296,12 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data[].crowdLevel",
                         ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath(
+                            "data[].crewMemberCount",
+                        ).type(JsonFieldType.NUMBER).description("입장중인 크루원 수"),
+                        fieldWithPath(
+                            "data[].crewMembers",
+                        ).type(JsonFieldType.ARRAY).description("입장중인 크루원 목록"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -321,6 +334,7 @@ class GymControllerTest : RestDocsTest() {
         every {
             gymService.getGymsByRadiusSlice(latitude, longitude, radiusKm, any())
         } returns sliceResult
+        every { gymService.getCrewMemberVisitMap(gyms, 1L) } returns emptyMap()
 
         // when & then
         mockMvc
@@ -363,6 +377,12 @@ class GymControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.content[].crowdLevel",
                         ).type(JsonFieldType.STRING).description("혼잡도 상태 (RELAXED, NORMAL, CROWDED)"),
+                        fieldWithPath(
+                            "data.content[].crewMemberCount",
+                        ).type(JsonFieldType.NUMBER).description("입장중인 크루원 수"),
+                        fieldWithPath(
+                            "data.content[].crewMembers",
+                        ).type(JsonFieldType.ARRAY).description("입장중인 크루원 목록"),
                         fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
                         fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
                         fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부"),
