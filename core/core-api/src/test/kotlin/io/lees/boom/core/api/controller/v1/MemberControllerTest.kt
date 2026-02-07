@@ -1,30 +1,47 @@
 package io.lees.boom.core.api.controller.v1
 
 import com.fasterxml.jackson.module.kotlin.jsonMapper
+import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.api.controller.v1.request.MemberLoginRequest
+import io.lees.boom.core.domain.Member
+import io.lees.boom.core.domain.MemberService
+import io.lees.boom.core.domain.SocialInfo
 import io.lees.boom.core.domain.SocialLoginService
 import io.lees.boom.core.domain.TokenPair
+import io.lees.boom.core.enums.MemberRole
 import io.lees.boom.core.enums.SocialProvider
 import io.lees.boom.test.api.RestDocsTest
+import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class MemberControllerTest : RestDocsTest() {
     private lateinit var socialLoginService: SocialLoginService
+    private lateinit var memberService: MemberService
 
     @BeforeEach
     fun setUp() {
         socialLoginService = mockk()
-        mockMvc = mockController(MemberController(socialLoginService))
+        memberService = mockk()
+        mockMvc =
+            mockController(
+                MemberController(socialLoginService, memberService),
+                UserArgumentResolver(),
+            )
     }
 
     @Test
@@ -66,7 +83,12 @@ class MemberControllerTest : RestDocsTest() {
                             "provider",
                         ).type(JsonFieldType.STRING).description("소셜 로그인 제공자 (KAKAO, APPLE, GOOGLE)"),
                         fieldWithPath("socialId").type(JsonFieldType.STRING).description("소셜 서비스의 고유 ID"),
-                        fieldWithPath("name").type(JsonFieldType.STRING).description("사용자 이름(닉네임)"),
+                        fieldWithPath(
+                            "name",
+                        ).type(
+                            JsonFieldType.STRING,
+                        ).description("사용자 이름(닉네임) - Apple은 null 가능, null이면 UUID 기반 이름 자동 생성")
+                            .optional(),
                         fieldWithPath("email").type(JsonFieldType.STRING).description("이메일 (선택)").optional(),
                         fieldWithPath(
                             "profileImage",
@@ -121,6 +143,124 @@ class MemberControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.refreshToken",
                         ).type(JsonFieldType.STRING).description("새로운 Refresh Token (Rotation)"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getMe() {
+        // given
+        val memberId = 1L
+        val member =
+            Member(
+                id = memberId,
+                name = "홍길동",
+                email = "test@test.com",
+                profileImage = "https://example.com/profile.jpg",
+                role = MemberRole.USER,
+                socialInfo = SocialInfo(SocialProvider.KAKAO, "social-id-123"),
+            )
+
+        every { memberService.getMe(memberId) } returns member
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/members/me")
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getMe",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원 ID"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("닉네임"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일").optional(),
+                        fieldWithPath(
+                            "data.profileImage",
+                        ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun updateMe() {
+        // given
+        val memberId = 1L
+        val updatedMember =
+            Member(
+                id = memberId,
+                name = "새닉네임",
+                email = "new@test.com",
+                profileImage = "https://supabase.co/storage/v1/object/public/boom/profile/1/abc.jpg",
+                role = MemberRole.USER,
+                socialInfo = SocialInfo(SocialProvider.KAKAO, "social-id-123"),
+            )
+
+        every { memberService.updateMe(memberId, any(), any(), any()) } returns updatedMember
+
+        val profileImage =
+            MockMultipartFile(
+                "profileImage",
+                "profile.jpg",
+                "image/jpeg",
+                "fake-image-content".toByteArray(),
+            )
+        val namePart =
+            MockMultipartFile(
+                "name",
+                "",
+                "text/plain",
+                "새닉네임".toByteArray(),
+            )
+        val emailPart =
+            MockMultipartFile(
+                "email",
+                "",
+                "text/plain",
+                "new@test.com".toByteArray(),
+            )
+
+        // when & then
+        mockMvc
+            .perform(
+                multipart("/api/v1/members/me")
+                    .file(profileImage)
+                    .file(namePart)
+                    .file(emailPart)
+                    .with(authenticatedUser(memberId))
+                    .with { request ->
+                        request.method = "PUT"
+                        request
+                    },
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "updateMe",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원 ID"),
+                        fieldWithPath("data.name").type(JsonFieldType.STRING).description("닉네임"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일").optional(),
+                        fieldWithPath(
+                            "data.profileImage",
+                        ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

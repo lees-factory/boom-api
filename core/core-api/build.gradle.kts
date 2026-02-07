@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":support:jwt"))
 
     runtimeOnly(project(":storage:db-core"))
+    runtimeOnly(project(":storage:supabase"))
 
     testImplementation(project(":tests:api-docs"))
 

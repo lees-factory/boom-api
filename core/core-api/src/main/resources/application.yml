@@ -8,11 +8,13 @@ spring:
       - monitoring.yml
       - logging.yml
       - db-core.yml
+      - supabase.yml
 
   web.resources.add-mappings: false
 
 server:
   tomcat:
+
     max-connections: 20000
     threads:
       max: 50
@@ -25,6 +27,10 @@ storage:
       url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
       username: ${DB_USER}
       password: ${DB_PASSWORD}
+  s3:
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    bucket: ${S3_BUCKET}
 management:
   endpoints:
     web:

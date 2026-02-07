@@ -11,4 +11,6 @@ interface MemberRepository {
     ): Member?
 
     fun findById(memberId: Long): Member?
+
+    fun update(member: Member): Member
 }

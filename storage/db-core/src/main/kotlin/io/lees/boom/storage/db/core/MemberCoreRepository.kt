@@ -19,6 +19,17 @@ internal class MemberCoreRepository(
 
     override fun save(member: Member): Member = memberJpaRepository.save(member.toEntity()).toDomain()
 
+    override fun update(member: Member): Member {
+        val entity =
+            memberJpaRepository.findById(member.id!!).orElseThrow {
+                IllegalStateException("Member not found: ${member.id}")
+            }
+        entity.name = member.name
+        entity.email = member.email
+        entity.profileImage = member.profileImage
+        return entity.toDomain()
+    }
+
     private fun Member.toEntity() =
         MemberEntity(
             name = this.name,

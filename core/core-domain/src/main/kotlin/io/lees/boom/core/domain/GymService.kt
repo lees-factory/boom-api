@@ -18,17 +18,23 @@ class GymService(
     private val crowdLevelCalculator: CrowdLevelCalculator,
     private val locationCalculator: LocationCalculator,
 ) {
+    companion object {
+        private const val ENTRY_RADIUS_KM = 0.1 // 100m
+    }
+
     /**
      * 입장 처리
      * 1. 이미 입장 중이면 에러
-     * 2. gym_active_visit에 INSERT (현재 상태)
-     * 3. gym_visit에 INSERT (히스토리/통계용)
-     * 4. 암장 인원 증가
+     * 2. 사용자 위치가 암장 100m 반경 이내인지 검증
+     * 3. gym_active_visit에 INSERT (현재 상태)
+     * 4. gym_visit에 INSERT (히스토리/통계용)
+     * 5. 암장 인원 증가
      */
     @Transactional
     fun enterUser(
         gymId: Long,
         memberId: Long,
+        userLocation: Location,
     ) {
         // 1. 이미 입장 중인 암장이 있는지 확인
         if (gymActiveVisitReader.existsActiveVisit(memberId)) {
@@ -37,6 +43,11 @@ class GymService(
 
         // 2. 암장 정보 조회
         val gym = gymReader.read(gymId)
+
+        // 3. 사용자 위치가 암장 100m 반경 이내인지 검증
+        if (!locationCalculator.isWithinRadius(userLocation, gym.location, ENTRY_RADIUS_KM)) {
+            throw CoreException(CoreErrorType.TOO_FAR_FROM_GYM)
+        }
 
         // 3. 현재 입장 상태 저장 (gym_active_visit)
         val activeVisit = GymActiveVisit.create(gymId, memberId)

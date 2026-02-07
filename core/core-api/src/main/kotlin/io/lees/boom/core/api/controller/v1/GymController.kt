@@ -1,5 +1,6 @@
 package io.lees.boom.core.api.controller.v1
 
+import io.lees.boom.core.api.controller.v1.request.GymEntryRequest
 import io.lees.boom.core.api.controller.v1.request.GymRadiusSearchRequest
 import io.lees.boom.core.api.controller.v1.request.GymSearchRequest
 import io.lees.boom.core.api.controller.v1.response.CurrentVisitResponse
@@ -7,6 +8,7 @@ import io.lees.boom.core.api.controller.v1.response.GymResponse
 import io.lees.boom.core.api.controller.v1.response.GymVisitorResponse
 import io.lees.boom.core.api.controller.v1.response.SliceResponse
 import io.lees.boom.core.domain.GymService
+import io.lees.boom.core.domain.Location
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -24,13 +27,16 @@ class GymController(
 ) {
     /**
      * 암장 입장 체크
+     * 사용자의 현재 위치가 암장에서 100m 이내여야 입장 가능
      */
     @PostMapping("/{gymId}/entry")
     fun enterGym(
-        @User memberId: Long, // 인증된 사용자만 호출 가능
+        @User memberId: Long,
         @PathVariable gymId: Long,
+        @RequestBody request: GymEntryRequest,
     ): ApiResponse<Any> {
-        gymService.enterUser(gymId, memberId)
+        val userLocation = Location.create(request.latitude, request.longitude)
+        gymService.enterUser(gymId, memberId, userLocation)
         return ApiResponse.success()
     }
 

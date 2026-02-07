@@ -22,4 +22,10 @@ enum class CoreErrorType(
 
     ALREADY_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4000, "이미 입장 중인 상태입니다.", CoreErrorLevel.INFO),
     NOT_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4001, "입장 기록이 없습니다.", CoreErrorLevel.INFO),
+    TOO_FAR_FROM_GYM(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B4002,
+        "암장에서 너무 멀리 있습니다. 100m 이내에서 입장해주세요.",
+        CoreErrorLevel.INFO,
+    ),
 }

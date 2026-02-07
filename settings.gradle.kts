@@ -5,6 +5,7 @@ include(
     "core:core-domain",
     "core:core-api",
     "storage:db-core",
+    "storage:supabase",
     "tests:api-docs",
     "support:logging",
     "support:monitoring",
