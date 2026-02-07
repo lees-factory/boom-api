@@ -31,4 +31,18 @@ interface CrewJpaRepository : JpaRepository<CrewEntity, Long> {
     ): Slice<CrewEntity>
 
     fun findByOrderByActivityScoreDesc(pageable: Pageable): Slice<CrewEntity>
+
+    @Query(
+        """
+        SELECT c.id as crewId, c.name as name, c.description as description,
+               c.memberCount as memberCount, c.maxMemberCount as maxMemberCount,
+               COALESCE(AVG(m.activityScore), 0) as avgScore
+        FROM CrewEntity c
+        LEFT JOIN CrewMemberEntity cm ON c.id = cm.crewId
+        LEFT JOIN MemberEntity m ON cm.memberId = m.id
+        GROUP BY c.id, c.name, c.description, c.memberCount, c.maxMemberCount
+        ORDER BY avgScore DESC
+        """,
+    )
+    fun findCrewRankingByAvgScore(pageable: Pageable): Slice<CrewRankingProjection>
 }
