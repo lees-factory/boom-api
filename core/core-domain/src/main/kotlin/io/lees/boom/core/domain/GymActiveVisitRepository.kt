@@ -45,4 +45,12 @@ interface GymActiveVisitRepository {
         gymId: Long,
         pageRequest: PageRequest,
     ): SliceResult<GymVisitor>
+
+    /**
+     * 특정 멤버들의 active_visit을 gym별로 조회 (크루원 입장 정보)
+     */
+    fun findCrewMemberVisits(
+        memberIds: Set<Long>,
+        gymIds: Set<Long>,
+    ): Map<Long, List<GymCrewMemberInfo>>
 }

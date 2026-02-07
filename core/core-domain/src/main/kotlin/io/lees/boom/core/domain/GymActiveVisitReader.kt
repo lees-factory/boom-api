@@ -40,4 +40,12 @@ class GymActiveVisitReader(
         gymId: Long,
         pageRequest: PageRequest,
     ): SliceResult<GymVisitor> = gymActiveVisitRepository.findVisitorsByGymId(gymId, pageRequest)
+
+    /**
+     * 크루원들의 암장별 입장 정보 배치 조회
+     */
+    fun readCrewMemberVisits(
+        memberIds: Set<Long>,
+        gymIds: Set<Long>,
+    ): Map<Long, List<GymCrewMemberInfo>> = gymActiveVisitRepository.findCrewMemberVisits(memberIds, gymIds)
 }

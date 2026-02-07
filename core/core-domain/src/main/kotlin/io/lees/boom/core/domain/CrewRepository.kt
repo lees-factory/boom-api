@@ -6,5 +6,17 @@ interface CrewRepository {
     fun saveMember(crewMember: CrewMember): CrewMember
 
     fun findCrewById(crewId: Long): Crew?
-    // 필요시 findCrewMemberByCrewIdAndMemberId 등 추가
+
+    fun findCrewIdsByMemberId(memberId: Long): List<Long>
+
+    fun findMemberIdsByCrewIds(crewIds: List<Long>): Set<Long>
+
+    fun findMyCrews(memberId: Long): List<MyCrewInfo>
+
+    fun findMembersWithInfoByCrewId(crewId: Long): List<CrewMemberInfo>
+
+    fun findMemberByCrewIdAndMemberId(
+        crewId: Long,
+        memberId: Long,
+    ): CrewMember?
 }
