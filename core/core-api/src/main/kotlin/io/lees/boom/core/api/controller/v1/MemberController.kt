@@ -29,14 +29,15 @@ class MemberController(
     private val badgeService: BadgeService,
 ) {
     /**
-     * 내 정보 조회
+     * 내 정보 조회 (뱃지 on-demand 계산 포함)
      */
     @GetMapping("/me")
     fun getMe(
         @User memberId: Long,
-    ): ApiResponse<MemberResponse> {
+    ): ApiResponse<MemberProfileResponse> {
         val member = memberService.getMe(memberId)
-        return ApiResponse.success(MemberResponse.of(member))
+        val badges = badgeService.getMyBadges(memberId)
+        return ApiResponse.success(MemberProfileResponse.of(member, badges))
     }
 
     /**
