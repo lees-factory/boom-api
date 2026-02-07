@@ -99,3 +99,21 @@ CREATE UNIQUE INDEX idx_active_visit_member ON public.gym_active_visit (member_i
 CREATE INDEX idx_active_visit_gym ON public.gym_active_visit (gym_id);
 -- 만료된 입장 정리용 인덱스 (스케줄러에서 사용)
 CREATE INDEX idx_active_visit_expires ON public.gym_active_visit (expires_at);
+
+-- [2026-02-07] CrewSchedule (크루 일정) 테이블 추가
+-- 크루 내 일정 관리 (암장 선택 가능, LEADER/MEMBER만 등록 가능)
+-- gym_id는 nullable로, 특정 암장 모임이 아닌 경우 NULL
+CREATE TABLE public.crew_schedule (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    crew_id bigint NOT NULL,
+    gym_id bigint,
+    title character varying NOT NULL,
+    description character varying NOT NULL,
+    scheduled_at timestamp without time zone NOT NULL,
+    created_by bigint NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT crew_schedule_pkey PRIMARY KEY (id)
+);
+-- 크루별 일정 조회용 인덱스
+CREATE INDEX idx_crew_schedule_crew ON public.crew_schedule (crew_id, scheduled_at);
