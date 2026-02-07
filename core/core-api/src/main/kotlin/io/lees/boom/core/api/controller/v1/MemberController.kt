@@ -3,13 +3,16 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.controller.v1.request.MemberLoginRequest
 import io.lees.boom.core.api.controller.v1.request.TokenRefreshRequest
 import io.lees.boom.core.api.controller.v1.response.MemberLoginResponse
+import io.lees.boom.core.api.controller.v1.response.MemberProfileResponse
 import io.lees.boom.core.api.controller.v1.response.MemberResponse
+import io.lees.boom.core.domain.BadgeService
 import io.lees.boom.core.domain.MemberService
 import io.lees.boom.core.domain.ProfileImageInput
 import io.lees.boom.core.domain.SocialLoginService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile
 class MemberController(
     private val socialLoginService: SocialLoginService,
     private val memberService: MemberService,
+    private val badgeService: BadgeService,
 ) {
     /**
      * 내 정보 조회
@@ -33,6 +37,19 @@ class MemberController(
     ): ApiResponse<MemberResponse> {
         val member = memberService.getMe(memberId)
         return ApiResponse.success(MemberResponse.of(member))
+    }
+
+    /**
+     * 타 유저 프로필 조회
+     * 암장 입장 유저 목록 등에서 프로필 확인 시 사용
+     */
+    @GetMapping("/{memberId}")
+    fun getMemberProfile(
+        @PathVariable memberId: Long,
+    ): ApiResponse<MemberProfileResponse> {
+        val member = memberService.getMember(memberId)
+        val badges = badgeService.getMemberBadges(memberId)
+        return ApiResponse.success(MemberProfileResponse.of(member, badges))
     }
 
     /**

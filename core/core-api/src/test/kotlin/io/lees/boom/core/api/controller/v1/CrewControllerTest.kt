@@ -5,7 +5,9 @@ import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewMemberInfo
+import io.lees.boom.core.domain.CrewRankingInfo
 import io.lees.boom.core.domain.CrewSchedule
+import io.lees.boom.core.domain.CrewScheduleParticipantInfo
 import io.lees.boom.core.domain.CrewService
 import io.lees.boom.core.domain.MyCrewInfo
 import io.lees.boom.core.enums.CrewRole
@@ -442,31 +444,122 @@ class CrewControllerTest : RestDocsTest() {
     }
 
     @Test
-    fun getCrewRanking() {
+    fun participateSchedule() {
         // given
-        val crews =
-            listOf(
-                Crew(
-                    id = 3L,
-                    name = "전국 1위 크루",
-                    description = "활동 점수 최상위 크루",
-                    maxMemberCount = 100,
-                    memberCount = 45,
-                    address = "서울특별시 강남구",
-                    activityScore = 1200.0,
+        val memberId = 1L
+        val crewId = 1L
+        val scheduleId = 1L
+
+        justRun { crewService.participateSchedule(any(), any(), any()) }
+
+        // when & then
+        mockMvc
+            .perform(
+                post("/api/v1/crews/{crewId}/schedules/{scheduleId}/participate", crewId, scheduleId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "participateSchedule",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("크루 ID"),
+                        parameterWithName("scheduleId").description("일정 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
                 ),
-                Crew(
-                    id = 1L,
-                    name = "해운대 클라이밍",
-                    description = "해운대 클라이밍 크루",
-                    maxMemberCount = 50,
-                    memberCount = 12,
-                    address = "부산광역시 해운대구",
-                    activityScore = 350.0,
+            )
+    }
+
+    @Test
+    fun getScheduleParticipants() {
+        // given
+        val memberId = 1L
+        val crewId = 1L
+        val scheduleId = 1L
+        val participants =
+            listOf(
+                CrewScheduleParticipantInfo(
+                    memberId = 1L,
+                    name = "홍길동",
+                    profileImage = "https://example.com/profile1.jpg",
+                    participatedAt = LocalDateTime.of(2026, 3, 15, 14, 5),
+                ),
+                CrewScheduleParticipantInfo(
+                    memberId = 2L,
+                    name = "김철수",
+                    profileImage = null,
+                    participatedAt = LocalDateTime.of(2026, 3, 15, 14, 10),
                 ),
             )
 
-        every { crewService.getCrewRanking(any(), any()) } returns crews
+        every { crewService.getScheduleParticipants(any(), any(), any()) } returns participants
+
+        // when & then
+        mockMvc
+            .perform(
+                get("/api/v1/crews/{crewId}/schedules/{scheduleId}/participants", crewId, scheduleId)
+                    .with(authenticatedUser(memberId)),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "getScheduleParticipants",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("크루 ID"),
+                        parameterWithName("scheduleId").description("일정 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data[].memberId").type(JsonFieldType.NUMBER).description("참여자 멤버 ID"),
+                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("참여자 이름"),
+                        fieldWithPath(
+                            "data[].profileImage",
+                        ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
+                        fieldWithPath("data[].participatedAt").type(JsonFieldType.STRING).description("참여 일시"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun getCrewRanking() {
+        // given
+        val rankings =
+            listOf(
+                CrewRankingInfo(
+                    crewId = 3L,
+                    name = "전국 1위 크루",
+                    description = "활동 점수 최상위 크루",
+                    memberCount = 45,
+                    maxMemberCount = 100,
+                    avgScore = 85.5,
+                ),
+                CrewRankingInfo(
+                    crewId = 1L,
+                    name = "해운대 클라이밍",
+                    description = "해운대 클라이밍 크루",
+                    memberCount = 12,
+                    maxMemberCount = 50,
+                    avgScore = 42.3,
+                ),
+            )
+
+        every { crewService.getCrewRanking(any(), any()) } returns rankings
 
         // when & then
         mockMvc
@@ -486,19 +579,12 @@ class CrewControllerTest : RestDocsTest() {
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
-                        fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("크루 ID"),
+                        fieldWithPath("data[].crewId").type(JsonFieldType.NUMBER).description("크루 ID"),
                         fieldWithPath("data[].name").type(JsonFieldType.STRING).description("크루 이름"),
                         fieldWithPath("data[].description").type(JsonFieldType.STRING).description("크루 설명"),
-                        fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
-                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("크루 주소").optional(),
-                        fieldWithPath("data[].activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
-                        fieldWithPath(
-                            "data[].activityRank",
-                        ).type(JsonFieldType.STRING).description("활동 등급 (노랑단/초록단/빨강단/보라단/황금단)"),
-                        fieldWithPath(
-                            "data[].activityRankColor",
-                        ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
+                        fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
+                        fieldWithPath("data[].avgScore").type(JsonFieldType.NUMBER).description("크루원 평균 활동 점수"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
