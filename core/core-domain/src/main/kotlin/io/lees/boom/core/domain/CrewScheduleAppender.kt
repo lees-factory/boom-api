@@ -7,4 +7,7 @@ class CrewScheduleAppender(
     private val crewScheduleRepository: CrewScheduleRepository,
 ) {
     fun append(schedule: CrewSchedule): CrewSchedule = crewScheduleRepository.save(schedule)
+
+    fun appendParticipant(participant: CrewScheduleParticipant): CrewScheduleParticipant =
+        crewScheduleRepository.saveParticipant(participant)
 }

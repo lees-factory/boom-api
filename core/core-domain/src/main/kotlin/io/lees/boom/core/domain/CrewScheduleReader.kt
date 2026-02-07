@@ -7,4 +7,14 @@ class CrewScheduleReader(
     private val crewScheduleRepository: CrewScheduleRepository,
 ) {
     fun readByCrewId(crewId: Long): List<CrewSchedule> = crewScheduleRepository.findByCrewId(crewId)
+
+    fun readById(scheduleId: Long): CrewSchedule? = crewScheduleRepository.findById(scheduleId)
+
+    fun readParticipant(
+        scheduleId: Long,
+        memberId: Long,
+    ): CrewScheduleParticipant? = crewScheduleRepository.findParticipant(scheduleId, memberId)
+
+    fun readParticipants(scheduleId: Long): List<CrewScheduleParticipantInfo> =
+        crewScheduleRepository.findParticipantsByScheduleId(scheduleId)
 }

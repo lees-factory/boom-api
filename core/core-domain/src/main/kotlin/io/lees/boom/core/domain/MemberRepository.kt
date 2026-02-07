@@ -13,4 +13,9 @@ interface MemberRepository {
     fun findById(memberId: Long): Member?
 
     fun update(member: Member): Member
+
+    fun incrementActivityScore(
+        memberId: Long,
+        score: Int,
+    )
 }

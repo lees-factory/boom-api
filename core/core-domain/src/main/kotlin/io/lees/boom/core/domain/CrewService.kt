@@ -13,6 +13,7 @@ class CrewService(
     private val crewMemberReader: CrewMemberReader,
     private val crewScheduleAppender: CrewScheduleAppender,
     private val crewScheduleReader: CrewScheduleReader,
+    private val activityScoreUpdater: ActivityScoreUpdater,
 ) {
     /**
      * 크루 만들기
@@ -39,8 +40,19 @@ class CrewService(
         memberId: Long,
         crewId: Long,
     ) {
-        // TODO: 이미 가입된 유저인지 검증 (Validator or Reader)
-        // TODO: 크루 정원 초과 여부 확인
+        // 이미 가입된 유저인지 검증
+        crewMemberReader.readCrewMember(crewId, memberId)?.let {
+            throw CoreException(CoreErrorType.CREW_ALREADY_JOINED)
+        }
+
+        // 크루 정원 초과 여부 확인
+        val crew =
+            crewReader.readById(crewId)
+                ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
+
+        if (crew.memberCount >= crew.maxMemberCount) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_LIMIT_EXCEEDED)
+        }
 
         val newMember = CrewMember.createMember(crewId, memberId)
         crewAppender.appendMemberWithCount(newMember)
@@ -103,6 +115,60 @@ class CrewService(
     }
 
     /**
+     * 크루 일정 참여
+     * LEADER, MEMBER만 접근 가능 (GUEST 제외)
+     */
+    fun participateSchedule(
+        crewId: Long,
+        scheduleId: Long,
+        memberId: Long,
+    ) {
+        // 크루 멤버 권한 확인
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        if (crewMember.role == CrewRole.GUEST) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+        }
+
+        // 일정 존재 확인
+        val schedule =
+            crewScheduleReader.readById(scheduleId)
+                ?: throw CoreException(CoreErrorType.SCHEDULE_NOT_FOUND)
+
+        if (schedule.crewId != crewId) {
+            throw CoreException(CoreErrorType.SCHEDULE_NOT_FOUND)
+        }
+
+        // 중복 참여 확인
+        crewScheduleReader.readParticipant(scheduleId, memberId)?.let {
+            throw CoreException(CoreErrorType.SCHEDULE_ALREADY_PARTICIPATED)
+        }
+
+        val participant = CrewScheduleParticipant.create(scheduleId, memberId)
+        crewScheduleAppender.appendParticipant(participant)
+
+        // 활동 점수 +10
+        activityScoreUpdater.addScheduleParticipateScore(memberId)
+    }
+
+    /**
+     * 크루 일정 참여자 목록 조회
+     * 크루 멤버만 접근 가능
+     */
+    fun getScheduleParticipants(
+        crewId: Long,
+        scheduleId: Long,
+        memberId: Long,
+    ): List<CrewScheduleParticipantInfo> {
+        crewMemberReader.readCrewMember(crewId, memberId)
+            ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        return crewScheduleReader.readParticipants(scheduleId)
+    }
+
+    /**
      * 내 주변 크루 찾기 (동네 크루)
      */
     fun getLocalCrews(
@@ -114,10 +180,10 @@ class CrewService(
 
     /**
      * 크루 랭킹 조회
-     * (활동 점수 기반 컬러 랭킹용 데이터 제공)
+     * 크루원들의 평균 활동 점수 기반
      */
     fun getCrewRanking(
         page: Int,
         size: Int,
-    ): List<Crew> = crewReader.readCrewRanking(page, size)
+    ): List<CrewRankingInfo> = crewReader.readCrewRankingByAvgScore(page, size)
 }

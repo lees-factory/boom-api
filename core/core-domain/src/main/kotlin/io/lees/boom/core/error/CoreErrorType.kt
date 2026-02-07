@@ -32,6 +32,19 @@ enum class CoreErrorType(
         CoreErrorLevel.INFO,
     ),
 
+    // 크루 가입
+    CREW_ALREADY_JOINED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3003, "이미 가입된 크루입니다.", CoreErrorLevel.INFO),
+    CREW_MEMBER_LIMIT_EXCEEDED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3004, "크루 정원이 초과되었습니다.", CoreErrorLevel.INFO),
+
+    // 크루 일정 참여
+    SCHEDULE_NOT_FOUND(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3100, "일정을 찾을 수 없습니다.", CoreErrorLevel.INFO),
+    SCHEDULE_ALREADY_PARTICIPATED(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3101,
+        "이미 참여한 일정입니다.",
+        CoreErrorLevel.INFO,
+    ),
+
     ALREADY_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4000, "이미 입장 중인 상태입니다.", CoreErrorLevel.INFO),
     NOT_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4001, "입장 기록이 없습니다.", CoreErrorLevel.INFO),
     TOO_FAR_FROM_GYM(

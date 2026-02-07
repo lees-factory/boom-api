@@ -1,0 +1,10 @@
+package io.lees.boom.core.domain
+
+data class CrewRankingInfo(
+    val crewId: Long,
+    val name: String,
+    val description: String,
+    val memberCount: Int,
+    val maxMemberCount: Int,
+    val avgScore: Double,
+)

@@ -16,6 +16,14 @@ enum class CoreErrorCode {
     B3001,
     B3002,
 
+    // 크루 가입
+    B3003, // CREW_ALREADY_JOINED (이미 가입된 크루)
+    B3004, // CREW_MEMBER_LIMIT_EXCEEDED (크루 정원 초과)
+
+    // 크루 일정 참여
+    B3100, // SCHEDULE_NOT_FOUND
+    B3101, // SCHEDULE_ALREADY_PARTICIPATED
+
     // 짐 (Gym) - [추가]
     B4000, // ALREADY_ADMITTED (이미 입장 중)
     B4001, // NOT_ADMITTED (입장 기록 없음)
