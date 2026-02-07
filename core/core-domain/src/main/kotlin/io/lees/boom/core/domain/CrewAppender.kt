@@ -9,4 +9,11 @@ class CrewAppender(
     fun append(crew: Crew): Crew = crewRepository.save(crew)
 
     fun appendMember(crewMember: CrewMember): CrewMember = crewRepository.saveMember(crewMember)
+
+    fun appendCrewWithLeader(
+        crew: Crew,
+        leaderId: Long,
+    ): Crew = crewRepository.saveCrewWithLeader(crew, leaderId)
+
+    fun appendMemberWithCount(crewMember: CrewMember): CrewMember = crewRepository.addMemberWithCount(crewMember)
 }

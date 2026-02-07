@@ -5,6 +5,10 @@ import io.lees.boom.core.domain.CrewMember
 import io.lees.boom.core.domain.CrewMemberInfo
 import io.lees.boom.core.domain.CrewRepository
 import io.lees.boom.core.domain.MyCrewInfo
+import io.lees.boom.core.enums.CrewRole
+import io.lees.boom.core.error.CoreErrorType
+import io.lees.boom.core.error.CoreException
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
@@ -22,6 +26,33 @@ internal class CrewCoreRepository(
     override fun saveMember(crewMember: CrewMember): CrewMember {
         val entity = crewMember.toEntity()
         return crewMemberJpaRepository.save(entity).toDomain()
+    }
+
+    @Transactional
+    override fun saveCrewWithLeader(
+        crew: Crew,
+        leaderId: Long,
+    ): Crew {
+        val savedCrew = crewJpaRepository.save(crew.toEntity()).toDomain()
+        val crewId = savedCrew.id ?: throw CoreException(CoreErrorType.CREW_CREATE_ERROR)
+
+        val leader =
+            CrewMemberEntity(
+                crewId = crewId,
+                memberId = leaderId,
+                role = CrewRole.LEADER,
+            )
+        crewMemberJpaRepository.save(leader)
+        crewJpaRepository.incrementMemberCount(crewId)
+
+        return savedCrew
+    }
+
+    @Transactional
+    override fun addMemberWithCount(crewMember: CrewMember): CrewMember {
+        val saved = crewMemberJpaRepository.save(crewMember.toEntity()).toDomain()
+        crewJpaRepository.incrementMemberCount(crewMember.crewId)
+        return saved
     }
 
     override fun findCrewById(crewId: Long): Crew? = crewJpaRepository.findByIdOrNull(crewId)?.toDomain()
