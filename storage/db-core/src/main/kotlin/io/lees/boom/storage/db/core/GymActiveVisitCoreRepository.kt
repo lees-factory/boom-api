@@ -2,6 +2,7 @@ package io.lees.boom.storage.db.core
 
 import io.lees.boom.core.domain.GymActiveVisit
 import io.lees.boom.core.domain.GymActiveVisitRepository
+import io.lees.boom.core.domain.GymCrewMemberInfo
 import io.lees.boom.core.domain.GymVisitor
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.SliceResult
@@ -68,6 +69,24 @@ internal class GymActiveVisitCoreRepository(
             }
 
         return SliceResult.fromLimitPlusOne(visitors, pageRequest)
+    }
+
+    override fun findCrewMemberVisits(
+        memberIds: Set<Long>,
+        gymIds: Set<Long>,
+    ): Map<Long, List<GymCrewMemberInfo>> {
+        val projections = gymActiveVisitJpaRepository.findCrewMemberVisits(memberIds, gymIds)
+        return projections
+            .groupBy { it.gymId }
+            .mapValues { (_, visitors) ->
+                visitors.map { projection ->
+                    GymCrewMemberInfo(
+                        memberId = projection.memberId,
+                        memberName = projection.memberName,
+                        memberProfileImage = projection.memberProfileImage,
+                    )
+                }
+            }
     }
 
     private fun GymActiveVisit.toEntity() =
