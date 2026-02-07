@@ -71,6 +71,33 @@ class GymService(
     }
 
     /**
+     * [TEST ONLY] 위치 검증 없이 입장 처리
+     * 테스트 환경에서 반경 100m 제한 없이 입장할 수 있도록 하는 메서드
+     */
+    @Transactional
+    fun enterUserWithoutLocationCheck(
+        gymId: Long,
+        memberId: Long,
+    ) {
+        if (gymActiveVisitReader.existsActiveVisit(memberId)) {
+            throw CoreException(CoreErrorType.ALREADY_ADMITTED)
+        }
+
+        val gym = gymReader.read(gymId)
+
+        val activeVisit = GymActiveVisit.create(gymId, memberId)
+        gymActiveVisitWriter.save(activeVisit)
+
+        val visitHistory = GymVisit.createAdmission(gymId, memberId)
+        gymVisitAppender.append(visitHistory)
+
+        val newCount = gym.currentCount + 1
+        val newLevel = crowdLevelCalculator.calculate(newCount, gym.maxCapacity)
+        val updatedGym = gym.copy(currentCount = newCount, crowdLevel = newLevel)
+        gymUpdater.update(updatedGym)
+    }
+
+    /**
      * 퇴장 처리
      * 1. 입장 기록 확인
      * 2. gym_active_visit에서 DELETE

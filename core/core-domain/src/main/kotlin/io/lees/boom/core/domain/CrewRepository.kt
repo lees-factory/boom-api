@@ -19,4 +19,19 @@ interface CrewRepository {
         crewId: Long,
         memberId: Long,
     ): CrewMember?
+
+    fun incrementMemberCount(crewId: Long)
+
+    fun findCrewsByLocation(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        page: Int,
+        size: Int,
+    ): List<Crew>
+
+    fun findCrewRanking(
+        page: Int,
+        size: Int,
+    ): List<Crew>
 }

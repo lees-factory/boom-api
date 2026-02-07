@@ -6,10 +6,11 @@ import io.lees.boom.core.enums.SocialProvider
 data class Member(
     val id: Long? = null,
     val name: String,
-    val email: String?, // 이메일이 없는 경우 빈 문자열 또는 null 처리 고려
-    val profileImage: String?, // [추가]
+    val email: String?,
+    val profileImage: String?,
     val role: MemberRole,
     val socialInfo: SocialInfo,
+    val activityScore: Int = 0,
 ) {
     companion object {
         fun register(

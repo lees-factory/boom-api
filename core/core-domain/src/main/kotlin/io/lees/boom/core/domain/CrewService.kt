@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 
 @Service
 class CrewService(
+    private val crewRepository: CrewRepository,
     private val crewAppender: CrewAppender,
     private val crewReader: CrewReader,
     private val crewMemberReader: CrewMemberReader,
@@ -24,9 +25,12 @@ class CrewService(
         name: String,
         description: String,
         maxMemberCount: Int,
+        latitude: Double?,
+        longitude: Double?,
+        address: String?,
     ): Crew {
         // 1. 크루 생성
-        val newCrew = Crew.create(name, description, maxMemberCount)
+        val newCrew = Crew.create(name, description, maxMemberCount, latitude, longitude, address)
         val savedCrew = crewAppender.append(newCrew)
         if (savedCrew.id == null) {
             throw CoreException(CoreErrorType.CREW_CREATE_ERROR)
@@ -39,6 +43,7 @@ class CrewService(
                 memberId = memberId,
             )
         crewAppender.appendMember(leader)
+        crewRepository.incrementMemberCount(savedCrew.id)
 
         return savedCrew
     }
@@ -55,6 +60,7 @@ class CrewService(
 
         val newMember = CrewMember.createMember(crewId, memberId)
         crewAppender.appendMember(newMember)
+        crewRepository.incrementMemberCount(crewId)
     }
 
     /**
@@ -112,4 +118,23 @@ class CrewService(
 
         return crewScheduleReader.readByCrewId(crewId)
     }
+
+    /**
+     * 내 주변 크루 찾기 (동네 크루)
+     */
+    fun getLocalCrews(
+        latitude: Double,
+        longitude: Double,
+        page: Int,
+        size: Int,
+    ): List<Crew> = crewReader.readLocalCrews(latitude, longitude, page, size)
+
+    /**
+     * 크루 랭킹 조회
+     * (활동 점수 기반 컬러 랭킹용 데이터 제공)
+     */
+    fun getCrewRanking(
+        page: Int,
+        size: Int,
+    ): List<Crew> = crewReader.readCrewRanking(page, size)
 }
