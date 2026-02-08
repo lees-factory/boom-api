@@ -171,3 +171,8 @@ CREATE INDEX idx_member_badge_member ON public.member_badge (member_id);
 
 -- [2026-02-08] 크루 이미지 컬럼 추가
 ALTER TABLE crew ADD COLUMN crew_image character varying;
+
+-- [2026-02-08] 크루/크루멤버 Soft Delete 컬럼 추가
+-- 크루 탈퇴(MEMBER/GUEST) 및 크루 삭제(LEADER) 시 soft delete 처리
+ALTER TABLE crew ADD COLUMN deleted_at timestamp without time zone;
+ALTER TABLE crew_member ADD COLUMN deleted_at timestamp without time zone;
