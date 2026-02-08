@@ -18,4 +18,13 @@ interface MemberJpaRepository : JpaRepository<MemberEntity, Long> {
         @Param("memberId") memberId: Long,
         @Param("score") score: Int,
     )
+
+    @Modifying
+    @Query(
+        "UPDATE MemberEntity m SET m.activityScore = CASE WHEN m.activityScore >= :score THEN m.activityScore - :score ELSE 0 END WHERE m.id = :memberId",
+    )
+    fun decrementActivityScore(
+        @Param("memberId") memberId: Long,
+        @Param("score") score: Int,
+    )
 }

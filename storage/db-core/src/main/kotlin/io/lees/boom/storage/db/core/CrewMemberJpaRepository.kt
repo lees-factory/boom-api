@@ -2,7 +2,9 @@ package io.lees.boom.storage.db.core
 
 import io.lees.boom.core.enums.CrewRole
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface MyCrewProjection {
     val crewId: Long
@@ -54,4 +56,23 @@ interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
         crewId: Long,
         memberId: Long,
     ): CrewMemberEntity?
+
+    fun countByCrewIdAndRole(
+        crewId: Long,
+        role: CrewRole,
+    ): Long
+
+    @Modifying
+    @Query(
+        "UPDATE CrewMemberEntity cm SET cm.deletedAt = CURRENT_TIMESTAMP WHERE cm.crewId = :crewId AND cm.deletedAt IS NULL",
+    )
+    fun softDeleteByCrewId(
+        @Param("crewId") crewId: Long,
+    )
+
+    @Modifying
+    @Query("UPDATE CrewMemberEntity cm SET cm.deletedAt = CURRENT_TIMESTAMP WHERE cm.id = :id")
+    fun softDeleteById(
+        @Param("id") id: Long,
+    )
 }
