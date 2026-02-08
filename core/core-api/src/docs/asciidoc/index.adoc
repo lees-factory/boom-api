@@ -14,8 +14,7 @@ Boom API 문서입니다.
 
 === 내 정보 조회 (Get Me)
 현재 로그인한 사용자의 프로필 정보를 조회합니다. +
-활동 점수, 등급, 뱃지 목록을 함께 반환합니다. +
-뱃지는 on-demand로 조건을 평가하여 신규 뱃지를 자동 획득합니다.
+활동 점수, 등급을 함께 반환합니다.
 
 ==== HTTP Request
 include::{snippets}/getMe/http-request.adoc[]
@@ -34,7 +33,7 @@ include::{snippets}/getMe/response-fields.adoc[]
 === 유저 프로필 조회 (Get Member Profile)
 특정 유저의 프로필을 조회합니다. +
 암장 입장 유저 목록 등에서 프로필 확인 시 사용합니다. +
-활동 점수, 등급, 획득한 뱃지 목록을 함께 반환합니다.
+활동 점수, 등급을 함께 반환합니다.
 
 ==== HTTP Request
 include::{snippets}/getMemberProfile/http-request.adoc[]
@@ -117,8 +116,8 @@ include::{snippets}/createCrew/http-request.adoc[]
 ==== Request Headers
 include::{snippets}/createCrew/request-headers.adoc[]
 
-==== Request Fields
-include::{snippets}/createCrew/request-fields.adoc[]
+==== Request Parts
+include::{snippets}/createCrew/request-parts.adoc[]
 
 ==== HTTP Response
 include::{snippets}/createCrew/http-response.adoc[]
@@ -288,6 +287,92 @@ include::{snippets}/getScheduleParticipants/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/getScheduleParticipants/response-fields.adoc[]
+
+'''
+
+=== 크루 탈퇴 (Leave Crew)
+크루에서 탈퇴합니다. +
+MEMBER 또는 GUEST만 탈퇴할 수 있으며, LEADER는 크루 삭제를 이용해야 합니다.
+
+==== HTTP Request
+include::{snippets}/leaveCrew/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/leaveCrew/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/leaveCrew/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/leaveCrew/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/leaveCrew/response-fields.adoc[]
+
+'''
+
+=== 크루 삭제 (Delete Crew)
+크루를 삭제합니다. +
+LEADER만 삭제할 수 있으며, 크루 인원이 본인 1명일 때만 삭제 가능합니다. +
+크루 가입과의 동시성 처리를 위해 비관적 락이 적용됩니다.
+
+==== HTTP Request
+include::{snippets}/deleteCrew/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/deleteCrew/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/deleteCrew/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/deleteCrew/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/deleteCrew/response-fields.adoc[]
+
+'''
+
+=== 크루 일정 참여 취소 (Cancel Schedule Participation)
+크루 일정 참여를 취소합니다. +
+참여 기록이 삭제되며 활동 점수 -10이 차감됩니다.
+
+==== HTTP Request
+include::{snippets}/cancelScheduleParticipation/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/cancelScheduleParticipation/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/cancelScheduleParticipation/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/cancelScheduleParticipation/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/cancelScheduleParticipation/response-fields.adoc[]
+
+'''
+
+=== 크루 일정 삭제 (Delete Schedule)
+크루 일정을 삭제합니다. +
+LEADER 또는 일정 생성자만 삭제할 수 있으며, 이미 지난 일정은 삭제할 수 없습니다. +
+삭제 시 참여자 전원의 활동 점수 -10이 차감되고 참여 기록이 삭제됩니다.
+
+==== HTTP Request
+include::{snippets}/deleteSchedule/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/deleteSchedule/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/deleteSchedule/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/deleteSchedule/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/deleteSchedule/response-fields.adoc[]
 
 '''
 
