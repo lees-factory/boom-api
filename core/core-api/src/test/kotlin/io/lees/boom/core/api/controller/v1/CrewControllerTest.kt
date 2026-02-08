@@ -23,6 +23,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
 import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest
@@ -110,7 +111,11 @@ class CrewControllerTest : RestDocsTest() {
                         headerWithName("Authorization").description("Bearer {accessToken}"),
                     ),
                     requestParts(
-                        partWithName("request").description("크루 생성 요청 JSON (name, description, maxMemberCount, latitude, longitude, address)"),
+                        partWithName(
+                            "request",
+                        ).description(
+                            "크루 생성 요청 JSON (name, description, maxMemberCount, latitude, longitude, address)",
+                        ),
                         partWithName("crewImage").description("크루 이미지 파일").optional(),
                     ),
                     responseFields(
@@ -617,6 +622,150 @@ class CrewControllerTest : RestDocsTest() {
                             "data[].profileImage",
                         ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
                         fieldWithPath("data[].participatedAt").type(JsonFieldType.STRING).description("참여 일시"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun leaveCrew() {
+        // given
+        val memberId = 2L
+        val crewId = 1L
+
+        justRun { crewService.leaveCrew(any(), any()) }
+
+        // when & then
+        mockMvc
+            .perform(
+                delete("/api/v1/crews/{crewId}/leave", crewId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "leaveCrew",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("탈퇴할 크루 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun deleteCrew() {
+        // given
+        val memberId = 1L
+        val crewId = 1L
+
+        justRun { crewService.deleteCrew(any(), any()) }
+
+        // when & then
+        mockMvc
+            .perform(
+                delete("/api/v1/crews/{crewId}", crewId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "deleteCrew",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("삭제할 크루 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun cancelScheduleParticipation() {
+        // given
+        val memberId = 1L
+        val crewId = 1L
+        val scheduleId = 1L
+
+        justRun { crewService.cancelScheduleParticipation(any(), any(), any()) }
+
+        // when & then
+        mockMvc
+            .perform(
+                delete("/api/v1/crews/{crewId}/schedules/{scheduleId}/participate", crewId, scheduleId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "cancelScheduleParticipation",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("크루 ID"),
+                        parameterWithName("scheduleId").description("일정 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun deleteSchedule() {
+        // given
+        val memberId = 1L
+        val crewId = 1L
+        val scheduleId = 1L
+
+        justRun { crewService.deleteSchedule(any(), any(), any()) }
+
+        // when & then
+        mockMvc
+            .perform(
+                delete("/api/v1/crews/{crewId}/schedules/{scheduleId}", crewId, scheduleId)
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "deleteSchedule",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("크루 ID"),
+                        parameterWithName("scheduleId").description("삭제할 일정 ID"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
