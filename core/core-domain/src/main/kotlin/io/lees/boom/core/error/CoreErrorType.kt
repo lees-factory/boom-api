@@ -36,12 +36,34 @@ enum class CoreErrorType(
     CREW_ALREADY_JOINED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3003, "이미 가입된 크루입니다.", CoreErrorLevel.INFO),
     CREW_MEMBER_LIMIT_EXCEEDED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3004, "크루 정원이 초과되었습니다.", CoreErrorLevel.INFO),
 
+    // 크루 탈퇴/삭제
+    CREW_NOT_MEMBER(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3005, "크루 멤버가 아닙니다.", CoreErrorLevel.INFO),
+    CREW_LEADER_CANNOT_LEAVE(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3006,
+        "리더는 크루를 탈퇴할 수 없습니다. 크루 삭제를 이용해주세요.",
+        CoreErrorLevel.INFO,
+    ),
+    CREW_DELETE_NOT_ALLOWED(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3007,
+        "다른 멤버가 존재하여 크루를 삭제할 수 없습니다.",
+        CoreErrorLevel.INFO,
+    ),
+
     // 크루 일정 참여
     SCHEDULE_NOT_FOUND(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3100, "일정을 찾을 수 없습니다.", CoreErrorLevel.INFO),
     SCHEDULE_ALREADY_PARTICIPATED(
         CoreErrorKind.CLIENT_ERROR,
         CoreErrorCode.B3101,
         "이미 참여한 일정입니다.",
+        CoreErrorLevel.INFO,
+    ),
+    SCHEDULE_NOT_PARTICIPATED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3102, "참여하지 않은 일정입니다.", CoreErrorLevel.INFO),
+    SCHEDULE_ALREADY_PASSED(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3103,
+        "이미 지난 일정은 삭제할 수 없습니다.",
         CoreErrorLevel.INFO,
     ),
 

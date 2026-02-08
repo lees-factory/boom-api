@@ -10,6 +10,8 @@ class CrewReader(
 
     fun readById(crewId: Long): Crew? = crewRepository.findCrewById(crewId)
 
+    fun readByIdForUpdate(crewId: Long): Crew? = crewRepository.findCrewByIdForUpdate(crewId)
+
     // [추가] 동네 크루 찾기
     fun readLocalCrews(
         latitude: Double,

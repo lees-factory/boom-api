@@ -18,4 +18,9 @@ interface MemberRepository {
         memberId: Long,
         score: Int,
     )
+
+    fun decrementActivityScore(
+        memberId: Long,
+        score: Int,
+    )
 }

@@ -17,4 +17,7 @@ class CrewScheduleReader(
 
     fun readParticipants(scheduleId: Long): List<CrewScheduleParticipantInfo> =
         crewScheduleRepository.findParticipantsByScheduleId(scheduleId)
+
+    fun readParticipantMemberIds(scheduleId: Long): List<Long> =
+        crewScheduleRepository.findParticipantMemberIdsByScheduleId(scheduleId)
 }
