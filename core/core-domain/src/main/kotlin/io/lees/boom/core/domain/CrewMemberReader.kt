@@ -18,4 +18,6 @@ class CrewMemberReader(
         crewId: Long,
         memberId: Long,
     ): CrewMember? = crewRepository.findMemberByCrewIdAndMemberId(crewId, memberId)
+
+    fun countLeaders(crewId: Long): Long = crewRepository.countLeadersByCrewId(crewId)
 }

@@ -20,6 +20,8 @@ interface CrewRepository {
 
     fun findCrewById(crewId: Long): Crew?
 
+    fun findCrewByIdForUpdate(crewId: Long): Crew?
+
     fun findCrewIdsByMemberId(memberId: Long): List<Long>
 
     fun findMemberIdsByCrewIds(crewIds: List<Long>): Set<Long>
@@ -34,6 +36,16 @@ interface CrewRepository {
     ): CrewMember?
 
     fun incrementMemberCount(crewId: Long)
+
+    fun decrementMemberCount(crewId: Long)
+
+    fun softDeleteCrew(crewId: Long)
+
+    fun softDeleteMember(crewMemberId: Long)
+
+    fun softDeleteAllMembersByCrewId(crewId: Long)
+
+    fun countLeadersByCrewId(crewId: Long): Long
 
     fun findCrewsByLocation(
         latitude: Double,

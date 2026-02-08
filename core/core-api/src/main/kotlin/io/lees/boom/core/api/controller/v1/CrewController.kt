@@ -168,6 +168,60 @@ class CrewController(
     }
 
     /**
+     * 크루 탈퇴 (MEMBER/GUEST 전용)
+     * [DELETE] /api/v1/crews/{crewId}/leave
+     */
+    @DeleteMapping("/{crewId}/leave")
+    fun leaveCrew(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+    ): ApiResponse<Any> {
+        crewService.leaveCrew(crewId, memberId!!)
+        return ApiResponse.success()
+    }
+
+    /**
+     * 크루 삭제 (LEADER 전용, 혼자일 때만)
+     * [DELETE] /api/v1/crews/{crewId}
+     */
+    @DeleteMapping("/{crewId}")
+    fun deleteCrew(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+    ): ApiResponse<Any> {
+        crewService.deleteCrew(crewId, memberId!!)
+        return ApiResponse.success()
+    }
+
+    /**
+     * 크루 일정 참여 취소
+     * [DELETE] /api/v1/crews/{crewId}/schedules/{scheduleId}/participate
+     */
+    @DeleteMapping("/{crewId}/schedules/{scheduleId}/participate")
+    fun cancelScheduleParticipation(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @PathVariable scheduleId: Long,
+    ): ApiResponse<Any> {
+        crewService.cancelScheduleParticipation(crewId, scheduleId, memberId!!)
+        return ApiResponse.success()
+    }
+
+    /**
+     * 크루 일정 삭제
+     * [DELETE] /api/v1/crews/{crewId}/schedules/{scheduleId}
+     */
+    @DeleteMapping("/{crewId}/schedules/{scheduleId}")
+    fun deleteSchedule(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @PathVariable scheduleId: Long,
+    ): ApiResponse<Any> {
+        crewService.deleteSchedule(crewId, scheduleId, memberId!!)
+        return ApiResponse.success()
+    }
+
+    /**
      * 동네 크루 찾기
      * [GET] /api/v1/crews/local?lat=37.123&lon=127.123
      */

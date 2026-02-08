@@ -58,6 +58,8 @@ internal class CrewCoreRepository(
 
     override fun findCrewById(crewId: Long): Crew? = crewJpaRepository.findByIdOrNull(crewId)?.toDomain()
 
+    override fun findCrewByIdForUpdate(crewId: Long): Crew? = crewJpaRepository.findByIdForUpdate(crewId)?.toDomain()
+
     override fun findCrewIdsByMemberId(memberId: Long): List<Long> =
         crewMemberJpaRepository.findByMemberId(memberId).map { it.crewId }
 
@@ -78,6 +80,29 @@ internal class CrewCoreRepository(
     override fun incrementMemberCount(crewId: Long) {
         crewJpaRepository.incrementMemberCount(crewId)
     }
+
+    @Transactional
+    override fun decrementMemberCount(crewId: Long) {
+        crewJpaRepository.decrementMemberCount(crewId)
+    }
+
+    @Transactional
+    override fun softDeleteCrew(crewId: Long) {
+        crewJpaRepository.softDelete(crewId)
+    }
+
+    @Transactional
+    override fun softDeleteMember(crewMemberId: Long) {
+        crewMemberJpaRepository.softDeleteById(crewMemberId)
+    }
+
+    @Transactional
+    override fun softDeleteAllMembersByCrewId(crewId: Long) {
+        crewMemberJpaRepository.softDeleteByCrewId(crewId)
+    }
+
+    override fun countLeadersByCrewId(crewId: Long): Long =
+        crewMemberJpaRepository.countByCrewIdAndRole(crewId, CrewRole.LEADER)
 
     override fun findCrewsByLocation(
         latitude: Double,

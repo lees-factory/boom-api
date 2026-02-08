@@ -4,6 +4,7 @@ import io.lees.boom.core.domain.CrewSchedule
 import io.lees.boom.core.domain.CrewScheduleParticipant
 import io.lees.boom.core.domain.CrewScheduleParticipantInfo
 import io.lees.boom.core.domain.CrewScheduleRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
@@ -32,6 +33,27 @@ internal class CrewScheduleCoreRepository(
 
     override fun findParticipantsByScheduleId(scheduleId: Long): List<CrewScheduleParticipantInfo> =
         crewScheduleParticipantJpaRepository.findParticipantsWithInfo(scheduleId).map { it.toDomain() }
+
+    @Transactional
+    override fun deleteParticipant(
+        scheduleId: Long,
+        memberId: Long,
+    ) {
+        crewScheduleParticipantJpaRepository.deleteByScheduleIdAndMemberId(scheduleId, memberId)
+    }
+
+    @Transactional
+    override fun deleteSchedule(scheduleId: Long) {
+        crewScheduleJpaRepository.deleteById(scheduleId)
+    }
+
+    @Transactional
+    override fun deleteParticipantsByScheduleId(scheduleId: Long) {
+        crewScheduleParticipantJpaRepository.deleteAllByScheduleId(scheduleId)
+    }
+
+    override fun findParticipantMemberIdsByScheduleId(scheduleId: Long): List<Long> =
+        crewScheduleParticipantJpaRepository.findAllByScheduleId(scheduleId).map { it.memberId }
 
     // CrewSchedule Mappers
     private fun CrewSchedule.toEntity() =

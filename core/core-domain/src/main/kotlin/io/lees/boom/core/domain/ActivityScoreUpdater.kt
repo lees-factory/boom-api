@@ -18,6 +18,10 @@ class ActivityScoreUpdater(
         memberRepository.incrementActivityScore(memberId, SCHEDULE_PARTICIPATE_SCORE)
     }
 
+    fun subtractScheduleParticipateScore(memberId: Long) {
+        memberRepository.decrementActivityScore(memberId, SCHEDULE_PARTICIPATE_SCORE)
+    }
+
     fun addGymVisitScore(memberId: Long) {
         memberRepository.incrementActivityScore(memberId, GYM_VISIT_SCORE)
     }

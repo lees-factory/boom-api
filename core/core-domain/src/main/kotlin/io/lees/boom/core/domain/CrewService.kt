@@ -3,6 +3,7 @@ package io.lees.boom.core.domain
 import io.lees.boom.core.enums.CrewRole
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -51,8 +52,10 @@ class CrewService(
             ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
 
     /**
-     * 크루 가입하기 (초대/직접 가입 등 흐름에 따라 메서드 분화 가능)
+     * 크루 가입하기
+     * 비관적 락으로 크루 삭제와의 동시성 보장
      */
+    @Transactional
     fun joinCrew(
         memberId: Long,
         crewId: Long,
@@ -62,9 +65,9 @@ class CrewService(
             throw CoreException(CoreErrorType.CREW_ALREADY_JOINED)
         }
 
-        // 크루 정원 초과 여부 확인
+        // 비관적 락으로 크루 조회 (삭제와 동시성 보장)
         val crew =
-            crewReader.readById(crewId)
+            crewReader.readByIdForUpdate(crewId)
                 ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
 
         if (crew.memberCount >= crew.maxMemberCount) {
@@ -183,6 +186,128 @@ class CrewService(
             ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
 
         return crewScheduleReader.readParticipants(scheduleId)
+    }
+
+    /**
+     * 크루 탈퇴 (MEMBER/GUEST만 가능)
+     * LEADER는 크루 삭제(deleteCrew)를 이용해야 함
+     */
+    @Transactional
+    fun leaveCrew(
+        crewId: Long,
+        memberId: Long,
+    ) {
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_NOT_MEMBER)
+
+        if (crewMember.role == CrewRole.LEADER) {
+            throw CoreException(CoreErrorType.CREW_LEADER_CANNOT_LEAVE)
+        }
+
+        crewAppender.softDeleteMember(crewMember.id!!)
+        crewAppender.decrementMemberCount(crewId)
+    }
+
+    /**
+     * 크루 삭제 (LEADER 전용, 혼자일 때만)
+     * 비관적 락으로 크루 가입과의 동시성 보장
+     */
+    @Transactional
+    fun deleteCrew(
+        crewId: Long,
+        memberId: Long,
+    ) {
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_NOT_MEMBER)
+
+        if (crewMember.role != CrewRole.LEADER) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+        }
+
+        // 비관적 락으로 크루 조회 (가입과 동시성 보장)
+        val crew =
+            crewReader.readByIdForUpdate(crewId)
+                ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
+
+        // 리더 혼자일 때만 삭제 가능 (서버 사이드 검증)
+        if (crew.memberCount > 1) {
+            throw CoreException(CoreErrorType.CREW_DELETE_NOT_ALLOWED)
+        }
+
+        crewAppender.softDeleteAllMembersByCrewId(crewId)
+        crewAppender.softDeleteCrew(crewId)
+    }
+
+    /**
+     * 크루 일정 참여 취소
+     * 참여 기록 hard delete + 활동점수 -10
+     */
+    fun cancelScheduleParticipation(
+        crewId: Long,
+        scheduleId: Long,
+        memberId: Long,
+    ) {
+        // 크루 멤버 확인
+        crewMemberReader.readCrewMember(crewId, memberId)
+            ?: throw CoreException(CoreErrorType.CREW_NOT_MEMBER)
+
+        // 참여 기록 확인
+        crewScheduleReader.readParticipant(scheduleId, memberId)
+            ?: throw CoreException(CoreErrorType.SCHEDULE_NOT_PARTICIPATED)
+
+        // 참여 기록 삭제
+        crewScheduleAppender.removeParticipant(scheduleId, memberId)
+
+        // 활동점수 -10
+        activityScoreUpdater.subtractScheduleParticipateScore(memberId)
+    }
+
+    /**
+     * 크루 일정 삭제
+     * - LEADER 또는 일정 생성자만 삭제 가능
+     * - scheduledAt이 현재 시간 이후인 경우에만 삭제 가능
+     * - 참여자 전원 활동점수 -10 + 참여자/일정 hard delete
+     */
+    fun deleteSchedule(
+        crewId: Long,
+        scheduleId: Long,
+        memberId: Long,
+    ) {
+        // 크루 멤버 확인
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        // 일정 존재 + 크루 소속 확인
+        val schedule =
+            crewScheduleReader.readById(scheduleId)
+                ?: throw CoreException(CoreErrorType.SCHEDULE_NOT_FOUND)
+
+        if (schedule.crewId != crewId) {
+            throw CoreException(CoreErrorType.SCHEDULE_NOT_FOUND)
+        }
+
+        // LEADER 또는 일정 생성자만 삭제 가능
+        if (crewMember.role != CrewRole.LEADER && schedule.createdBy != memberId) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+        }
+
+        // 이미 지난 일정은 삭제 불가
+        if (schedule.scheduledAt.isBefore(LocalDateTime.now())) {
+            throw CoreException(CoreErrorType.SCHEDULE_ALREADY_PASSED)
+        }
+
+        // 참여자 활동점수 차감
+        val participantMemberIds = crewScheduleReader.readParticipantMemberIds(scheduleId)
+        participantMemberIds.forEach { participantMemberId ->
+            activityScoreUpdater.subtractScheduleParticipateScore(participantMemberId)
+        }
+
+        // 참여자 전원 삭제 → 일정 삭제
+        crewScheduleAppender.removeParticipantsByScheduleId(scheduleId)
+        crewScheduleAppender.removeSchedule(scheduleId)
     }
 
     /**

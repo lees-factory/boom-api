@@ -1,16 +1,36 @@
 package io.lees.boom.storage.db.core
 
+import jakarta.persistence.LockModeType
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface CrewJpaRepository : JpaRepository<CrewEntity, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM CrewEntity c WHERE c.id = :crewId")
+    fun findByIdForUpdate(
+        @Param("crewId") crewId: Long,
+    ): CrewEntity?
+
     @Modifying
     @Query("UPDATE CrewEntity c SET c.memberCount = c.memberCount + 1 WHERE c.id = :crewId")
     fun incrementMemberCount(
+        @Param("crewId") crewId: Long,
+    )
+
+    @Modifying
+    @Query("UPDATE CrewEntity c SET c.memberCount = c.memberCount - 1 WHERE c.id = :crewId AND c.memberCount > 0")
+    fun decrementMemberCount(
+        @Param("crewId") crewId: Long,
+    )
+
+    @Modifying
+    @Query("UPDATE CrewEntity c SET c.deletedAt = CURRENT_TIMESTAMP WHERE c.id = :crewId")
+    fun softDelete(
         @Param("crewId") crewId: Long,
     )
 

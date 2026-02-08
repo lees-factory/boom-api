@@ -5,7 +5,6 @@ import io.lees.boom.core.api.controller.v1.request.TokenRefreshRequest
 import io.lees.boom.core.api.controller.v1.response.MemberLoginResponse
 import io.lees.boom.core.api.controller.v1.response.MemberProfileResponse
 import io.lees.boom.core.api.controller.v1.response.MemberResponse
-import io.lees.boom.core.domain.BadgeService
 import io.lees.boom.core.domain.MemberService
 import io.lees.boom.core.domain.ProfileImageInput
 import io.lees.boom.core.domain.SocialLoginService
@@ -26,18 +25,16 @@ import org.springframework.web.multipart.MultipartFile
 class MemberController(
     private val socialLoginService: SocialLoginService,
     private val memberService: MemberService,
-    private val badgeService: BadgeService,
 ) {
     /**
-     * 내 정보 조회 (뱃지 on-demand 계산 포함)
+     * 내 정보 조회
      */
     @GetMapping("/me")
     fun getMe(
         @User memberId: Long,
     ): ApiResponse<MemberProfileResponse> {
         val member = memberService.getMe(memberId)
-        val badges = badgeService.getMyBadges(memberId)
-        return ApiResponse.success(MemberProfileResponse.of(member, badges))
+        return ApiResponse.success(MemberProfileResponse.of(member))
     }
 
     /**
@@ -49,8 +46,7 @@ class MemberController(
         @PathVariable memberId: Long,
     ): ApiResponse<MemberProfileResponse> {
         val member = memberService.getMember(memberId)
-        val badges = badgeService.getMemberBadges(memberId)
-        return ApiResponse.success(MemberProfileResponse.of(member, badges))
+        return ApiResponse.success(MemberProfileResponse.of(member))
     }
 
     /**

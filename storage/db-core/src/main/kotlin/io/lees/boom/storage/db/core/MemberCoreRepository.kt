@@ -39,6 +39,14 @@ internal class MemberCoreRepository(
         memberJpaRepository.incrementActivityScore(memberId, score)
     }
 
+    @Transactional
+    override fun decrementActivityScore(
+        memberId: Long,
+        score: Int,
+    ) {
+        memberJpaRepository.decrementActivityScore(memberId, score)
+    }
+
     private fun Member.toEntity() =
         MemberEntity(
             name = this.name,

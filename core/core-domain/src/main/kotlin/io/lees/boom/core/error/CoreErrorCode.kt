@@ -20,9 +20,16 @@ enum class CoreErrorCode {
     B3003, // CREW_ALREADY_JOINED (이미 가입된 크루)
     B3004, // CREW_MEMBER_LIMIT_EXCEEDED (크루 정원 초과)
 
+    // 크루 탈퇴/삭제
+    B3005, // CREW_NOT_MEMBER (크루 멤버가 아님)
+    B3006, // CREW_LEADER_CANNOT_LEAVE (리더는 탈퇴 불가, 크루 삭제 사용)
+    B3007, // CREW_DELETE_NOT_ALLOWED (크루 삭제 불가 - 다른 멤버 존재)
+
     // 크루 일정 참여
     B3100, // SCHEDULE_NOT_FOUND
     B3101, // SCHEDULE_ALREADY_PARTICIPATED
+    B3102, // SCHEDULE_NOT_PARTICIPATED (일정 참여 기록 없음)
+    B3103, // SCHEDULE_ALREADY_PASSED (이미 지난 일정)
 
     // 짐 (Gym) - [추가]
     B4000, // ALREADY_ADMITTED (이미 입장 중)
