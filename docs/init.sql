@@ -176,3 +176,25 @@ ALTER TABLE crew ADD COLUMN crew_image character varying;
 -- 크루 탈퇴(MEMBER/GUEST) 및 크루 삭제(LEADER) 시 soft delete 처리
 ALTER TABLE crew ADD COLUMN deleted_at timestamp without time zone;
 ALTER TABLE crew_member ADD COLUMN deleted_at timestamp without time zone;
+
+-- [2026-02-10] member_count 비정규화 컬럼 제거
+-- 카운터 동기화 문제 방지. crew_member COUNT로 대체 (Repository 계층에서 조회)
+ALTER TABLE crew DROP COLUMN member_count;
+
+-- [2026-02-10] CrewChatMessage (크루 채팅) 테이블 추가
+-- Supabase Realtime (Postgres Changes) 기반 크루 채팅. INSERT 발생 시 Supabase가 실시간 전달.
+-- 도배 방지: 1초에 5건 제한 (DB COUNT 기반, 추후 Redis 업그레이드 가능)
+CREATE TABLE public.crew_chat_message (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    crew_id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    content text NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT crew_chat_message_pkey PRIMARY KEY (id)
+);
+-- 크루별 채팅 이력 조회용 인덱스 (커서 페이지네이션: WHERE crew_id = ? AND id < cursor ORDER BY id DESC)
+CREATE INDEX idx_crew_chat_message_crew ON public.crew_chat_message (crew_id, id DESC);
+-- 도배 방지 속도 제한용 인덱스 (COUNT WHERE crew_id = ? AND member_id = ? AND created_at >= ?)
+CREATE INDEX idx_crew_chat_message_rate_limit ON public.crew_chat_message (crew_id, member_id, created_at);

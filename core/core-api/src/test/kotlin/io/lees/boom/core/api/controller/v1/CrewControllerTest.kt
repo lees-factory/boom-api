@@ -1,8 +1,10 @@
 package io.lees.boom.core.api.controller.v1
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jsonMapper
 import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
+import io.lees.boom.core.api.controller.v1.request.CrewUpdateRequest
 import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewMemberInfo
 import io.lees.boom.core.domain.CrewRankingInfo
@@ -121,6 +123,65 @@ class CrewControllerTest : RestDocsTest() {
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과 (SUCCESS/ERROR)"),
                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 크루 ID"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun updateCrew() {
+        // given
+        val memberId = 1L
+        val crewId = 1L
+        val request = CrewUpdateRequest(maxMemberCount = 50)
+
+        justRun { crewService.updateCrew(any(), any(), any(), any()) }
+
+        val requestPart =
+            MockMultipartFile(
+                "request",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                jacksonObjectMapper().writeValueAsBytes(request),
+            )
+        val crewImageFile =
+            MockMultipartFile(
+                "crewImage",
+                "crew-image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-content".toByteArray(),
+            )
+
+        // when & then
+        mockMvc
+            .perform(
+                multipart("/api/v1/crews/{crewId}", crewId)
+                    .file(requestPart)
+                    .file(crewImageFile)
+                    .with {
+                        it.method = "PATCH"
+                        it
+                    }.with(authenticatedUser(memberId)),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "updateCrew",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    pathParameters(
+                        parameterWithName("crewId").description("수정할 크루 ID"),
+                    ),
+                    requestParts(
+                        partWithName("request").description("크루 수정 요청 JSON (maxMemberCount)").optional(),
+                        partWithName("crewImage").description("변경할 크루 이미지 파일").optional(),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -585,12 +646,14 @@ class CrewControllerTest : RestDocsTest() {
                     name = "홍길동",
                     profileImage = "https://example.com/profile1.jpg",
                     participatedAt = LocalDateTime.of(2026, 3, 15, 14, 5),
+                    isCreator = true,
                 ),
                 CrewScheduleParticipantInfo(
                     memberId = 2L,
                     name = "김철수",
                     profileImage = null,
                     participatedAt = LocalDateTime.of(2026, 3, 15, 14, 10),
+                    isCreator = false,
                 ),
             )
 
@@ -622,6 +685,7 @@ class CrewControllerTest : RestDocsTest() {
                             "data[].profileImage",
                         ).type(JsonFieldType.STRING).description("프로필 이미지 URL").optional(),
                         fieldWithPath("data[].participatedAt").type(JsonFieldType.STRING).description("참여 일시"),
+                        fieldWithPath("data[].isCreator").type(JsonFieldType.BOOLEAN).description("일정 생성자 여부"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

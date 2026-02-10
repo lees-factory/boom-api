@@ -50,6 +50,12 @@ enum class CoreErrorType(
         "다른 멤버가 존재하여 크루를 삭제할 수 없습니다.",
         CoreErrorLevel.INFO,
     ),
+    CREW_MAX_MEMBER_COUNT_TOO_SMALL(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3008,
+        "최대 인원은 현재 인원보다 적을 수 없습니다.",
+        CoreErrorLevel.INFO,
+    ),
 
     // 크루 일정 참여
     SCHEDULE_NOT_FOUND(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B3100, "일정을 찾을 수 없습니다.", CoreErrorLevel.INFO),
@@ -64,6 +70,20 @@ enum class CoreErrorType(
         CoreErrorKind.CLIENT_ERROR,
         CoreErrorCode.B3103,
         "이미 지난 일정은 삭제할 수 없습니다.",
+        CoreErrorLevel.INFO,
+    ),
+
+    // 크루 채팅
+    CHAT_RATE_LIMIT_EXCEEDED(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3200,
+        "메시지 전송이 너무 빠릅니다. 잠시 후 다시 시도해주세요.",
+        CoreErrorLevel.INFO,
+    ),
+    CHAT_MESSAGE_NOT_FOUND(
+        CoreErrorKind.CLIENT_ERROR,
+        CoreErrorCode.B3201,
+        "메시지를 찾을 수 없습니다.",
         CoreErrorLevel.INFO,
     ),
 

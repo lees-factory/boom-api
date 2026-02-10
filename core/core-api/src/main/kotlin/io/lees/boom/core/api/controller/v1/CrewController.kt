@@ -2,6 +2,7 @@ package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.api.controller.v1.request.CrewScheduleCreateRequest
+import io.lees.boom.core.api.controller.v1.request.CrewUpdateRequest
 import io.lees.boom.core.api.controller.v1.response.CrewIdResponse
 import io.lees.boom.core.api.controller.v1.response.CrewMemberResponse
 import io.lees.boom.core.api.controller.v1.response.CrewRankingResponse
@@ -52,6 +53,36 @@ class CrewController(
                 address = request.address,
             )
         return ApiResponse.success(CrewIdResponse(createdCrew.id!!))
+    }
+
+    /**
+     * 크루 수정 (LEADER 전용)
+     * [PATCH] /api/v1/crews/{crewId}
+     * 인원수, 이미지만 변경 가능
+     */
+    @PatchMapping("/{crewId}")
+    fun updateCrew(
+        @User memberId: Long?,
+        @PathVariable crewId: Long,
+        @RequestPart(required = false) request: CrewUpdateRequest?,
+        @RequestPart(required = false) crewImage: MultipartFile?,
+    ): ApiResponse<Any> {
+        val imageInput =
+            crewImage?.let {
+                CrewImageInput(
+                    inputStream = it.inputStream,
+                    contentType = it.contentType ?: "image/jpeg",
+                    contentLength = it.size,
+                )
+            }
+
+        crewService.updateCrew(
+            crewId = crewId,
+            memberId = memberId!!,
+            crewImageInput = imageInput,
+            maxMemberCount = request?.maxMemberCount,
+        )
+        return ApiResponse.success()
     }
 
     /**

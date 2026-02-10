@@ -127,6 +127,33 @@ include::{snippets}/createCrew/response-fields.adoc[]
 
 '''
 
+=== 크루 수정 (Update Crew)
+크루 정보를 수정합니다. +
+LEADER만 수정할 수 있으며, 최대 인원수와 크루 이미지만 변경 가능합니다. +
+`multipart/form-data` 형식으로 전송합니다. 모든 필드는 선택사항이며, 전달된 필드만 업데이트됩니다.
+
+NOTE: 최대 인원수는 현재 멤버 수보다 적게 설정할 수 없습니다.
+
+==== HTTP Request
+include::{snippets}/updateCrew/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/updateCrew/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/updateCrew/path-parameters.adoc[]
+
+==== Request Parts
+include::{snippets}/updateCrew/request-parts.adoc[]
+
+==== HTTP Response
+include::{snippets}/updateCrew/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/updateCrew/response-fields.adoc[]
+
+'''
+
 === 크루 상세 조회 (Get Crew Detail)
 크루 상세 정보를 조회합니다. +
 내 크루 상세 조회, 동네 크루 상세 조회 모두 이 API를 사용합니다.
@@ -373,6 +400,76 @@ include::{snippets}/deleteSchedule/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/deleteSchedule/response-fields.adoc[]
+
+'''
+
+=== 채팅 메시지 전송 (Send Chat Message)
+크루 채팅 메시지를 전송합니다. +
+크루 멤버만 전송할 수 있으며, 도배 방지를 위해 1초에 5건까지만 전송 가능합니다.
+
+==== HTTP Request
+include::{snippets}/sendChatMessage/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/sendChatMessage/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/sendChatMessage/path-parameters.adoc[]
+
+==== Request Fields
+include::{snippets}/sendChatMessage/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/sendChatMessage/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/sendChatMessage/response-fields.adoc[]
+
+'''
+
+=== 채팅 이력 조회 (Get Chat Messages)
+크루 채팅 메시지 이력을 조회합니다. +
+크루 멤버만 조회할 수 있으며, 커서 기반 페이지네이션을 사용합니다. +
+`cursor`를 생략하면 최신 메시지부터 조회하며, 기본 조회 개수는 10건입니다.
+
+==== HTTP Request
+include::{snippets}/getChatMessages/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/getChatMessages/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/getChatMessages/path-parameters.adoc[]
+
+==== Query Parameters
+include::{snippets}/getChatMessages/query-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/getChatMessages/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getChatMessages/response-fields.adoc[]
+
+'''
+
+=== 채팅 메시지 삭제 (Delete Chat Message)
+크루 채팅 메시지를 삭제합니다. +
+메시지 작성자 또는 크루 LEADER만 삭제할 수 있습니다.
+
+==== HTTP Request
+include::{snippets}/deleteChatMessage/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/deleteChatMessage/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/deleteChatMessage/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/deleteChatMessage/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/deleteChatMessage/response-fields.adoc[]
 
 '''
 

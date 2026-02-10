@@ -7,4 +7,5 @@ data class CrewScheduleParticipantInfo(
     val name: String,
     val profileImage: String?,
     val participatedAt: LocalDateTime,
+    val isCreator: Boolean = false,
 )
