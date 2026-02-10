@@ -45,6 +45,44 @@ class CrewService(
     }
 
     /**
+     * 크루 수정 (LEADER 전용)
+     * 인원수, 이미지만 변경 가능
+     */
+    @Transactional
+    fun updateCrew(
+        crewId: Long,
+        memberId: Long,
+        crewImageInput: CrewImageInput?,
+        maxMemberCount: Int?,
+    ) {
+        val crewMember =
+            crewMemberReader.readCrewMember(crewId, memberId)
+                ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+
+        if (crewMember.role != CrewRole.LEADER) {
+            throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
+        }
+
+        // maxMemberCount 검증: 현재 인원보다 적게 설정 불가
+        if (maxMemberCount != null) {
+            val crew =
+                crewReader.readById(crewId)
+                    ?: throw CoreException(CoreErrorType.CREW_NOT_FOUND)
+            if (maxMemberCount < crew.memberCount) {
+                throw CoreException(CoreErrorType.CREW_MAX_MEMBER_COUNT_TOO_SMALL)
+            }
+        }
+
+        val crewImageUrl =
+            crewImageInput?.let {
+                val path = "crew/${UUID.randomUUID()}"
+                imageStorage.upload(path, it.inputStream, it.contentType, it.contentLength)
+            }
+
+        crewAppender.updateCrew(crewId, maxMemberCount, crewImageUrl)
+    }
+
+    /**
      * 크루 상세 조회
      */
     fun getCrew(crewId: Long): Crew =
@@ -75,7 +113,7 @@ class CrewService(
         }
 
         val newMember = CrewMember.createMember(crewId, memberId)
-        crewAppender.appendMemberWithCount(newMember)
+        crewAppender.appendMember(newMember)
     }
 
     /**
@@ -117,7 +155,14 @@ class CrewService(
                 scheduledAt = scheduledAt,
                 createdBy = memberId,
             )
-        return crewScheduleAppender.append(schedule)
+        val savedSchedule = crewScheduleAppender.append(schedule)
+
+        // 생성자를 자동으로 참여자에 추가
+        val participant = CrewScheduleParticipant.create(savedSchedule.id!!, memberId)
+        crewScheduleAppender.appendParticipant(participant)
+        activityScoreUpdater.addScheduleParticipateScore(memberId)
+
+        return savedSchedule
     }
 
     /**
@@ -185,7 +230,13 @@ class CrewService(
         crewMemberReader.readCrewMember(crewId, memberId)
             ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
 
-        return crewScheduleReader.readParticipants(scheduleId)
+        val schedule =
+            crewScheduleReader.readById(scheduleId)
+                ?: throw CoreException(CoreErrorType.SCHEDULE_NOT_FOUND)
+
+        return crewScheduleReader.readParticipants(scheduleId).map {
+            it.copy(isCreator = it.memberId == schedule.createdBy)
+        }
     }
 
     /**
@@ -206,7 +257,6 @@ class CrewService(
         }
 
         crewAppender.softDeleteMember(crewMember.id!!)
-        crewAppender.decrementMemberCount(crewId)
     }
 
     /**

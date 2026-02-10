@@ -15,13 +15,15 @@ class CrewAppender(
         leaderId: Long,
     ): Crew = crewRepository.saveCrewWithLeader(crew, leaderId)
 
-    fun appendMemberWithCount(crewMember: CrewMember): CrewMember = crewRepository.addMemberWithCount(crewMember)
+    fun updateCrew(
+        crewId: Long,
+        maxMemberCount: Int?,
+        crewImage: String?,
+    ) = crewRepository.updateCrew(crewId, maxMemberCount, crewImage)
 
     fun softDeleteCrew(crewId: Long) = crewRepository.softDeleteCrew(crewId)
 
     fun softDeleteMember(crewMemberId: Long) = crewRepository.softDeleteMember(crewMemberId)
 
     fun softDeleteAllMembersByCrewId(crewId: Long) = crewRepository.softDeleteAllMembersByCrewId(crewId)
-
-    fun decrementMemberCount(crewId: Long) = crewRepository.decrementMemberCount(crewId)
 }

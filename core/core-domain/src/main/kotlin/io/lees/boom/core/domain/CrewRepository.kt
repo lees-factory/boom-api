@@ -6,17 +6,18 @@ interface CrewRepository {
     fun saveMember(crewMember: CrewMember): CrewMember
 
     /**
-     * 크루 생성 + 리더 등록 + 멤버 수 증가를 원자적으로 처리
+     * 크루 생성 + 리더 등록을 원자적으로 처리
      */
     fun saveCrewWithLeader(
         crew: Crew,
         leaderId: Long,
     ): Crew
 
-    /**
-     * 크루 멤버 저장 + 멤버 수 증가를 원자적으로 처리
-     */
-    fun addMemberWithCount(crewMember: CrewMember): CrewMember
+    fun updateCrew(
+        crewId: Long,
+        maxMemberCount: Int?,
+        crewImage: String?,
+    )
 
     fun findCrewById(crewId: Long): Crew?
 
@@ -34,10 +35,6 @@ interface CrewRepository {
         crewId: Long,
         memberId: Long,
     ): CrewMember?
-
-    fun incrementMemberCount(crewId: Long)
-
-    fun decrementMemberCount(crewId: Long)
 
     fun softDeleteCrew(crewId: Long)
 
