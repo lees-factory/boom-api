@@ -57,6 +57,8 @@ interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
         memberId: Long,
     ): CrewMemberEntity?
 
+    fun countByCrewId(crewId: Long): Long
+
     fun countByCrewIdAndRole(
         crewId: Long,
         role: CrewRole,

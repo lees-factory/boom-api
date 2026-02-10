@@ -17,18 +17,6 @@ interface CrewJpaRepository : JpaRepository<CrewEntity, Long> {
     ): CrewEntity?
 
     @Modifying
-    @Query("UPDATE CrewEntity c SET c.memberCount = c.memberCount + 1 WHERE c.id = :crewId")
-    fun incrementMemberCount(
-        @Param("crewId") crewId: Long,
-    )
-
-    @Modifying
-    @Query("UPDATE CrewEntity c SET c.memberCount = c.memberCount - 1 WHERE c.id = :crewId AND c.memberCount > 0")
-    fun decrementMemberCount(
-        @Param("crewId") crewId: Long,
-    )
-
-    @Modifying
     @Query("UPDATE CrewEntity c SET c.deletedAt = CURRENT_TIMESTAMP WHERE c.id = :crewId")
     fun softDelete(
         @Param("crewId") crewId: Long,
@@ -55,12 +43,13 @@ interface CrewJpaRepository : JpaRepository<CrewEntity, Long> {
     @Query(
         """
         SELECT c.id as crewId, c.name as name, c.description as description,
-               c.memberCount as memberCount, c.maxMemberCount as maxMemberCount,
+               (SELECT COUNT(cm2) FROM CrewMemberEntity cm2 WHERE cm2.crewId = c.id) as memberCount,
+               c.maxMemberCount as maxMemberCount,
                COALESCE(AVG(m.activityScore), 0) as avgScore
         FROM CrewEntity c
         LEFT JOIN CrewMemberEntity cm ON c.id = cm.crewId
         LEFT JOIN MemberEntity m ON cm.memberId = m.id
-        GROUP BY c.id, c.name, c.description, c.memberCount, c.maxMemberCount
+        GROUP BY c.id, c.name, c.description, c.maxMemberCount
         ORDER BY avgScore DESC
         """,
     )

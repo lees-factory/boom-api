@@ -44,21 +44,32 @@ internal class CrewCoreRepository(
                 role = CrewRole.LEADER,
             )
         crewMemberJpaRepository.save(leader)
-        crewJpaRepository.incrementMemberCount(crewId)
 
         return savedCrew
     }
 
     @Transactional
-    override fun addMemberWithCount(crewMember: CrewMember): CrewMember {
-        val saved = crewMemberJpaRepository.save(crewMember.toEntity()).toDomain()
-        crewJpaRepository.incrementMemberCount(crewMember.crewId)
-        return saved
+    override fun updateCrew(
+        crewId: Long,
+        maxMemberCount: Int?,
+        crewImage: String?,
+    ) {
+        val entity = crewJpaRepository.findByIdOrNull(crewId) ?: return
+        maxMemberCount?.let { entity.maxMemberCount = it }
+        crewImage?.let { entity.crewImage = it }
     }
 
-    override fun findCrewById(crewId: Long): Crew? = crewJpaRepository.findByIdOrNull(crewId)?.toDomain()
+    override fun findCrewById(crewId: Long): Crew? {
+        val entity = crewJpaRepository.findByIdOrNull(crewId) ?: return null
+        val memberCount = crewMemberJpaRepository.countByCrewId(crewId).toInt()
+        return entity.toDomain(memberCount)
+    }
 
-    override fun findCrewByIdForUpdate(crewId: Long): Crew? = crewJpaRepository.findByIdForUpdate(crewId)?.toDomain()
+    override fun findCrewByIdForUpdate(crewId: Long): Crew? {
+        val entity = crewJpaRepository.findByIdForUpdate(crewId) ?: return null
+        val memberCount = crewMemberJpaRepository.countByCrewId(crewId).toInt()
+        return entity.toDomain(memberCount)
+    }
 
     override fun findCrewIdsByMemberId(memberId: Long): List<Long> =
         crewMemberJpaRepository.findByMemberId(memberId).map { it.crewId }
@@ -76,15 +87,6 @@ internal class CrewCoreRepository(
         crewId: Long,
         memberId: Long,
     ): CrewMember? = crewMemberJpaRepository.findByCrewIdAndMemberId(crewId, memberId)?.toDomain()
-
-    override fun incrementMemberCount(crewId: Long) {
-        crewJpaRepository.incrementMemberCount(crewId)
-    }
-
-    @Transactional
-    override fun decrementMemberCount(crewId: Long) {
-        crewJpaRepository.decrementMemberCount(crewId)
-    }
 
     @Transactional
     override fun softDeleteCrew(crewId: Long) {
@@ -125,7 +127,10 @@ internal class CrewCoreRepository(
         return crewJpaRepository
             .findByLocation(minLat, maxLat, minLon, maxLon, pageRequest)
             .content
-            .map { it.toDomain() }
+            .map {
+                val memberCount = crewMemberJpaRepository.countByCrewId(it.id).toInt()
+                it.toDomain(memberCount)
+            }
     }
 
     override fun findCrewRanking(
@@ -136,7 +141,10 @@ internal class CrewCoreRepository(
         return crewJpaRepository
             .findByOrderByActivityScoreDesc(pageRequest)
             .content
-            .map { it.toDomain() }
+            .map {
+                val memberCount = crewMemberJpaRepository.countByCrewId(it.id).toInt()
+                it.toDomain(memberCount)
+            }
     }
 
     override fun findCrewRankingByAvgScore(
@@ -157,21 +165,20 @@ internal class CrewCoreRepository(
             description = this.description,
             crewImage = this.crewImage,
             maxMemberCount = this.maxMemberCount,
-            memberCount = this.memberCount,
             latitude = this.latitude,
             longitude = this.longitude,
             address = this.address,
             activityScore = this.activityScore,
         )
 
-    private fun CrewEntity.toDomain() =
+    private fun CrewEntity.toDomain(memberCount: Int = 0) =
         Crew(
             id = this.id,
             name = this.name,
             description = this.description,
             crewImage = this.crewImage,
             maxMemberCount = this.maxMemberCount,
-            memberCount = this.memberCount,
+            memberCount = memberCount,
             latitude = this.latitude,
             longitude = this.longitude,
             address = this.address,
