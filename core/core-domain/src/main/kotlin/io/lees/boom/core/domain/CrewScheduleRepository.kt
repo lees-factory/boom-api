@@ -5,6 +5,8 @@ interface CrewScheduleRepository {
 
     fun findByCrewId(crewId: Long): List<CrewSchedule>
 
+    fun findWithCreatorByCrewId(crewId: Long): List<CrewScheduleInfo>
+
     fun findById(scheduleId: Long): CrewSchedule?
 
     fun saveParticipant(participant: CrewScheduleParticipant): CrewScheduleParticipant

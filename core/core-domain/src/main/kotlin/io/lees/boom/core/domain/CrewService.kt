@@ -172,11 +172,11 @@ class CrewService(
     fun getSchedules(
         crewId: Long,
         memberId: Long,
-    ): List<CrewSchedule> {
+    ): List<CrewScheduleInfo> {
         crewMemberReader.readCrewMember(crewId, memberId)
             ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
 
-        return crewScheduleReader.readByCrewId(crewId)
+        return crewScheduleReader.readWithCreatorByCrewId(crewId)
     }
 
     /**
