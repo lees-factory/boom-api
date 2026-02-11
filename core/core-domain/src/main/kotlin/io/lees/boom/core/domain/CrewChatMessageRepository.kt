@@ -7,12 +7,12 @@ interface CrewChatMessageRepository {
 
     fun findById(messageId: Long): CrewChatMessage?
 
-    fun findMessagesWithInfo(
+    fun findMessages(
         crewId: Long,
         cursor: Long?,
         size: Int,
         blockedMemberIds: List<Long> = emptyList(),
-    ): List<CrewChatMessageInfo>
+    ): List<CrewChatMessage>
 
     fun countRecentMessages(
         crewId: Long,

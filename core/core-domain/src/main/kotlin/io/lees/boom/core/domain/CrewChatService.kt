@@ -11,6 +11,7 @@ class CrewChatService(
     private val crewChatMessageReader: CrewChatMessageReader,
     private val crewChatMessageAppender: CrewChatMessageAppender,
     private val crewMemberReader: CrewMemberReader,
+    private val memberFinder: MemberFinder,
     private val memberBlockService: MemberBlockService,
 ) {
     companion object {
@@ -22,7 +23,8 @@ class CrewChatService(
      * 메시지 전송
      * 1. 크루 멤버 검증
      * 2. 속도 제한 (1초에 5건)
-     * 3. 저장
+     * 3. 멤버 정보 조회 (반정규화 저장용)
+     * 4. 저장
      */
     fun sendMessage(
         crewId: Long,
@@ -38,7 +40,18 @@ class CrewChatService(
             throw CoreException(CoreErrorType.CHAT_RATE_LIMIT_EXCEEDED)
         }
 
-        val message = CrewChatMessage.create(crewId, memberId, content)
+        val member =
+            memberFinder.findById(memberId)
+                ?: throw CoreException(CoreErrorType.NOT_FOUND_MEMBER)
+
+        val message =
+            CrewChatMessage.create(
+                crewId = crewId,
+                memberId = memberId,
+                memberName = member.name,
+                memberProfileImage = member.profileImage,
+                content = content,
+            )
         return crewChatMessageAppender.append(message)
     }
 
@@ -51,7 +64,7 @@ class CrewChatService(
         memberId: Long,
         cursor: Long?,
         size: Int,
-    ): List<CrewChatMessageInfo> {
+    ): List<CrewChatMessage> {
         crewMemberReader.readCrewMember(crewId, memberId)
             ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
 

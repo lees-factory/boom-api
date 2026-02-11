@@ -11,6 +11,8 @@ import java.time.LocalDateTime
 class CrewChatMessageEntity(
     val crewId: Long,
     val memberId: Long,
+    val memberName: String,
+    val memberProfileImage: String? = null,
     val content: String,
     var deletedAt: LocalDateTime? = null,
 ) : BaseEntity()

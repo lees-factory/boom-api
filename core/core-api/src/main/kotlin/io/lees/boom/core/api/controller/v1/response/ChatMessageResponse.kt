@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.CrewChatMessageInfo
+import io.lees.boom.core.domain.CrewChatMessage
 import java.time.LocalDateTime
 
 data class ChatMessageResponse(
@@ -12,14 +12,14 @@ data class ChatMessageResponse(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(info: CrewChatMessageInfo): ChatMessageResponse =
+        fun from(message: CrewChatMessage): ChatMessageResponse =
             ChatMessageResponse(
-                messageId = info.messageId,
-                memberId = info.memberId,
-                memberName = info.memberName,
-                memberProfileImage = info.memberProfileImage,
-                content = info.content,
-                createdAt = info.createdAt,
+                messageId = message.id!!,
+                memberId = message.memberId,
+                memberName = message.memberName,
+                memberProfileImage = message.memberProfileImage,
+                content = message.content,
+                createdAt = message.createdAt!!,
             )
     }
 }
