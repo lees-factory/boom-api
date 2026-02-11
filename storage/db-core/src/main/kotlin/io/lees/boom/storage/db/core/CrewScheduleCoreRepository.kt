@@ -1,6 +1,7 @@
 package io.lees.boom.storage.db.core
 
 import io.lees.boom.core.domain.CrewSchedule
+import io.lees.boom.core.domain.CrewScheduleInfo
 import io.lees.boom.core.domain.CrewScheduleParticipant
 import io.lees.boom.core.domain.CrewScheduleParticipantInfo
 import io.lees.boom.core.domain.CrewScheduleRepository
@@ -18,6 +19,9 @@ internal class CrewScheduleCoreRepository(
 
     override fun findByCrewId(crewId: Long): List<CrewSchedule> =
         crewScheduleJpaRepository.findByCrewIdOrderByScheduledAtAsc(crewId).map { it.toDomain() }
+
+    override fun findWithCreatorByCrewId(crewId: Long): List<CrewScheduleInfo> =
+        crewScheduleJpaRepository.findWithCreatorByCrewId(crewId).map { it.toDomain() }
 
     override fun findById(scheduleId: Long): CrewSchedule? =
         crewScheduleJpaRepository.findByIdOrNull(scheduleId)?.toDomain()
@@ -91,6 +95,18 @@ internal class CrewScheduleCoreRepository(
             scheduleId = this.scheduleId,
             memberId = this.memberId,
             participatedAt = this.participatedAt,
+        )
+
+    private fun ScheduleWithCreatorProjection.toDomain() =
+        CrewScheduleInfo(
+            id = this.id,
+            crewId = this.crewId,
+            gymId = this.gymId,
+            title = this.title,
+            description = this.description,
+            scheduledAt = this.scheduledAt,
+            createdBy = this.createdBy,
+            createdByName = this.createdByName,
         )
 
     private fun ScheduleParticipantInfoProjection.toDomain() =
