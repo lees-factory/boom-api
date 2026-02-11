@@ -14,8 +14,7 @@ class CrewChatMessageReader(
         cursor: Long?,
         size: Int,
         blockedMemberIds: List<Long> = emptyList(),
-    ): List<CrewChatMessageInfo> =
-        crewChatMessageRepository.findMessagesWithInfo(crewId, cursor, size, blockedMemberIds)
+    ): List<CrewChatMessage> = crewChatMessageRepository.findMessages(crewId, cursor, size, blockedMemberIds)
 
     fun countRecentMessages(
         crewId: Long,

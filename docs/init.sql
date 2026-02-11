@@ -223,3 +223,41 @@ CREATE TABLE member_block (
 );
 
 
+- 1. 모든 주요 테이블에 대해 RLS(보안 기능) 활성화
+-- (이걸 실행하면 Supabase 보안 경고가 사라집니다.)
+ALTER TABLE public.crew ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crew_chat_message ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crew_member ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crew_schedule ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.crew_schedule_participant ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gym ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gym_active_visit ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gym_visit ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.member ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.member_badge ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.member_token ENABLE ROW LEVEL SECURITY;
+
+-- 2. 채팅 테이블(crew_chat_message)에만 "모든 권한 허용" 정책 추가
+-- (프론트엔드에서 읽기, 쓰기, 수정, 삭제가 모두 가능해집니다.)
+create policy "Allow all access for public"
+on public.crew_chat_message
+for all
+using (true)
+with check (true);
+
+
+alter publication supabase_realtime add table public.crew_chat_message;
+
+-- [2026-02-11] crew_chat_message 반정규화 (Supabase Realtime postgres_changes 지원)
+-- postgres_changes는 JOIN 데이터를 전달하지 않으므로, member 정보를 직접 저장
+-- 채팅 메시지는 전송 시점의 닉네임/프로필을 스냅샷으로 보존
+ALTER TABLE public.crew_chat_message ADD COLUMN member_name character varying;
+ALTER TABLE public.crew_chat_message ADD COLUMN member_profile_image character varying;
+
+-- 기존 데이터 보정 (member 테이블에서 이름/프로필 복사)
+UPDATE public.crew_chat_message cm
+SET member_name = m.name,
+    member_profile_image = m.profile_image
+FROM public.member m
+WHERE cm.member_id = m.id AND cm.member_name IS NULL;
+

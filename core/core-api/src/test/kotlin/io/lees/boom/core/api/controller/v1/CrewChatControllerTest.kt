@@ -2,7 +2,6 @@ package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.domain.CrewChatMessage
-import io.lees.boom.core.domain.CrewChatMessageInfo
 import io.lees.boom.core.domain.CrewChatService
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
@@ -54,6 +53,8 @@ class CrewChatControllerTest : RestDocsTest() {
                 id = 100L,
                 crewId = crewId,
                 memberId = memberId,
+                memberName = "홍길동",
+                memberProfileImage = "https://example.com/profile1.jpg",
                 content = "안녕하세요! 오늘 클라이밍 가실 분?",
                 createdAt = LocalDateTime.of(2026, 2, 10, 14, 30),
             )
@@ -105,16 +106,18 @@ class CrewChatControllerTest : RestDocsTest() {
         val crewId = 1L
         val messages =
             listOf(
-                CrewChatMessageInfo(
-                    messageId = 100L,
+                CrewChatMessage(
+                    id = 100L,
+                    crewId = crewId,
                     memberId = 1L,
                     memberName = "홍길동",
                     memberProfileImage = "https://example.com/profile1.jpg",
                     content = "안녕하세요! 오늘 클라이밍 가실 분?",
                     createdAt = LocalDateTime.of(2026, 2, 10, 14, 30),
                 ),
-                CrewChatMessageInfo(
-                    messageId = 99L,
+                CrewChatMessage(
+                    id = 99L,
+                    crewId = crewId,
                     memberId = 2L,
                     memberName = "김철수",
                     memberProfileImage = null,

@@ -1,7 +1,6 @@
 package io.lees.boom.storage.db.core
 
 import io.lees.boom.core.domain.CrewChatMessage
-import io.lees.boom.core.domain.CrewChatMessageInfo
 import io.lees.boom.core.domain.CrewChatMessageRepository
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
@@ -21,16 +20,16 @@ internal class CrewChatMessageCoreRepository(
     override fun findById(messageId: Long): CrewChatMessage? =
         crewChatMessageJpaRepository.findByIdOrNull(messageId)?.toDomain()
 
-    override fun findMessagesWithInfo(
+    override fun findMessages(
         crewId: Long,
         cursor: Long?,
         size: Int,
         blockedMemberIds: List<Long>,
-    ): List<CrewChatMessageInfo> {
+    ): List<CrewChatMessage> {
         val pageable = PageRequest.of(0, size)
         val blocked = blockedMemberIds.ifEmpty { null }
         return crewChatMessageJpaRepository
-            .findMessagesWithInfo(crewId, cursor, blocked, pageable)
+            .findMessages(crewId, cursor, blocked, pageable)
             .map { it.toDomain() }
     }
 
@@ -49,6 +48,8 @@ internal class CrewChatMessageCoreRepository(
         CrewChatMessageEntity(
             crewId = this.crewId,
             memberId = this.memberId,
+            memberName = this.memberName,
+            memberProfileImage = this.memberProfileImage,
             content = this.content,
         )
 
@@ -56,14 +57,6 @@ internal class CrewChatMessageCoreRepository(
         CrewChatMessage(
             id = this.id,
             crewId = this.crewId,
-            memberId = this.memberId,
-            content = this.content,
-            createdAt = this.createdAt,
-        )
-
-    private fun ChatMessageInfoProjection.toDomain() =
-        CrewChatMessageInfo(
-            messageId = this.messageId,
             memberId = this.memberId,
             memberName = this.memberName,
             memberProfileImage = this.memberProfileImage,
