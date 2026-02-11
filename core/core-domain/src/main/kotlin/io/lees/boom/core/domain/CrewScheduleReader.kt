@@ -8,7 +8,8 @@ class CrewScheduleReader(
 ) {
     fun readByCrewId(crewId: Long): List<CrewSchedule> = crewScheduleRepository.findByCrewId(crewId)
 
-    fun readWithCreatorByCrewId(crewId: Long): List<CrewScheduleInfo> = crewScheduleRepository.findWithCreatorByCrewId(crewId)
+    fun readWithCreatorByCrewId(crewId: Long): List<CrewScheduleInfo> =
+        crewScheduleRepository.findWithCreatorByCrewId(crewId)
 
     fun readById(scheduleId: Long): CrewSchedule? = crewScheduleRepository.findById(scheduleId)
 

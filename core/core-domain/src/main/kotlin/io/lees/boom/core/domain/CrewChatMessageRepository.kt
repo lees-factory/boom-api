@@ -11,6 +11,7 @@ interface CrewChatMessageRepository {
         crewId: Long,
         cursor: Long?,
         size: Int,
+        blockedMemberIds: List<Long> = emptyList(),
     ): List<CrewChatMessageInfo>
 
     fun countRecentMessages(
