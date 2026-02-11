@@ -25,12 +25,14 @@ interface CrewChatMessageJpaRepository : JpaRepository<CrewChatMessageEntity, Lo
         FROM CrewChatMessageEntity cm
         JOIN MemberEntity m ON cm.memberId = m.id
         WHERE cm.crewId = :crewId AND (:cursor IS NULL OR cm.id < :cursor)
+              AND (:blockedMemberIds IS NULL OR cm.memberId NOT IN :blockedMemberIds)
         ORDER BY cm.id DESC
         """,
     )
     fun findMessagesWithInfo(
         @Param("crewId") crewId: Long,
         @Param("cursor") cursor: Long?,
+        @Param("blockedMemberIds") blockedMemberIds: List<Long>?,
         pageable: Pageable,
     ): List<ChatMessageInfoProjection>
 

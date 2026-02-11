@@ -9,10 +9,16 @@ import io.lees.boom.core.domain.Crew
 import io.lees.boom.core.domain.CrewMemberInfo
 import io.lees.boom.core.domain.CrewRankingInfo
 import io.lees.boom.core.domain.CrewSchedule
+import io.lees.boom.core.domain.CrewScheduleInfo
 import io.lees.boom.core.domain.CrewScheduleParticipantInfo
 import io.lees.boom.core.domain.CrewService
+import io.lees.boom.core.domain.Member
+import io.lees.boom.core.domain.MemberFinder
 import io.lees.boom.core.domain.MyCrewInfo
+import io.lees.boom.core.domain.SocialInfo
 import io.lees.boom.core.enums.CrewRole
+import io.lees.boom.core.enums.MemberRole
+import io.lees.boom.core.enums.SocialProvider
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
@@ -46,13 +52,15 @@ import java.time.LocalDateTime
 
 class CrewControllerTest : RestDocsTest() {
     private lateinit var crewService: CrewService
+    private lateinit var memberFinder: MemberFinder
 
     @BeforeEach
     fun setUp() {
         crewService = mockk()
+        memberFinder = mockk()
         mockMvc =
             mockController(
-                CrewController(crewService),
+                CrewController(crewService, memberFinder),
                 UserArgumentResolver(),
             )
     }
@@ -417,6 +425,15 @@ class CrewControllerTest : RestDocsTest() {
             """.trimIndent()
 
         every { crewService.createSchedule(any(), any(), any(), any(), any(), any()) } returns schedule
+        every { memberFinder.findById(memberId) } returns
+            Member(
+                id = memberId,
+                name = "홍길동",
+                email = "hong@test.com",
+                profileImage = null,
+                role = MemberRole.USER,
+                socialInfo = SocialInfo(SocialProvider.KAKAO, "kakao-id"),
+            )
 
         // when & then
         mockMvc
@@ -452,6 +469,7 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data.description").type(JsonFieldType.STRING).description("일정 설명"),
                         fieldWithPath("data.scheduledAt").type(JsonFieldType.STRING).description("일정 날짜/시간"),
                         fieldWithPath("data.createdBy").type(JsonFieldType.NUMBER).description("생성자 멤버 ID"),
+                        fieldWithPath("data.createdByName").type(JsonFieldType.STRING).description("생성자 닉네임"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -465,7 +483,7 @@ class CrewControllerTest : RestDocsTest() {
         val crewId = 1L
         val schedules =
             listOf(
-                CrewSchedule(
+                CrewScheduleInfo(
                     id = 1L,
                     crewId = crewId,
                     gymId = 10L,
@@ -473,8 +491,9 @@ class CrewControllerTest : RestDocsTest() {
                     description = "토요일 오후 2시에 만나요!",
                     scheduledAt = LocalDateTime.of(2026, 3, 15, 14, 0),
                     createdBy = 1L,
+                    createdByName = "홍길동",
                 ),
-                CrewSchedule(
+                CrewScheduleInfo(
                     id = 2L,
                     crewId = crewId,
                     gymId = null,
@@ -482,6 +501,7 @@ class CrewControllerTest : RestDocsTest() {
                     description = "월간 크루 회의입니다.",
                     scheduledAt = LocalDateTime.of(2026, 3, 20, 19, 0),
                     createdBy = 2L,
+                    createdByName = "김철수",
                 ),
             )
 
@@ -513,6 +533,7 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data[].description").type(JsonFieldType.STRING).description("일정 설명"),
                         fieldWithPath("data[].scheduledAt").type(JsonFieldType.STRING).description("일정 날짜/시간"),
                         fieldWithPath("data[].createdBy").type(JsonFieldType.NUMBER).description("생성자 멤버 ID"),
+                        fieldWithPath("data[].createdByName").type(JsonFieldType.STRING).description("생성자 닉네임"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

@@ -36,8 +36,12 @@ enum class CoreErrorCode {
     B3200, // CHAT_RATE_LIMIT_EXCEEDED (도배 방지)
     B3201, // CHAT_MESSAGE_NOT_FOUND
 
-    // 짐 (Gym) - [추가]
+    // 짐 (Gym)
     B4000, // ALREADY_ADMITTED (이미 입장 중)
     B4001, // NOT_ADMITTED (입장 기록 없음)
     B4002, // TOO_FAR_FROM_GYM (암장과 거리 초과)
+
+    // 차단
+    B5000, // ALREADY_BLOCKED
+    B5001, // NOT_BLOCKED
 }

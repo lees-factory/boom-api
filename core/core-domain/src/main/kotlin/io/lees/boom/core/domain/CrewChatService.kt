@@ -11,6 +11,7 @@ class CrewChatService(
     private val crewChatMessageReader: CrewChatMessageReader,
     private val crewChatMessageAppender: CrewChatMessageAppender,
     private val crewMemberReader: CrewMemberReader,
+    private val memberBlockService: MemberBlockService,
 ) {
     companion object {
         private const val RATE_LIMIT_COUNT = 5
@@ -54,7 +55,8 @@ class CrewChatService(
         crewMemberReader.readCrewMember(crewId, memberId)
             ?: throw CoreException(CoreErrorType.CREW_MEMBER_NOT_AUTHORIZED)
 
-        return crewChatMessageReader.readMessages(crewId, cursor, size)
+        val blockedMemberIds = memberBlockService.getBlockedMemberIds(memberId)
+        return crewChatMessageReader.readMessages(crewId, cursor, size, blockedMemberIds)
     }
 
     /**

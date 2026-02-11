@@ -87,6 +87,11 @@ enum class CoreErrorType(
         CoreErrorLevel.INFO,
     ),
 
+    // 차단
+    ALREADY_BLOCKED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B5000, "이미 차단한 유저입니다.", CoreErrorLevel.INFO),
+    NOT_BLOCKED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B5001, "차단하지 않은 유저입니다.", CoreErrorLevel.INFO),
+
+    // 짐
     ALREADY_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4000, "이미 입장 중인 상태입니다.", CoreErrorLevel.INFO),
     NOT_ADMITTED(CoreErrorKind.CLIENT_ERROR, CoreErrorCode.B4001, "입장 기록이 없습니다.", CoreErrorLevel.INFO),
     TOO_FAR_FROM_GYM(
