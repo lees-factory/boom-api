@@ -742,3 +742,65 @@ include::{snippets}/getMemberBadges/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/getMemberBadges/response-fields.adoc[]
+
+== Report API
+
+=== 신고하기 (Create Report)
+유저 또는 채팅 메시지를 신고합니다. +
+신고 사유: `ABUSE_HARASSMENT`(욕설/비하/괴롭힘), `SPAM_COMMERCIAL`(스팸/홍보), `INAPPROPRIATE_CONTENT`(부적절한 콘텐츠)
+
+==== HTTP Request
+include::{snippets}/createReport/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/createReport/request-headers.adoc[]
+
+==== Request Fields
+include::{snippets}/createReport/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/createReport/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/createReport/response-fields.adoc[]
+
+== Block API
+
+=== 유저 차단 (Block Member)
+특정 유저를 차단합니다. +
+차단된 유저의 채팅 메시지는 조회되지 않습니다.
+
+==== HTTP Request
+include::{snippets}/blockMember/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/blockMember/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/blockMember/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/blockMember/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/blockMember/response-fields.adoc[]
+
+'''
+
+=== 유저 차단 해제 (Unblock Member)
+차단한 유저를 해제합니다.
+
+==== HTTP Request
+include::{snippets}/unblockMember/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/unblockMember/request-headers.adoc[]
+
+==== Path Parameters
+include::{snippets}/unblockMember/path-parameters.adoc[]
+
+==== HTTP Response
+include::{snippets}/unblockMember/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/unblockMember/response-fields.adoc[]
