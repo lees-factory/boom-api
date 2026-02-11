@@ -25,10 +25,12 @@ internal class CrewChatMessageCoreRepository(
         crewId: Long,
         cursor: Long?,
         size: Int,
+        blockedMemberIds: List<Long>,
     ): List<CrewChatMessageInfo> {
         val pageable = PageRequest.of(0, size)
+        val blocked = blockedMemberIds.ifEmpty { null }
         return crewChatMessageJpaRepository
-            .findMessagesWithInfo(crewId, cursor, pageable)
+            .findMessagesWithInfo(crewId, cursor, blocked, pageable)
             .map { it.toDomain() }
     }
 

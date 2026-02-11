@@ -198,3 +198,28 @@ CREATE TABLE public.crew_chat_message (
 CREATE INDEX idx_crew_chat_message_crew ON public.crew_chat_message (crew_id, id DESC);
 -- 도배 방지 속도 제한용 인덱스 (COUNT WHERE crew_id = ? AND member_id = ? AND created_at >= ?)
 CREATE INDEX idx_crew_chat_message_rate_limit ON public.crew_chat_message (crew_id, member_id, created_at);
+
+
+-- 2026-02-11
+
+CREATE TABLE report (
+                        id BIGSERIAL PRIMARY KEY,
+                        reporter_id BIGINT NOT NULL,
+                        target_type VARCHAR(255) NOT NULL,
+                        target_id BIGINT NOT NULL,
+                        reason VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE member_block (
+                              id BIGSERIAL PRIMARY KEY,
+                              blocker_id BIGINT NOT NULL,
+                              blocked_id BIGINT NOT NULL,
+                              created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                              updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                              UNIQUE (blocker_id, blocked_id)
+);
+
+
