@@ -261,3 +261,20 @@ SET member_name = m.name,
 FROM public.member m
 WHERE cm.member_id = m.id AND cm.member_name IS NULL;
 
+-- [2026-02-12] MemberNotificationSetting (푸시 알림 설정) 테이블 추가
+-- RN Expo 푸시 알림용. 크루 일정 등록 시 알림 전송 등에 사용.
+-- 유저별 1개 row (UNIQUE member_id), 글로벌 on/off + 카테고리별 on/off 지원
+CREATE TABLE public.member_notification_setting (
+    id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    member_id bigint NOT NULL UNIQUE,
+    push_token character varying,
+    push_enabled boolean NOT NULL DEFAULT true,
+    crew_schedule_enabled boolean NOT NULL DEFAULT true,
+    crew_chat_enabled boolean NOT NULL DEFAULT true,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT member_notification_setting_pkey PRIMARY KEY (id)
+);
+-- 유저별 알림 설정 조회용 인덱스 (UNIQUE 제약으로 자동 생성)
+CREATE UNIQUE INDEX idx_notification_setting_member ON public.member_notification_setting (member_id);
+
