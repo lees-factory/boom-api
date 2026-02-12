@@ -804,3 +804,62 @@ include::{snippets}/unblockMember/http-response.adoc[]
 
 ==== Response Fields
 include::{snippets}/unblockMember/response-fields.adoc[]
+
+== Notification Setting API
+
+=== 알림 설정 조회 (Get Notification Setting)
+현재 로그인한 사용자의 알림 설정을 조회합니다. +
+설정이 없는 경우 기본값으로 자동 생성됩니다.
+
+==== HTTP Request
+include::{snippets}/getNotificationSetting/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/getNotificationSetting/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/getNotificationSetting/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/getNotificationSetting/response-fields.adoc[]
+
+'''
+
+=== 알림 설정 변경 (Update Notification Setting)
+푸시 알림, 크루 일정 알림, 크루 채팅 알림의 on/off를 변경합니다.
+
+==== HTTP Request
+include::{snippets}/updateNotificationSetting/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/updateNotificationSetting/request-headers.adoc[]
+
+==== Request Fields
+include::{snippets}/updateNotificationSetting/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/updateNotificationSetting/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/updateNotificationSetting/response-fields.adoc[]
+
+'''
+
+=== 푸시 토큰 등록/갱신 (Update Push Token)
+Expo 푸시 토큰을 등록하거나 갱신합니다. +
+앱 시작 시 호출하여 최신 토큰을 서버에 저장합니다.
+
+==== HTTP Request
+include::{snippets}/updatePushToken/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/updatePushToken/request-headers.adoc[]
+
+==== Request Fields
+include::{snippets}/updatePushToken/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/updatePushToken/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/updatePushToken/response-fields.adoc[]
