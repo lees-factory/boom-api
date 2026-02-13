@@ -14,6 +14,9 @@ interface MyCrewProjection {
     val maxMemberCount: Int
     val myRole: CrewRole
     val memberCount: Long
+    val latitude: Double?
+    val longitude: Double?
+    val address: String?
 }
 
 interface CrewMemberInfoProjection {
@@ -32,7 +35,8 @@ interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
         """
         SELECT c.id as crewId, c.name as name, c.description as description,
                c.crewImage as crewImage, c.maxMemberCount as maxMemberCount, cm.role as myRole,
-               (SELECT COUNT(cm2) FROM CrewMemberEntity cm2 WHERE cm2.crewId = c.id) as memberCount
+               (SELECT COUNT(cm2) FROM CrewMemberEntity cm2 WHERE cm2.crewId = c.id) as memberCount,
+               c.latitude as latitude, c.longitude as longitude, c.address as address
         FROM CrewMemberEntity cm
         JOIN CrewEntity c ON cm.crewId = c.id
         WHERE cm.memberId = :memberId

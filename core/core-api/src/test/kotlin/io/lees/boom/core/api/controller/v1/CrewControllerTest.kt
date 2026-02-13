@@ -239,6 +239,12 @@ class CrewControllerTest : RestDocsTest() {
                         ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
                         fieldWithPath("data.maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath("data.memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath(
+                            "data.latitude",
+                        ).type(JsonFieldType.NUMBER).description("위도").optional(),
+                        fieldWithPath(
+                            "data.longitude",
+                        ).type(JsonFieldType.NUMBER).description("경도").optional(),
                         fieldWithPath("data.address").type(JsonFieldType.STRING).description("크루 주소").optional(),
                         fieldWithPath("data.activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
                         fieldWithPath(
@@ -300,6 +306,9 @@ class CrewControllerTest : RestDocsTest() {
                     maxMemberCount = 100,
                     myRole = CrewRole.LEADER,
                     memberCount = 5,
+                    latitude = 35.1796,
+                    longitude = 129.0756,
+                    address = "부산광역시 해운대구",
                 ),
                 MyCrewInfo(
                     crewId = 2L,
@@ -309,6 +318,9 @@ class CrewControllerTest : RestDocsTest() {
                     maxMemberCount = 50,
                     myRole = CrewRole.MEMBER,
                     memberCount = 12,
+                    latitude = 35.1580,
+                    longitude = 129.0596,
+                    address = "부산광역시 부산진구 서면",
                 ),
             )
 
@@ -341,6 +353,15 @@ class CrewControllerTest : RestDocsTest() {
                             "data[].myRole",
                         ).type(JsonFieldType.STRING).description("내 역할 (LEADER/MEMBER/GUEST)"),
                         fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath(
+                            "data[].latitude",
+                        ).type(JsonFieldType.NUMBER).description("위도").optional(),
+                        fieldWithPath(
+                            "data[].longitude",
+                        ).type(JsonFieldType.NUMBER).description("경도").optional(),
+                        fieldWithPath(
+                            "data[].address",
+                        ).type(JsonFieldType.STRING).description("크루 주소").optional(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -603,6 +624,12 @@ class CrewControllerTest : RestDocsTest() {
                         ).type(JsonFieldType.STRING).description("크루 이미지 URL").optional(),
                         fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
+                        fieldWithPath(
+                            "data[].latitude",
+                        ).type(JsonFieldType.NUMBER).description("위도").optional(),
+                        fieldWithPath(
+                            "data[].longitude",
+                        ).type(JsonFieldType.NUMBER).description("경도").optional(),
                         fieldWithPath("data[].address").type(JsonFieldType.STRING).description("크루 주소").optional(),
                         fieldWithPath("data[].activityScore").type(JsonFieldType.NUMBER).description("활동 점수"),
                         fieldWithPath(
@@ -869,6 +896,9 @@ class CrewControllerTest : RestDocsTest() {
                     memberCount = 45,
                     maxMemberCount = 100,
                     avgScore = 85.5,
+                    latitude = 37.5665,
+                    longitude = 126.9780,
+                    address = "서울특별시 중구",
                 ),
                 CrewRankingInfo(
                     crewId = 1L,
@@ -877,6 +907,9 @@ class CrewControllerTest : RestDocsTest() {
                     memberCount = 12,
                     maxMemberCount = 50,
                     avgScore = 42.3,
+                    latitude = 35.1796,
+                    longitude = 129.0756,
+                    address = "부산광역시 해운대구",
                 ),
             )
 
@@ -906,6 +939,15 @@ class CrewControllerTest : RestDocsTest() {
                         fieldWithPath("data[].memberCount").type(JsonFieldType.NUMBER).description("현재 멤버 수"),
                         fieldWithPath("data[].maxMemberCount").type(JsonFieldType.NUMBER).description("최대 인원수"),
                         fieldWithPath("data[].avgScore").type(JsonFieldType.NUMBER).description("크루원 평균 활동 점수"),
+                        fieldWithPath(
+                            "data[].latitude",
+                        ).type(JsonFieldType.NUMBER).description("위도").optional(),
+                        fieldWithPath(
+                            "data[].longitude",
+                        ).type(JsonFieldType.NUMBER).description("경도").optional(),
+                        fieldWithPath(
+                            "data[].address",
+                        ).type(JsonFieldType.STRING).description("크루 주소").optional(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

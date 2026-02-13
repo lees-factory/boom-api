@@ -45,11 +45,12 @@ interface CrewJpaRepository : JpaRepository<CrewEntity, Long> {
         SELECT c.id as crewId, c.name as name, c.description as description,
                (SELECT COUNT(cm2) FROM CrewMemberEntity cm2 WHERE cm2.crewId = c.id) as memberCount,
                c.maxMemberCount as maxMemberCount,
-               COALESCE(AVG(m.activityScore), 0) as avgScore
+               COALESCE(AVG(m.activityScore), 0) as avgScore,
+               c.latitude as latitude, c.longitude as longitude, c.address as address
         FROM CrewEntity c
         LEFT JOIN CrewMemberEntity cm ON c.id = cm.crewId
         LEFT JOIN MemberEntity m ON cm.memberId = m.id
-        GROUP BY c.id, c.name, c.description, c.maxMemberCount
+        GROUP BY c.id, c.name, c.description, c.maxMemberCount, c.latitude, c.longitude, c.address
         ORDER BY avgScore DESC
         """,
     )

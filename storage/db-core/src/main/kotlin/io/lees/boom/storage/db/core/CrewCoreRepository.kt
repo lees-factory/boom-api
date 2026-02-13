@@ -209,6 +209,9 @@ internal class CrewCoreRepository(
             maxMemberCount = this.maxMemberCount,
             myRole = this.myRole,
             memberCount = this.memberCount,
+            latitude = this.latitude,
+            longitude = this.longitude,
+            address = this.address,
         )
 
     private fun CrewMemberInfoProjection.toDomain() =
@@ -227,5 +230,8 @@ internal class CrewCoreRepository(
             memberCount = this.memberCount,
             maxMemberCount = this.maxMemberCount,
             avgScore = this.avgScore,
+            latitude = this.latitude,
+            longitude = this.longitude,
+            address = this.address,
         )
 }
