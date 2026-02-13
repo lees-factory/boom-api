@@ -9,6 +9,9 @@ data class CrewRankingResponse(
     val memberCount: Int,
     val maxMemberCount: Int,
     val avgScore: Double,
+    val latitude: Double?,
+    val longitude: Double?,
+    val address: String?,
 ) {
     companion object {
         fun from(info: CrewRankingInfo): CrewRankingResponse =
@@ -19,6 +22,9 @@ data class CrewRankingResponse(
                 memberCount = info.memberCount,
                 maxMemberCount = info.maxMemberCount,
                 avgScore = info.avgScore,
+                latitude = info.latitude,
+                longitude = info.longitude,
+                address = info.address,
             )
     }
 }

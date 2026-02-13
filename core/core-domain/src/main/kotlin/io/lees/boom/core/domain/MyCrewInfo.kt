@@ -10,4 +10,7 @@ data class MyCrewInfo(
     val maxMemberCount: Int,
     val myRole: CrewRole,
     val memberCount: Long,
+    val latitude: Double?,
+    val longitude: Double?,
+    val address: String?,
 )

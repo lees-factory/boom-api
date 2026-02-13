@@ -11,6 +11,9 @@ data class MyCrewResponse(
     val maxMemberCount: Int,
     val myRole: CrewRole,
     val memberCount: Long,
+    val latitude: Double?,
+    val longitude: Double?,
+    val address: String?,
 ) {
     companion object {
         fun from(info: MyCrewInfo): MyCrewResponse =
@@ -22,6 +25,9 @@ data class MyCrewResponse(
                 maxMemberCount = info.maxMemberCount,
                 myRole = info.myRole,
                 memberCount = info.memberCount,
+                latitude = info.latitude,
+                longitude = info.longitude,
+                address = info.address,
             )
     }
 }

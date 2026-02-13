@@ -7,4 +7,7 @@ data class CrewRankingInfo(
     val memberCount: Int,
     val maxMemberCount: Int,
     val avgScore: Double,
+    val latitude: Double?,
+    val longitude: Double?,
+    val address: String?,
 )
