@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.api.controller.v1.request.MemberLoginRequest
 import io.lees.boom.core.domain.Member
+import io.lees.boom.core.domain.MemberBlockService
 import io.lees.boom.core.domain.MemberService
 import io.lees.boom.core.domain.SocialInfo
 import io.lees.boom.core.domain.SocialLoginService
@@ -34,14 +35,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class MemberControllerTest : RestDocsTest() {
     private lateinit var socialLoginService: SocialLoginService
     private lateinit var memberService: MemberService
+    private lateinit var memberBlockService: MemberBlockService
 
     @BeforeEach
     fun setUp() {
         socialLoginService = mockk()
         memberService = mockk()
+        memberBlockService = mockk()
         mockMvc =
             mockController(
-                MemberController(socialLoginService, memberService),
+                MemberController(socialLoginService, memberService, memberBlockService),
                 UserArgumentResolver(),
             )
     }
@@ -197,6 +200,9 @@ class MemberControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.activityRankColor",
                         ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
+                        fieldWithPath(
+                            "data.isBlocked",
+                        ).type(JsonFieldType.BOOLEAN).description("차단 여부 (내 정보 조회 시 항상 false)"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
@@ -206,6 +212,7 @@ class MemberControllerTest : RestDocsTest() {
     @Test
     fun getMemberProfile() {
         // given
+        val memberId = 1L
         val targetMemberId = 2L
         val member =
             Member(
@@ -219,19 +226,24 @@ class MemberControllerTest : RestDocsTest() {
             )
 
         every { memberService.getMember(targetMemberId) } returns member
+        every { memberBlockService.isBlocked(memberId, targetMemberId) } returns false
 
         // when & then
         mockMvc
             .perform(
-                get("/api/v1/members/{memberId}", targetMemberId),
+                get("/api/v1/members/{targetMemberId}", targetMemberId)
+                    .with(authenticatedUser(memberId)),
             ).andExpect(status().isOk)
             .andDo(
                 document(
                     "getMemberProfile",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
                     pathParameters(
-                        parameterWithName("memberId").description("조회할 유저 ID"),
+                        parameterWithName("targetMemberId").description("조회할 유저 ID"),
                     ),
                     responseFields(
                         fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
@@ -247,6 +259,9 @@ class MemberControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.activityRankColor",
                         ).type(JsonFieldType.STRING).description("활동 등급 컬러 코드 (HEX)"),
+                        fieldWithPath(
+                            "data.isBlocked",
+                        ).type(JsonFieldType.BOOLEAN).description("내가 해당 유저를 차단했는지 여부"),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),
