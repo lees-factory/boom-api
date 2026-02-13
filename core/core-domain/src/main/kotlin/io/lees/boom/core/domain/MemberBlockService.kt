@@ -31,4 +31,9 @@ class MemberBlockService(
     }
 
     fun getBlockedMemberIds(blockerId: Long): List<Long> = memberBlockRepository.findBlockedIdsByBlockerId(blockerId)
+
+    fun isBlocked(
+        blockerId: Long,
+        blockedId: Long,
+    ): Boolean = memberBlockRepository.findByBlockerIdAndBlockedId(blockerId, blockedId) != null
 }
