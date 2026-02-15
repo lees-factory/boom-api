@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.Gym
-import io.lees.boom.core.domain.GymCrewMemberInfo
+import io.lees.boom.core.domain.crew.GymCrewMemberInfo
+import io.lees.boom.core.domain.gym.Gym
 import io.lees.boom.core.enums.CrowdLevel
 
 data class GymResponse(

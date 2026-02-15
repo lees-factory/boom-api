@@ -5,17 +5,17 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import io.lees.boom.core.api.config.UserArgumentResolver
 import io.lees.boom.core.api.controller.v1.request.CrewCreateRequest
 import io.lees.boom.core.api.controller.v1.request.CrewUpdateRequest
-import io.lees.boom.core.domain.Crew
-import io.lees.boom.core.domain.CrewMemberInfo
-import io.lees.boom.core.domain.CrewRankingInfo
-import io.lees.boom.core.domain.CrewSchedule
-import io.lees.boom.core.domain.CrewScheduleInfo
-import io.lees.boom.core.domain.CrewScheduleParticipantInfo
-import io.lees.boom.core.domain.CrewService
-import io.lees.boom.core.domain.Member
-import io.lees.boom.core.domain.MemberFinder
-import io.lees.boom.core.domain.MyCrewInfo
-import io.lees.boom.core.domain.SocialInfo
+import io.lees.boom.core.domain.crew.Crew
+import io.lees.boom.core.domain.crew.CrewMemberInfo
+import io.lees.boom.core.domain.crew.CrewRankingInfo
+import io.lees.boom.core.domain.crew.CrewSchedule
+import io.lees.boom.core.domain.crew.CrewScheduleInfo
+import io.lees.boom.core.domain.crew.CrewScheduleParticipantInfo
+import io.lees.boom.core.domain.crew.CrewService
+import io.lees.boom.core.domain.crew.MyCrewInfo
+import io.lees.boom.core.domain.member.Member
+import io.lees.boom.core.domain.member.MemberService
+import io.lees.boom.core.domain.member.SocialInfo
 import io.lees.boom.core.enums.CrewRole
 import io.lees.boom.core.enums.MemberRole
 import io.lees.boom.core.enums.SocialProvider
@@ -52,15 +52,15 @@ import java.time.LocalDateTime
 
 class CrewControllerTest : RestDocsTest() {
     private lateinit var crewService: CrewService
-    private lateinit var memberFinder: MemberFinder
+    private lateinit var memberService: MemberService
 
     @BeforeEach
     fun setUp() {
         crewService = mockk()
-        memberFinder = mockk()
+        memberService = mockk()
         mockMvc =
             mockController(
-                CrewController(crewService, memberFinder),
+                CrewController(crewService, memberService),
                 UserArgumentResolver(),
             )
     }
@@ -446,7 +446,7 @@ class CrewControllerTest : RestDocsTest() {
             """.trimIndent()
 
         every { crewService.createSchedule(any(), any(), any(), any(), any(), any()) } returns schedule
-        every { memberFinder.findById(memberId) } returns
+        every { memberService.getMember(memberId) } returns
             Member(
                 id = memberId,
                 name = "홍길동",

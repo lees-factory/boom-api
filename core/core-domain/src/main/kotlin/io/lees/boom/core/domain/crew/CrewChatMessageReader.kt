@@ -1,0 +1,24 @@
+package io.lees.boom.core.domain.crew
+
+import org.springframework.stereotype.Component
+import java.time.LocalDateTime
+
+@Component
+class CrewChatMessageReader(
+    private val crewChatMessageRepository: CrewChatMessageRepository,
+) {
+    fun readById(messageId: Long): CrewChatMessage? = crewChatMessageRepository.findById(messageId)
+
+    fun readMessages(
+        crewId: Long,
+        cursor: Long?,
+        size: Int,
+        blockedMemberIds: List<Long> = emptyList(),
+    ): List<CrewChatMessage> = crewChatMessageRepository.findMessages(crewId, cursor, size, blockedMemberIds)
+
+    fun countRecentMessages(
+        crewId: Long,
+        memberId: Long,
+        since: LocalDateTime,
+    ): Long = crewChatMessageRepository.countRecentMessages(crewId, memberId, since)
+}

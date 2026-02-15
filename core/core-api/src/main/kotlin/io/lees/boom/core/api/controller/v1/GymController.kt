@@ -7,8 +7,8 @@ import io.lees.boom.core.api.controller.v1.response.CurrentVisitResponse
 import io.lees.boom.core.api.controller.v1.response.GymResponse
 import io.lees.boom.core.api.controller.v1.response.GymVisitorResponse
 import io.lees.boom.core.api.controller.v1.response.SliceResponse
-import io.lees.boom.core.domain.GymService
-import io.lees.boom.core.domain.Location
+import io.lees.boom.core.domain.gym.GymService
+import io.lees.boom.core.domain.gym.Location
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse

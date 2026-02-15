@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.GymVisitor
+import io.lees.boom.core.domain.gym.GymVisitor
 import java.time.LocalDateTime
 
 data class GymVisitorResponse(

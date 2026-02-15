@@ -3,7 +3,7 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.controller.v1.request.ChatMessageCreateRequest
 import io.lees.boom.core.api.controller.v1.response.ChatMessageIdResponse
 import io.lees.boom.core.api.controller.v1.response.ChatMessageResponse
-import io.lees.boom.core.domain.CrewChatService
+import io.lees.boom.core.domain.crew.CrewChatService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.*

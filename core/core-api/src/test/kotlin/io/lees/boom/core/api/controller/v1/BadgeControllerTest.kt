@@ -1,8 +1,8 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
-import io.lees.boom.core.domain.BadgeResult
-import io.lees.boom.core.domain.BadgeService
+import io.lees.boom.core.domain.badge.BadgeResult
+import io.lees.boom.core.domain.badge.BadgeService
 import io.lees.boom.core.enums.BadgeType
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser

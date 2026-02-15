@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.CrewSchedule
-import io.lees.boom.core.domain.CrewScheduleInfo
+import io.lees.boom.core.domain.crew.CrewSchedule
+import io.lees.boom.core.domain.crew.CrewScheduleInfo
 import java.time.LocalDateTime
 
 data class CrewScheduleResponse(

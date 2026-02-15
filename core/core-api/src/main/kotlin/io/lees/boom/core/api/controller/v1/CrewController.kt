@@ -10,9 +10,9 @@ import io.lees.boom.core.api.controller.v1.response.CrewResponse
 import io.lees.boom.core.api.controller.v1.response.CrewScheduleResponse
 import io.lees.boom.core.api.controller.v1.response.MyCrewResponse
 import io.lees.boom.core.api.controller.v1.response.ScheduleParticipantResponse
-import io.lees.boom.core.domain.CrewImageInput
-import io.lees.boom.core.domain.CrewService
-import io.lees.boom.core.domain.MemberFinder
+import io.lees.boom.core.domain.crew.CrewImageInput
+import io.lees.boom.core.domain.crew.CrewService
+import io.lees.boom.core.domain.member.MemberService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.*
@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api/v1/crews")
 class CrewController(
     private val crewService: CrewService,
-    private val memberFinder: MemberFinder,
+    private val memberService: MemberService,
 ) {
     /**
      * 크루 생성
@@ -156,7 +156,7 @@ class CrewController(
                 description = request.description,
                 scheduledAt = request.scheduledAt,
             )
-        val creatorName = memberFinder.findById(memberId)!!.name
+        val creatorName = memberService.getMember(memberId).name
         return ApiResponse.success(CrewScheduleResponse.from(schedule, creatorName))
     }
 

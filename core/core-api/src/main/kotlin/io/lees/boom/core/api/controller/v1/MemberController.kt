@@ -5,10 +5,10 @@ import io.lees.boom.core.api.controller.v1.request.TokenRefreshRequest
 import io.lees.boom.core.api.controller.v1.response.MemberLoginResponse
 import io.lees.boom.core.api.controller.v1.response.MemberProfileResponse
 import io.lees.boom.core.api.controller.v1.response.MemberResponse
-import io.lees.boom.core.domain.MemberBlockService
-import io.lees.boom.core.domain.MemberService
-import io.lees.boom.core.domain.ProfileImageInput
-import io.lees.boom.core.domain.SocialLoginService
+import io.lees.boom.core.domain.member.MemberBlockService
+import io.lees.boom.core.domain.member.MemberService
+import io.lees.boom.core.domain.member.ProfileImageInput
+import io.lees.boom.core.domain.member.SocialLoginService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.lees.boom.core.domain.BadgeResult
+import io.lees.boom.core.domain.badge.BadgeResult
 import java.time.LocalDateTime
 
 data class BadgeResponse(

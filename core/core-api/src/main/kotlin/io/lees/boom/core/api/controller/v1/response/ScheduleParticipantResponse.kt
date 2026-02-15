@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.lees.boom.core.domain.CrewScheduleParticipantInfo
+import io.lees.boom.core.domain.crew.CrewScheduleParticipantInfo
 import java.time.LocalDateTime
 
 data class ScheduleParticipantResponse(

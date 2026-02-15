@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.lees.boom.core.domain.Member
+import io.lees.boom.core.domain.member.Member
 import io.lees.boom.core.enums.ActivityRank
 
 data class MemberProfileResponse(

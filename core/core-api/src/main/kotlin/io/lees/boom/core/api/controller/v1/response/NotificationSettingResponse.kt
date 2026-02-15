@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.MemberNotificationSetting
+import io.lees.boom.core.domain.member.MemberNotificationSetting
 
 data class NotificationSettingResponse(
     val pushEnabled: Boolean,
