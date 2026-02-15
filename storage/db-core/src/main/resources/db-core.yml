@@ -5,7 +5,6 @@ spring:
       ddl-auto: validate
     properties:
       hibernate.default_batch_fetch_size: 100
-      hibernate.default_schema: ${storage.database.core-db.schema:public}
 
 ---
 spring.config.activate.on-profile: local
