@@ -57,6 +57,7 @@ storage:
       validation-timeout: 5000
       max-lifetime: 1800000 # 30분
       pool-name: core-db-pool
+      connection-init-sql: SET search_path TO ${storage.database.core-db.schema:public}
       data-source-properties:
         rewriteBatchedStatements: true
 
@@ -76,6 +77,7 @@ storage:
       validation-timeout: 5000
       max-lifetime: 1800000 # 30분
       pool-name: core-db-pool
+      connection-init-sql: SET search_path TO ${storage.database.core-db.schema:public}
       data-source-properties:
         rewriteBatchedStatements: true
 
@@ -95,6 +97,7 @@ storage:
       validation-timeout: 5000
       max-lifetime: 1800000 # 30분
       pool-name: core-db-pool
+      connection-init-sql: SET search_path TO ${storage.database.core-db.schema:public}
       data-source-properties:
         rewriteBatchedStatements: true
 
