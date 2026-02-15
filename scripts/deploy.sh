@@ -59,6 +59,7 @@ start_app() {
         -Dspring.profiles.active="$PROFILE" \
         -Dstorage.database.core-db.password="${DB_PASSWORD}" \
         -Dstorage.database.core-db.user="${DB_USER}" \
+        -Dstorage.database.core-db.schema="${DB_SCHEMA}" \
         -Dstorage.s3.access-key="${S3_ACCESS_KEY}" \
         -Dstorage.s3.secret-key="${S3_SECRET_KEY}" \
         -Dstorage.s3.bucket="${S3_BUCKET}" \
