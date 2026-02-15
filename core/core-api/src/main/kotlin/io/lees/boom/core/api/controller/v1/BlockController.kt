@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1
 
-import io.lees.boom.core.domain.MemberBlockService
+import io.lees.boom.core.domain.member.MemberBlockService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.DeleteMapping

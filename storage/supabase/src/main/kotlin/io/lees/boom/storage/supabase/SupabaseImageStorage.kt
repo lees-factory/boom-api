@@ -1,6 +1,6 @@
 package io.lees.boom.storage.supabase
 
-import io.lees.boom.core.domain.ImageStorage
+import io.lees.boom.core.domain.member.ImageStorage
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest

@@ -1,8 +1,8 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
-import io.lees.boom.core.domain.Report
-import io.lees.boom.core.domain.ReportService
+import io.lees.boom.core.domain.report.Report
+import io.lees.boom.core.domain.report.ReportService
 import io.lees.boom.core.enums.ReportReason
 import io.lees.boom.core.enums.ReportTargetType
 import io.lees.boom.test.api.RestDocsTest

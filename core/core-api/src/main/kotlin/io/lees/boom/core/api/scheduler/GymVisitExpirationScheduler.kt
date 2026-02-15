@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.scheduler
 
-import io.lees.boom.core.domain.GymService
+import io.lees.boom.core.domain.gym.GymService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

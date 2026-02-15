@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.CurrentVisit
+import io.lees.boom.core.domain.gym.CurrentVisit
 import io.lees.boom.core.enums.CrowdLevel
 import java.time.LocalDateTime
 

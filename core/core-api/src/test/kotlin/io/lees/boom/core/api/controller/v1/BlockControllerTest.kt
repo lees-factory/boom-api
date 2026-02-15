@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
-import io.lees.boom.core.domain.MemberBlockService
+import io.lees.boom.core.domain.member.MemberBlockService
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.justRun

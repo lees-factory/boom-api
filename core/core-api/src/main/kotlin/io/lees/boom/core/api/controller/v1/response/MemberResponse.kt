@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.Member
+import io.lees.boom.core.domain.member.Member
 
 data class MemberResponse(
     val id: Long,

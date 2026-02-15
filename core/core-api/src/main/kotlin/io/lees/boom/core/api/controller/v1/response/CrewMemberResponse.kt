@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.CrewMemberInfo
+import io.lees.boom.core.domain.crew.CrewMemberInfo
 import io.lees.boom.core.enums.CrewRole
 
 data class CrewMemberResponse(

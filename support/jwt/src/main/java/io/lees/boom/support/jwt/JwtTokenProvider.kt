@@ -3,7 +3,7 @@ package io.lees.boom.support.jwt
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import io.lees.boom.core.domain.TokenGenerator
+import io.lees.boom.core.domain.auth.TokenGenerator
 import io.lees.boom.core.error.CoreErrorType
 import io.lees.boom.core.error.CoreException
 import io.lees.boom.support.jwt.config.JwtProperties

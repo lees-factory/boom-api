@@ -3,7 +3,7 @@ package io.lees.boom.core.api.controller.v1
 import io.lees.boom.core.api.controller.v1.request.NotificationSettingUpdateRequest
 import io.lees.boom.core.api.controller.v1.request.PushTokenUpdateRequest
 import io.lees.boom.core.api.controller.v1.response.NotificationSettingResponse
-import io.lees.boom.core.domain.NotificationSettingService
+import io.lees.boom.core.domain.member.NotificationSettingService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,12 +1,12 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.config.UserArgumentResolver
-import io.lees.boom.core.domain.CurrentVisit
-import io.lees.boom.core.domain.Gym
-import io.lees.boom.core.domain.GymActiveVisit
-import io.lees.boom.core.domain.GymService
-import io.lees.boom.core.domain.GymVisitor
-import io.lees.boom.core.domain.Location
+import io.lees.boom.core.domain.gym.CurrentVisit
+import io.lees.boom.core.domain.gym.Gym
+import io.lees.boom.core.domain.gym.GymActiveVisit
+import io.lees.boom.core.domain.gym.GymService
+import io.lees.boom.core.domain.gym.GymVisitor
+import io.lees.boom.core.domain.gym.Location
 import io.lees.boom.core.enums.CrowdLevel
 import io.lees.boom.core.support.PageRequest
 import io.lees.boom.core.support.SliceResult

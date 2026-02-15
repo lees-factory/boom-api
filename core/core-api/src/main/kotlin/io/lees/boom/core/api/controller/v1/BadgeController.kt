@@ -1,7 +1,7 @@
 package io.lees.boom.core.api.controller.v1
 
 import io.lees.boom.core.api.controller.v1.response.BadgeResponse
-import io.lees.boom.core.domain.BadgeService
+import io.lees.boom.core.domain.badge.BadgeService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
 import org.springframework.web.bind.annotation.GetMapping

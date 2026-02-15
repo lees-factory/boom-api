@@ -1,6 +1,6 @@
 package io.lees.boom.core.api.controller.v1.response
 
-import io.lees.boom.core.domain.Crew
+import io.lees.boom.core.domain.crew.Crew
 import io.lees.boom.core.enums.ActivityRank
 
 data class CrewResponse(
