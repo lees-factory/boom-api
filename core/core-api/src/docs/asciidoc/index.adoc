@@ -73,6 +73,27 @@ include::{snippets}/updateMe/response-fields.adoc[]
 
 '''
 
+=== 회원탈퇴 (Withdraw)
+회원을 탈퇴합니다. +
+관련 데이터(토큰, 방문기록, 뱃지, 알림설정, 차단, 크루, 신고 등)를 모두 삭제하고 +
+회원 정보를 영구 삭제(Hard Delete)합니다.
+
+WARNING: 이 작업은 되돌릴 수 없습니다.
+
+==== HTTP Request
+include::{snippets}/withdraw/http-request.adoc[]
+
+==== Request Headers
+include::{snippets}/withdraw/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/withdraw/http-response.adoc[]
+
+==== Response Fields
+include::{snippets}/withdraw/response-fields.adoc[]
+
+'''
+
 === 소셜 로그인 (Social Login)
 소셜 계정으로 로그인하거나 회원가입을 진행합니다. +
 Apple 로그인의 경우 `name`, `email`, `profileImage`가 전달되지 않을 수 있으며, +
