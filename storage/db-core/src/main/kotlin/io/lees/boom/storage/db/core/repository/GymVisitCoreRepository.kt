@@ -22,6 +22,10 @@ internal class GymVisitCoreRepository(
 
     override fun findById(id: Long): GymVisit? = gymVisitJpaRepository.findByIdOrNull(id)?.toDomain()
 
+    override fun deleteAllByMemberId(memberId: Long) {
+        gymVisitJpaRepository.deleteAllByMemberId(memberId)
+    }
+
     private fun GymVisit.toEntity() =
         GymVisitEntity(
             gymId = this.gymId,

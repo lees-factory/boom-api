@@ -58,6 +58,11 @@ internal class CrewScheduleCoreRepository(
         crewScheduleParticipantJpaRepository.deleteAllByScheduleId(scheduleId)
     }
 
+    @Transactional
+    override fun deleteParticipantsByMemberId(memberId: Long) {
+        crewScheduleParticipantJpaRepository.deleteAllByMemberId(memberId)
+    }
+
     override fun findParticipantMemberIdsByScheduleId(scheduleId: Long): List<Long> =
         crewScheduleParticipantJpaRepository.findAllByScheduleId(scheduleId).map { it.memberId }
 

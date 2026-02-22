@@ -16,6 +16,10 @@ internal class MemberBadgeCoreRepository(
     override fun saveAll(badges: List<MemberBadge>): List<MemberBadge> =
         memberBadgeJpaRepository.saveAll(badges.map { it.toEntity() }).map { it.toDomain() }
 
+    override fun deleteAllByMemberId(memberId: Long) {
+        memberBadgeJpaRepository.deleteAllByMemberId(memberId)
+    }
+
     private fun MemberBadge.toEntity() =
         MemberBadgeEntity(
             memberId = this.memberId,

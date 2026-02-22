@@ -15,4 +15,8 @@ interface MemberBlockJpaRepository : JpaRepository<MemberBlockEntity, Long> {
     )
 
     fun findAllByBlockerId(blockerId: Long): List<MemberBlockEntity>
+
+    fun deleteAllByBlockerId(blockerId: Long)
+
+    fun deleteAllByBlockedId(blockedId: Long)
 }

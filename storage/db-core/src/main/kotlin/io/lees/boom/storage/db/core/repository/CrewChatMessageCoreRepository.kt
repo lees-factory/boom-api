@@ -45,6 +45,11 @@ internal class CrewChatMessageCoreRepository(
         crewChatMessageJpaRepository.softDeleteById(messageId)
     }
 
+    @Transactional
+    override fun softDeleteByMemberId(memberId: Long) {
+        crewChatMessageJpaRepository.softDeleteByMemberId(memberId)
+    }
+
     private fun CrewChatMessage.toEntity() =
         CrewChatMessageEntity(
             crewId = this.crewId,

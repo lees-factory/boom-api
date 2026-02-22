@@ -18,6 +18,8 @@ interface CrewScheduleParticipantJpaRepository : JpaRepository<CrewScheduleParti
 
     fun deleteAllByScheduleId(scheduleId: Long)
 
+    fun deleteAllByMemberId(memberId: Long)
+
     fun findAllByScheduleId(scheduleId: Long): List<CrewScheduleParticipantEntity>
 
     @Query(

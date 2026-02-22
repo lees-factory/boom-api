@@ -16,6 +16,10 @@ internal class MemberNotificationSettingCoreRepository(
     override fun save(setting: MemberNotificationSetting): MemberNotificationSetting =
         memberNotificationSettingJpaRepository.save(setting.toEntity()).toDomain()
 
+    override fun deleteByMemberId(memberId: Long) {
+        memberNotificationSettingJpaRepository.deleteByMemberId(memberId)
+    }
+
     @Transactional
     override fun update(setting: MemberNotificationSetting) {
         val entity = memberNotificationSettingJpaRepository.findByMemberId(setting.memberId) ?: return

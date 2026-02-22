@@ -88,4 +88,6 @@ internal interface GymVisitJpaRepository : JpaRepository<GymVisitEntity, Long> {
         """,
     )
     fun existsWandererVisitByMemberId(memberId: Long): Boolean
+
+    fun deleteAllByMemberId(memberId: Long)
 }

@@ -105,6 +105,11 @@ internal class CrewCoreRepository(
         crewMemberJpaRepository.softDeleteByCrewId(crewId)
     }
 
+    @Transactional
+    override fun softDeleteMembersByMemberId(memberId: Long) {
+        crewMemberJpaRepository.softDeleteByMemberId(memberId)
+    }
+
     override fun countLeadersByCrewId(crewId: Long): Long =
         crewMemberJpaRepository.countByCrewIdAndRole(crewId, CrewRole.LEADER)
 
