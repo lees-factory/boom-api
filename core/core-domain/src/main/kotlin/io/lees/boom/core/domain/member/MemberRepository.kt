@@ -23,4 +23,6 @@ interface MemberRepository {
         memberId: Long,
         score: Int,
     )
+
+    fun deleteById(memberId: Long)
 }

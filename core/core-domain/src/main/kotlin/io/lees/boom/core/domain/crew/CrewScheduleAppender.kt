@@ -20,4 +20,6 @@ class CrewScheduleAppender(
 
     fun removeParticipantsByScheduleId(scheduleId: Long) =
         crewScheduleRepository.deleteParticipantsByScheduleId(scheduleId)
+
+    fun removeAllParticipantsByMemberId(memberId: Long) = crewScheduleRepository.deleteParticipantsByMemberId(memberId)
 }

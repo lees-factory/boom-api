@@ -61,4 +61,6 @@ interface CrewRepository {
         page: Int,
         size: Int,
     ): List<CrewRankingInfo>
+
+    fun softDeleteMembersByMemberId(memberId: Long)
 }

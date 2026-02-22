@@ -28,4 +28,6 @@ interface CrewScheduleRepository {
     fun deleteParticipantsByScheduleId(scheduleId: Long)
 
     fun findParticipantMemberIdsByScheduleId(scheduleId: Long): List<Long>
+
+    fun deleteParticipantsByMemberId(memberId: Long)
 }

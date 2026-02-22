@@ -7,4 +7,6 @@ interface MemberTokenRepository {
     fun findByRefreshToken(refreshToken: String): MemberToken?
 
     fun findByMemberId(memberId: Long): MemberToken?
+
+    fun deleteByMemberId(memberId: Long)
 }

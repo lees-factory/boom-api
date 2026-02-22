@@ -26,4 +26,6 @@ class CrewAppender(
     fun softDeleteMember(crewMemberId: Long) = crewRepository.softDeleteMember(crewMemberId)
 
     fun softDeleteAllMembersByCrewId(crewId: Long) = crewRepository.softDeleteAllMembersByCrewId(crewId)
+
+    fun softDeleteMembersByMemberId(memberId: Long) = crewRepository.softDeleteMembersByMemberId(memberId)
 }
