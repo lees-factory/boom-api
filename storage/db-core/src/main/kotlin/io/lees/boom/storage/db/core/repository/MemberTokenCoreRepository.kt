@@ -33,6 +33,11 @@ internal class MemberTokenCoreRepository(
     override fun findByMemberId(memberId: Long): MemberToken? =
         memberTokenJpaRepository.findByMemberId(memberId)?.toDomain()
 
+    @Transactional
+    override fun deleteByMemberId(memberId: Long) {
+        memberTokenJpaRepository.deleteByMemberId(memberId)
+    }
+
     private fun MemberTokenEntity.toDomain() =
         MemberToken(
             memberId = this.memberId,

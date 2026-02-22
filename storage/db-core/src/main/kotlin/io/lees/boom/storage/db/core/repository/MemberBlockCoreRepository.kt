@@ -28,6 +28,12 @@ internal class MemberBlockCoreRepository(
     override fun findBlockedIdsByBlockerId(blockerId: Long): List<Long> =
         memberBlockJpaRepository.findAllByBlockerId(blockerId).map { it.blockedId }
 
+    @Transactional
+    override fun deleteAllByMemberId(memberId: Long) {
+        memberBlockJpaRepository.deleteAllByBlockerId(memberId)
+        memberBlockJpaRepository.deleteAllByBlockedId(memberId)
+    }
+
     private fun MemberBlock.toEntity() =
         MemberBlockEntity(
             blockerId = this.blockerId,

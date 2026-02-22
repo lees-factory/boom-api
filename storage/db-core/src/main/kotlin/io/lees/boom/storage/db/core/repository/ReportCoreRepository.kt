@@ -13,6 +13,10 @@ internal class ReportCoreRepository(
 ) : ReportRepository {
     override fun save(report: Report): Report = reportJpaRepository.save(report.toEntity()).toDomain()
 
+    override fun deleteAllByReporterId(reporterId: Long) {
+        reportJpaRepository.deleteAllByReporterId(reporterId)
+    }
+
     private fun Report.toEntity() =
         ReportEntity(
             reporterId = this.reporterId,

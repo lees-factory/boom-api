@@ -6,4 +6,6 @@ interface MemberNotificationSettingRepository {
     fun save(setting: MemberNotificationSetting): MemberNotificationSetting
 
     fun update(setting: MemberNotificationSetting)
+
+    fun deleteByMemberId(memberId: Long)
 }

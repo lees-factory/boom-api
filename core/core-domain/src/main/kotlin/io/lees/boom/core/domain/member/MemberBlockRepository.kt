@@ -14,4 +14,6 @@ interface MemberBlockRepository {
     )
 
     fun findBlockedIdsByBlockerId(blockerId: Long): List<Long>
+
+    fun deleteAllByMemberId(memberId: Long)
 }

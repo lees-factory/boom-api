@@ -21,4 +21,6 @@ interface CrewChatMessageRepository {
     ): Long
 
     fun softDelete(messageId: Long)
+
+    fun softDeleteByMemberId(memberId: Long)
 }

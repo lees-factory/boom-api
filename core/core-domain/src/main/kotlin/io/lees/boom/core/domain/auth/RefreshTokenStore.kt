@@ -22,4 +22,8 @@ class RefreshTokenStore(
 
         memberTokenRepository.store(memberToken)
     }
+
+    fun deleteByMemberId(memberId: Long) {
+        memberTokenRepository.deleteByMemberId(memberId)
+    }
 }

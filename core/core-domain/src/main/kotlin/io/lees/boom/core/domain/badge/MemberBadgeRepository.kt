@@ -4,4 +4,6 @@ interface MemberBadgeRepository {
     fun findByMemberId(memberId: Long): List<MemberBadge>
 
     fun saveAll(badges: List<MemberBadge>): List<MemberBadge>
+
+    fun deleteAllByMemberId(memberId: Long)
 }

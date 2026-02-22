@@ -12,4 +12,6 @@ interface GymVisitRepository {
     fun save(visit: GymVisit): GymVisit
 
     fun findById(id: Long): GymVisit?
+
+    fun deleteAllByMemberId(memberId: Long)
 }

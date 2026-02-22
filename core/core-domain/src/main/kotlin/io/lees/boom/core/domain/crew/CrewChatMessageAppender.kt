@@ -9,4 +9,6 @@ class CrewChatMessageAppender(
     fun append(message: CrewChatMessage): CrewChatMessage = crewChatMessageRepository.save(message)
 
     fun softDelete(messageId: Long) = crewChatMessageRepository.softDelete(messageId)
+
+    fun softDeleteByMemberId(memberId: Long) = crewChatMessageRepository.softDeleteByMemberId(memberId)
 }

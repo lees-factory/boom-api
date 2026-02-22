@@ -7,6 +7,7 @@ import io.lees.boom.core.domain.auth.TokenPair
 import io.lees.boom.core.domain.member.Member
 import io.lees.boom.core.domain.member.MemberBlockService
 import io.lees.boom.core.domain.member.MemberService
+import io.lees.boom.core.domain.member.MemberWithdrawService
 import io.lees.boom.core.domain.member.SocialInfo
 import io.lees.boom.core.domain.member.SocialLoginService
 import io.lees.boom.core.enums.MemberRole
@@ -14,6 +15,7 @@ import io.lees.boom.core.enums.SocialProvider
 import io.lees.boom.test.api.RestDocsTest
 import io.lees.boom.test.api.TestAuthUtils.authenticatedUser
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,6 +24,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
@@ -36,15 +39,17 @@ class MemberControllerTest : RestDocsTest() {
     private lateinit var socialLoginService: SocialLoginService
     private lateinit var memberService: MemberService
     private lateinit var memberBlockService: MemberBlockService
+    private lateinit var memberWithdrawService: MemberWithdrawService
 
     @BeforeEach
     fun setUp() {
         socialLoginService = mockk()
         memberService = mockk()
         memberBlockService = mockk()
+        memberWithdrawService = mockk()
         mockMvc =
             mockController(
-                MemberController(socialLoginService, memberService, memberBlockService),
+                MemberController(socialLoginService, memberService, memberBlockService, memberWithdrawService),
                 UserArgumentResolver(),
             )
     }
@@ -262,6 +267,37 @@ class MemberControllerTest : RestDocsTest() {
                         fieldWithPath(
                             "data.isBlocked",
                         ).type(JsonFieldType.BOOLEAN).description("내가 해당 유저를 차단했는지 여부"),
+                        fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
+                    ),
+                ),
+            )
+    }
+
+    @Test
+    fun withdraw() {
+        // given
+        val memberId = 1L
+
+        justRun { memberWithdrawService.withdraw(memberId) }
+
+        // when & then
+        mockMvc
+            .perform(
+                delete("/api/v1/members/me")
+                    .with(authenticatedUser(memberId))
+                    .contentType(MediaType.APPLICATION_JSON),
+            ).andExpect(status().isOk)
+            .andDo(
+                document(
+                    "withdraw",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName("Authorization").description("Bearer {accessToken}"),
+                    ),
+                    responseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("응답 결과"),
+                        fieldWithPath("data").type(JsonFieldType.NULL).ignored(),
                         fieldWithPath("error").type(JsonFieldType.NULL).ignored(),
                     ),
                 ),

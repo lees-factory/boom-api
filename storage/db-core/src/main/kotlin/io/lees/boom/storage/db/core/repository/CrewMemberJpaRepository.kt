@@ -82,4 +82,12 @@ interface CrewMemberJpaRepository : JpaRepository<CrewMemberEntity, Long> {
     fun softDeleteById(
         @Param("id") id: Long,
     )
+
+    @Modifying
+    @Query(
+        "UPDATE CrewMemberEntity cm SET cm.deletedAt = CURRENT_TIMESTAMP WHERE cm.memberId = :memberId AND cm.deletedAt IS NULL",
+    )
+    fun softDeleteByMemberId(
+        @Param("memberId") memberId: Long,
+    )
 }

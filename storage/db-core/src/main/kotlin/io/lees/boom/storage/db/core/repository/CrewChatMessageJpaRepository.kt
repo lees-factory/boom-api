@@ -41,4 +41,12 @@ interface CrewChatMessageJpaRepository : JpaRepository<CrewChatMessageEntity, Lo
     fun softDeleteById(
         @Param("id") id: Long,
     )
+
+    @Modifying
+    @Query(
+        "UPDATE CrewChatMessageEntity cm SET cm.deletedAt = CURRENT_TIMESTAMP WHERE cm.memberId = :memberId AND cm.deletedAt IS NULL",
+    )
+    fun softDeleteByMemberId(
+        @Param("memberId") memberId: Long,
+    )
 }

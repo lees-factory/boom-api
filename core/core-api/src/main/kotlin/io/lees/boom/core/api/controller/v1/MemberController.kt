@@ -7,10 +7,12 @@ import io.lees.boom.core.api.controller.v1.response.MemberProfileResponse
 import io.lees.boom.core.api.controller.v1.response.MemberResponse
 import io.lees.boom.core.domain.member.MemberBlockService
 import io.lees.boom.core.domain.member.MemberService
+import io.lees.boom.core.domain.member.MemberWithdrawService
 import io.lees.boom.core.domain.member.ProfileImageInput
 import io.lees.boom.core.domain.member.SocialLoginService
 import io.lees.boom.core.support.User
 import io.lees.boom.core.support.response.ApiResponse
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -27,6 +29,7 @@ class MemberController(
     private val socialLoginService: SocialLoginService,
     private val memberService: MemberService,
     private val memberBlockService: MemberBlockService,
+    private val memberWithdrawService: MemberWithdrawService,
 ) {
     /**
      * 내 정보 조회
@@ -103,6 +106,18 @@ class MemberController(
 
         // 3. 공통 응답 포맷으로 래핑하여 반환
         return ApiResponse.success(response)
+    }
+
+    /**
+     * 회원탈퇴
+     * 관련 데이터를 모두 삭제하고 회원 정보를 영구 삭제합니다.
+     */
+    @DeleteMapping("/me")
+    fun withdraw(
+        @User memberId: Long,
+    ): ApiResponse<Any> {
+        memberWithdrawService.withdraw(memberId)
+        return ApiResponse.success()
     }
 
     @PostMapping("/refresh")
